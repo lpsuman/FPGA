@@ -217,4 +217,10 @@ public class CLBController {
             clbChangeListeners.remove(clbChangeListener);
         }
     }
+
+    @Override
+    public String toString() {
+        return String.format("Number of CLBs: %d\nNumber of CLB inputs: %d\nSize of each block (integers): %d\n",
+                numCLB, numCLBInputs, intsPerCLB);
+    }
 }

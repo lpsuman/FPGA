@@ -192,18 +192,19 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<BoolVecSolution> 
 
     private void calcBlockUsage(int[] data, int numFunctions, int numCLB) {
         int numInputs = getController().getNumInputs();
-        unusedBlocks.clear(0, unusedBlocks.length());
+        unusedBlocks.set(0, numInputs + numCLB);
 
 //        if (enableLogging) {
 //            System.out.println(String.format("Num of functions: %d\nNum of inputs: %d\nNum of CLB: %d", numFunctions, numInputs, numCLB));
 //        }
 
         for (int i = 0; i < numFunctions; ++i) {
-            blockUsage[i].set(0, blockUsage[i].length());
+            blockUsage[i].clear();
             int indexBestMatchingOutput = data[numCLB * getController().getIntsPerCLB() + i];
 
             Queue<Integer> queue = new LinkedList<>();
             queue.add(indexBestMatchingOutput);
+            blockUsage[i].set(indexBestMatchingOutput);
 
             while(!queue.isEmpty()) {
                 int indexCLB = queue.poll();
@@ -211,8 +212,6 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<BoolVecSolution> 
 //                if (enableLogging) {
 //                    System.out.println("Popped:  " + indexCLB);
 //                }
-
-                blockUsage[i].clear(indexCLB);
 
                 if (indexCLB < numInputs) {
                     continue;
@@ -229,11 +228,12 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<BoolVecSolution> 
 
 //                    if (enableLogging) {
 //                        System.out.println("Input:    " + input);
-//                        System.out.println(blockUsage[i]);
+////                        System.out.println(blockUsage[i]);
 //                    }
 
-                    if (blockUsage[i].get(input)) {
+                    if (!blockUsage[i].get(input)) {
                         queue.add(input);
+                        blockUsage[i].set(input);
 
 //                        if (enableLogging) {
 //                            System.out.println("Pushed:   " + (input));
@@ -247,9 +247,9 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<BoolVecSolution> 
             }
 
             if (i == 0) {
-                unusedBlocks.or(blockUsage[i]);
+                unusedBlocks.xor(blockUsage[i]);
             } else {
-                unusedBlocks.and(blockUsage[i]);
+                unusedBlocks.andNot(blockUsage[i]);
             }
         }
     }
@@ -286,6 +286,10 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<BoolVecSolution> 
 
     private BoolVector getVector() {
         return problem.getBoolVector();
+    }
+
+    public BitSet[] getBlockUsage() {
+        return blockUsage;
     }
 
     public BitSet getUnusedBlocks() {

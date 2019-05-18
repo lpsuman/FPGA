@@ -11,6 +11,8 @@ import java.util.NoSuchElementException;
 
 public class BoolFuncController {
 
+    private static final String DEFAULT_FUNC_NAME = "func";
+
     public static List<String> generateDefaultInputIDs(int numInputs) {
         Utility.checkLimit(Constants.NUM_FUNCTION_INPUTS_LIMIT, numInputs);
         List<String> inputIDs = new ArrayList<>(numInputs);
@@ -35,11 +37,11 @@ public class BoolFuncController {
     public static BoolFunc generateRandomFunction(List<String> inputIDs, int numInputs) {
         int numInputCombinations = (int) Math.pow(2, numInputs);
         BitSet bitSet = RNG.getRNG().nextBitSet(numInputCombinations);
-        return new BoolFunc(inputIDs, bitSet);
+        return new BoolFunc(DEFAULT_FUNC_NAME, inputIDs, bitSet);
     }
 
     public static BoolFunc generateFromMask(int mask, int numInputs) {
-        return new BoolFunc(BoolFuncController.generateDefaultInputIDs(numInputs),
+        return new BoolFunc(DEFAULT_FUNC_NAME, BoolFuncController.generateDefaultInputIDs(numInputs),
                 Utility.bitSetFromMask(mask, (int) Math.pow(2, numInputs)));
     }
 

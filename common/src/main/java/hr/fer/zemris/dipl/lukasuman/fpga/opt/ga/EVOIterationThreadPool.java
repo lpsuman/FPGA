@@ -109,7 +109,7 @@ public class EVOIterationThreadPool<T extends Solution> implements GAThreadPool<
 
                         }
 
-                        System.out.println("Termination check complete.");
+//                        System.out.println("Termination check complete.");
                     }
                 }
             }

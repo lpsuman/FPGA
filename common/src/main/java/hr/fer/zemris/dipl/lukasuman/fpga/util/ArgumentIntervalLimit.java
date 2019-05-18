@@ -36,4 +36,14 @@ public class ArgumentIntervalLimit<T extends Number> implements ArgumentLimit<T>
         String temp2 = isMin ? "minimum" : "maximum";
         return String.format("%s is too %s (%%.4f was given while %%.4f is %s).", argName, temp1, temp2);
     }
+
+    @Override
+    public T getLowerLimit() {
+        return lowerLimit;
+    }
+
+    @Override
+    public T getUpperLimit() {
+        return upperLimit;
+    }
 }

@@ -12,10 +12,8 @@ public class Constants {
     public static final double DEFAULT_TABLE_SINGLE_MUTATION_CHANCE = 0.10;
     public static final double DEFAULT_TABLE_COPY_MUTATION_CHANCE = 0.10;
 
-    private static final int MAX_NUM_FUNTION_INPUTS = 16;
-
     public static final ArgumentLimit<Integer> NUM_FUNCTION_INPUTS_LIMIT =
-            new ArgumentIntervalLimit<>("number of inputs for boolean function", 1,MAX_NUM_FUNTION_INPUTS);
+            new ArgumentIntervalLimit<>("number of inputs for boolean function", 1, 16);
 
     public static final ArgumentLimit<Integer> NUM_FUNCTIONS_LIMIT =
             new ArgumentIntervalLimit<>("number of functions", 1, 100);
@@ -33,10 +31,13 @@ public class Constants {
             new ArgumentIntervalLimit<>("number of operators", 1, 10);
 
     public static final ArgumentLimit<Integer> BITSET_SIZE_LIMIT =
-            new ArgumentIntervalLimit<>("size of bitset", 0, (int) Math.pow(2, MAX_NUM_FUNTION_INPUTS));
+            new ArgumentIntervalLimit<>("size of bitset", 0,
+                    (int) Math.pow(2, NUM_FUNCTION_INPUTS_LIMIT.getUpperLimit()));
 
     public static final ArgumentLimit<Integer> INTEGER_LENGTH_LIMIT =
             new ArgumentIntervalLimit<>("length of integer", 0, 32);
+
+    public static final String SOLUTION_PRINT_FORMAT = "%4d   ";
 
     public static final String PER_GENERATION_OUTPUT_MSG =
             "%6d. generation(%6d) => best: %10.4f, worst: %10.4f%n";
@@ -55,7 +56,7 @@ public class Constants {
     public static final double DEFAULT_ELITISM_RATIO = 0.002;
     public static final int DEFAULT_TOURNAMENT_SIZE = 3;
     public static final int DEFAULT_MAX_NUM_GENERATIONS = 2000;
-    public static final int DEFAULT_POPULATION_SIZE = 2000;
+    public static final int DEFAULT_POPULATION_SIZE = 1000;
 
     public static final int DEFAULT_MAX_NUM_FAILS = 10;
     public static final double DEFAULT_FITNESS_THRESHOLD = Double.MAX_VALUE;

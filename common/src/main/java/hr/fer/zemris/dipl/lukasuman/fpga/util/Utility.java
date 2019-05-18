@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -29,7 +30,7 @@ public class Utility {
     public static void checkRange(int index, int minValue, int maxValue) {
         if (index < minValue || index > maxValue) {
             throw new IllegalArgumentException(String.format(
-                    "Index %d is uut of range (must be between %d and %d).", index, minValue, maxValue));
+                    "Index %d is out of range (must be between %d and %d).", index, minValue, maxValue));
         }
     }
 
@@ -41,6 +42,38 @@ public class Utility {
         } else {
             return arg;
         }
+    }
+
+    public static <T extends Collection> T checkIfValidCollection(T col, String name) {
+        checkNull(col, name);
+        checkIfEmpty(col, name);
+        checkIfContainsNull(col, name);
+        return col;
+    }
+
+    public static <T extends Collection> T checkIfEmpty(T col, String name) {
+        if (col.isEmpty()) {
+            throw new IllegalArgumentException(capitalizedString(name) + " must not be empty.");
+        }
+        return col;
+    }
+
+    public static <T extends Collection> T checkIfContainsNull(T col, String name) {
+        if (col.contains(null)) {
+            throw new IllegalArgumentException(capitalizedString(name) + " must not contain null elements.");
+        }
+        return col;
+    }
+
+    public static String checkIfValidString(String str, String name) {
+        checkNull(str, name);
+        String result = str.trim();
+
+        if (result.length() == 0) {
+            throw new IllegalArgumentException(capitalizedString(name) + " must contain non-empty characters.");
+        }
+
+        return result;
     }
 
     public static BitSet[] newBitSetArray(int arraySize, int bitSetSize) {
@@ -68,6 +101,14 @@ public class Utility {
         BitSet result = new BitSet(length);
         setBitSet(result, mask, length);
         return result;
+    }
+
+    public static void appendBitSet(StringBuilder sb, BitSet bitSet, int length) {
+        Utility.checkNull(bitSet, "bitset");
+
+        for (int i = 0; i < length; ++i) {
+            sb.append(bitSet.get(i) ? '1' : '0');
+        }
     }
 
     public static String capitalizedString(String str) {

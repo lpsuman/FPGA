@@ -1,24 +1,35 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.func;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.AbstractNameHandler;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.CLBController;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class BoolVector {
+public class BoolVector extends AbstractNameHandler implements Serializable {
+
+    private static final long serialVersionUID = -7755696151775719987L;
+
+    private static final String DEFAULT_NAME = "BoolVector";
+    private static final String NAME_MSG = "boolean vector's name";
 
     private List<BoolFunc> boolFunctions;
     private int numInputCombinations;
     private BitSet[] truthTable;
     private List<String> sortedInputIDs;
 
-    public BoolVector(List<BoolFunc> boolFunctions) {
-        this.boolFunctions = Utility.checkNull(boolFunctions, "list of boolean functions");
+    public BoolVector(String name, List<BoolFunc> boolFunctions) {
+        super(name);
+        this.boolFunctions = Utility.checkIfValidCollection(boolFunctions, "boolean functions for vector");
         Utility.checkLimit(Constants.NUM_FUNCTIONS_LIMIT, boolFunctions.size());
-        boolFunctions.forEach(f -> Utility.checkNull(f, "boolean function for vector"));
 
         fillTable(boolFunctions);
+    }
+
+    public BoolVector(List<BoolFunc> boolFunctions) {
+        this(DEFAULT_NAME, boolFunctions);
     }
 
     private void fillTable(List<BoolFunc> boolFuncs) {
@@ -69,5 +80,10 @@ public class BoolVector {
 
     public List<String> getSortedInputIDs() {
         return sortedInputIDs;
+    }
+
+    @Override
+    protected String getNameMessage() {
+        return NAME_MSG;
     }
 }
