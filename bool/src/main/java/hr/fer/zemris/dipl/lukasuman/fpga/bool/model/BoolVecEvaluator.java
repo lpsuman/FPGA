@@ -2,6 +2,7 @@ package hr.fer.zemris.dipl.lukasuman.fpga.bool.model;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.evaluator.AbstractLoggingEvaluator;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
@@ -10,7 +11,7 @@ import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class BoolVecEvaluator extends AbstractLoggingEvaluator<BoolVecSolution> implements CLBChangeListener{
+public class BoolVecEvaluator extends AbstractLoggingEvaluator<IntArraySolution> implements CLBChangeListener{
 
     private BoolVecProblem problem;
 
@@ -40,7 +41,7 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<BoolVecSolution> 
     }
 
     @Override
-    public double evaluateSolution(BoolVecSolution solution, boolean allowTermination) {
+    public double evaluateSolution(IntArraySolution solution, boolean allowTermination) {
         int[] data = solution.getData();
         int numFunctions = getVector().getNumFunctions();
         int numCLB = getController().getNumCLB();

@@ -1,13 +1,13 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.mutation;
 
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecSolution;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.CLBController;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.mutation.Mutation;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.operator.AbstractOperator;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.IRNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
 
-public abstract class AbstractBoolMutation extends AbstractOperator implements Mutation<BoolVecSolution> {
+public abstract class AbstractBoolMutation extends AbstractOperator implements Mutation<IntArraySolution> {
 
     protected CLBController clbController;
     protected double mutationChance;
@@ -19,7 +19,7 @@ public abstract class AbstractBoolMutation extends AbstractOperator implements M
     }
 
     @Override
-    public BoolVecSolution mutate(BoolVecSolution candidate) {
+    public IntArraySolution mutate(IntArraySolution candidate) {
         for (int i = 0, n = calcNumMutations(); i < n; ++i) {
             mutateData(candidate.getData(), RNG.getRNG());
         }

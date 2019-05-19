@@ -10,7 +10,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.mutation.TableCopyMut
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.mutation.TableSingleMutation;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecEvaluator;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecProblem;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecSolution;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.CLBController;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.EVOIterationThreadPool;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.GAThreadPool;
@@ -23,6 +23,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.evaluator.Evaluator;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
@@ -35,11 +36,14 @@ public class BoolSolver {
     public static BoolVectorSolution solve(BoolVecProblem problem) {
         int numCLBInputs = problem.getClbController().getNumCLBInputs();
         List<BoolFunc> functions = problem.getBoolVector().getBoolFunctions();
+        List<Integer> perFuncEstimates = new ArrayList<>(Arrays.asList(3, 3, 6, 6, 6));
+
         List<BlockConfiguration> perFuncSolutions = new ArrayList<>();
 
-        for (BoolFunc function : functions) {
+        for (int i = 0; i < functions.size(); ++i) {
             BoolVecProblem singleFuncProblem = new BoolVecProblem(
-                    new BoolVector(Collections.singletonList(function)), numCLBInputs);
+                    new BoolVector(Collections.singletonList(functions.get(i))), numCLBInputs);
+            singleFuncProblem.getClbController().setNumCLB(perFuncEstimates.get(i));
             perFuncSolutions.add(doARun(singleFuncProblem, true));
         }
 
@@ -56,23 +60,23 @@ public class BoolSolver {
     private static BlockConfiguration doARun(BoolVecProblem problem, boolean shouldChangeNumCLB) {
         CLBController controller = problem.getClbController();
 
-        List<Crossover<BoolVecSolution>> crossoverList = new ArrayList<>();
+        List<Crossover<IntArraySolution>> crossoverList = new ArrayList<>();
         crossoverList.add(new SingleBlockCrossover(controller));
         crossoverList.add(new IntervalBlockCrossover(controller));
 //        crossoverList.add(new SingleBlockCrossover(controller, false));
 //        crossoverList.add(new IntervalBlockCrossover(controller, false));
-        RandomizeCrossover<BoolVecSolution> randomCrossovers = new RandomizeCrossover<>(crossoverList);
+        RandomizeCrossover<IntArraySolution> randomCrossovers = new RandomizeCrossover<>(crossoverList);
 
-        List<Mutation<BoolVecSolution>> mutationList = new ArrayList<>();
+        List<Mutation<IntArraySolution>> mutationList = new ArrayList<>();
         mutationList.add(new InputSingleMutation(controller));
 //        mutationList.add(new InputFullMutation(controller));
         mutationList.add(new TableCopyMutation(controller));
         mutationList.add(new TableSingleMutation(controller));
 //        mutationList.add(new TableFullMutation(controller));
-        RandomizeMutation<BoolVecSolution> randomMutations = new RandomizeMutation<>(mutationList);
+        RandomizeMutation<IntArraySolution> randomMutations = new RandomizeMutation<>(mutationList);
 
         List<BoolVecEvaluator> evaluators = new ArrayList<>();
-        Supplier<Evaluator<BoolVecSolution>> evaluatorSupplier = () -> {
+        Supplier<Evaluator<IntArraySolution>> evaluatorSupplier = () -> {
             BoolVecEvaluator evaluator = new BoolVecEvaluator(problem);
             evaluators.add(evaluator);
             evaluator.addFitnessListener(randomCrossovers);
@@ -81,8 +85,8 @@ public class BoolSolver {
         };
 
         BoolVecEvaluator evaluator = new BoolVecEvaluator(problem);
-        ParallelGA<BoolVecSolution> algorithm;
-        GAThreadPool<BoolVecSolution> threadPool = new EVOIterationThreadPool<>(randomCrossovers, randomMutations, evaluatorSupplier);
+        ParallelGA<IntArraySolution> algorithm;
+        GAThreadPool<IntArraySolution> threadPool = new EVOIterationThreadPool<>(randomCrossovers, randomMutations, evaluatorSupplier);
 
         if (Constants.DEFAULT_USE_TIME) {
             algorithm = new ParallelGA<>(problem, evaluator, threadPool);
@@ -95,8 +99,9 @@ public class BoolSolver {
         algorithm.addFitnessListener(randomMutations);
         algorithm.addTerminationListener(randomMutations);
 
-        BoolVecSolution bestSolution = null;
-        BoolVecSolution solution = null;
+        IntArraySolution bestSolution = null;
+        IntArraySolution solution = null;
+        int numCLBOfBest = -1;
         int numFailed = 0;
 
         while (true) {
@@ -111,6 +116,7 @@ public class BoolSolver {
 
             if (bestSolution == null || solution.getFitness() >= bestSolution.getFitness()) {
                 bestSolution = solution;
+                numCLBOfBest = controller.getNumCLB();
             }
 
             if (solution.getFitness() != Constants.FITNESS_SCALE) {
@@ -152,6 +158,7 @@ public class BoolSolver {
         System.out.println(randomMutations.resultsToString(randomMutations.getCumulativeResults()));
         System.out.println();
 
+        controller.setNumCLB(numCLBOfBest);
         evaluator.evaluateSolution(bestSolution, false);
         System.out.println(problem.solutionToString(bestSolution, evaluator.getBlockUsage()));
         System.out.println(bestSolution.getFitness());

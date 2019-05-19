@@ -4,11 +4,11 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BlockConfiguration;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFunc;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFuncController;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.IRNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
-import jdk.jshell.execution.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +16,7 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class BoolVecProblem implements Supplier<BoolVecSolution> {
+public class BoolVecProblem implements Supplier<IntArraySolution> {
 
     private BoolVector boolVector;
     private CLBController clbController;
@@ -27,7 +27,7 @@ public class BoolVecProblem implements Supplier<BoolVecSolution> {
     }
 
     @Override
-    public BoolVecSolution get() {
+    public IntArraySolution get() {
         int numCLB = clbController.getNumCLB();
         int[] data = new int[numCLB * clbController.getIntsPerCLB() + boolVector.getNumFunctions()];
         IRNG random = RNG.getRNG();
@@ -48,7 +48,7 @@ public class BoolVecProblem implements Supplier<BoolVecSolution> {
             data[data.length - numFunctions + i] = random.nextInt(0, boolVector.getNumInputs() + numCLB);
         }
 
-        return new BoolVecSolution(data);
+        return new IntArraySolution(data);
     }
 
     public static BoolVecProblem generateRandomProblem(int numFunctions, int numInputs, int numCLBInputs) {
@@ -60,7 +60,7 @@ public class BoolVecProblem implements Supplier<BoolVecSolution> {
         return new BoolVecProblem(new BoolVector(boolFuncs), numCLBInputs);
     }
 
-    public String solutionToString(BoolVecSolution solution, BitSet[] blockUsage) {
+    public String solutionToString(IntArraySolution solution, BitSet[] blockUsage) {
         Utility.checkNull(solution, "solution");
         int[] data = solution.getData();
         int sizeCLB = clbController.getIntsPerCLB();
@@ -139,7 +139,7 @@ public class BoolVecProblem implements Supplier<BoolVecSolution> {
         return sb.toString();
     }
 
-    public BlockConfiguration generateBlockConfiguration(BoolVecSolution solution) {
+    public BlockConfiguration generateBlockConfiguration(IntArraySolution solution) {
         Utility.checkNull(solution, "solution");
         int numCLB = clbController.getNumCLB();
         int numCLBInputs = clbController.getNumCLBInputs();

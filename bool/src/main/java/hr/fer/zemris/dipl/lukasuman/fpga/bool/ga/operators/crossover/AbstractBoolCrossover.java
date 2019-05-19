@@ -1,6 +1,6 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.crossover;
 
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecSolution;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.CLBController;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.crossover.Crossover;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.operator.AbstractOperator;
@@ -10,7 +10,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class AbstractBoolCrossover extends AbstractOperator implements Crossover<BoolVecSolution> {
+public abstract class AbstractBoolCrossover extends AbstractOperator implements Crossover<IntArraySolution> {
 
     protected static final double ALIGNED_CHANCE_MODIFIER = 2.0;
 
@@ -22,9 +22,9 @@ public abstract class AbstractBoolCrossover extends AbstractOperator implements 
     }
 
     @Override
-    public List<BoolVecSolution> crossover(BoolVecSolution firstParent, BoolVecSolution secondParent) {
-        BoolVecSolution firstChild = (BoolVecSolution) firstParent.duplicate();
-        BoolVecSolution secondChild = (BoolVecSolution) secondParent.duplicate();
+    public List<IntArraySolution> crossover(IntArraySolution firstParent, IntArraySolution secondParent) {
+        IntArraySolution firstChild = (IntArraySolution) firstParent.duplicate();
+        IntArraySolution secondChild = (IntArraySolution) secondParent.duplicate();
 
         if (clbController.getNumCLB() >= 2) {
             int[] first_data = firstChild.getData();
