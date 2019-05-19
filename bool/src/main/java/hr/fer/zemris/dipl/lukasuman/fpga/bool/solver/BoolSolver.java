@@ -10,7 +10,6 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.mutation.TableCopyMut
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.mutation.TableSingleMutation;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecEvaluator;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecProblem;
-import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.CLBController;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.EVOIterationThreadPool;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.GAThreadPool;
@@ -20,6 +19,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.crossover.RandomizeCro
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.mutation.Mutation;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.mutation.RandomizeMutation;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.evaluator.Evaluator;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 
 import java.util.ArrayList;
@@ -60,23 +60,23 @@ public class BoolSolver {
     private static BlockConfiguration doARun(BoolVecProblem problem, boolean shouldChangeNumCLB) {
         CLBController controller = problem.getClbController();
 
-        List<Crossover<IntArraySolution>> crossoverList = new ArrayList<>();
+        List<Crossover<int[]>> crossoverList = new ArrayList<>();
         crossoverList.add(new SingleBlockCrossover(controller));
         crossoverList.add(new IntervalBlockCrossover(controller));
 //        crossoverList.add(new SingleBlockCrossover(controller, false));
 //        crossoverList.add(new IntervalBlockCrossover(controller, false));
-        RandomizeCrossover<IntArraySolution> randomCrossovers = new RandomizeCrossover<>(crossoverList);
+        RandomizeCrossover<int[]> randomCrossovers = new RandomizeCrossover<>(crossoverList);
 
-        List<Mutation<IntArraySolution>> mutationList = new ArrayList<>();
+        List<Mutation<int[]>> mutationList = new ArrayList<>();
         mutationList.add(new InputSingleMutation(controller));
 //        mutationList.add(new InputFullMutation(controller));
         mutationList.add(new TableCopyMutation(controller));
         mutationList.add(new TableSingleMutation(controller));
 //        mutationList.add(new TableFullMutation(controller));
-        RandomizeMutation<IntArraySolution> randomMutations = new RandomizeMutation<>(mutationList);
+        RandomizeMutation<int[]> randomMutations = new RandomizeMutation<>(mutationList);
 
         List<BoolVecEvaluator> evaluators = new ArrayList<>();
-        Supplier<Evaluator<IntArraySolution>> evaluatorSupplier = () -> {
+        Supplier<Evaluator<int[]>> evaluatorSupplier = () -> {
             BoolVecEvaluator evaluator = new BoolVecEvaluator(problem);
             evaluators.add(evaluator);
             evaluator.addFitnessListener(randomCrossovers);
@@ -85,8 +85,8 @@ public class BoolSolver {
         };
 
         BoolVecEvaluator evaluator = new BoolVecEvaluator(problem);
-        ParallelGA<IntArraySolution> algorithm;
-        GAThreadPool<IntArraySolution> threadPool = new EVOIterationThreadPool<>(randomCrossovers, randomMutations, evaluatorSupplier);
+        ParallelGA<int[]> algorithm;
+        GAThreadPool<int[]> threadPool = new EVOIterationThreadPool<>(randomCrossovers, randomMutations, evaluatorSupplier);
 
         if (Constants.DEFAULT_USE_TIME) {
             algorithm = new ParallelGA<>(problem, evaluator, threadPool);
@@ -99,10 +99,11 @@ public class BoolSolver {
         algorithm.addFitnessListener(randomMutations);
         algorithm.addTerminationListener(randomMutations);
 
-        IntArraySolution bestSolution = null;
-        IntArraySolution solution = null;
+        Solution<int[]> bestSolution = null;
+        Solution<int[]> solution = null;
         int numCLBOfBest = -1;
         int numFailed = 0;
+        int numConsecutiveBestFitnessBelowThreshold = 0;
 
         while (true) {
             System.out.println(String.format("Running GA with %6d CLB (attempt %d/%d)",
@@ -121,10 +122,27 @@ public class BoolSolver {
 
             if (solution.getFitness() != Constants.FITNESS_SCALE) {
                 numFailed++;
+
                 if (numFailed >= Constants.DEFAULT_MAX_NUM_FAILS) {
-                    System.out.println("Failed to find a solution, aborting");
+                    System.out.println("Failed to find a solution after maximum number of tries, aborting");
                     break;
                 }
+
+                if (solution.getFitness() < Constants.BEST_FITNESS_THRESHOLD_TO_STOP_TRYING) {
+                    numConsecutiveBestFitnessBelowThreshold++;
+//                    System.out.println("Consecutive below threshold: " + numConsecutiveBestFitnessBelowThreshold);
+
+                    if (numConsecutiveBestFitnessBelowThreshold >= Constants.DEFAULT_MAX_NUM_BELOW_THRESHOLD_ATTEMPTS) {
+                        System.out.println(String.format("Exceeded maximum number of below threshold attempts. " +
+                                "Fitness of the best solution was below %.4f for %d consecutive attempts.",
+                                Constants.BEST_FITNESS_THRESHOLD_TO_STOP_TRYING,
+                                Constants.DEFAULT_MAX_NUM_BELOW_THRESHOLD_ATTEMPTS));
+                        break;
+                    }
+                } else {
+                    numConsecutiveBestFitnessBelowThreshold = 0;
+                }
+
                 System.out.println("No solution found, trying again.");
                 continue;
             }

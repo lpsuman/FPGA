@@ -4,7 +4,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.AbstractListenerHandler;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Logger;
 
-public abstract class AbstractEvaluator<T extends Solution> extends AbstractListenerHandler<T> implements Evaluator<T>, Logger {
+public abstract class AbstractEvaluator<T> extends AbstractListenerHandler<T> implements Evaluator<T>, Logger {
 
     protected int numEvaluations;
 

@@ -34,7 +34,9 @@ public class BoolVector extends AbstractNameHandler implements Serializable {
 
     private void fillTable(List<BoolFunc> boolFuncs) {
         Set<String> inputIDSet = new HashSet<>();
-        boolFuncs.forEach(f -> inputIDSet.addAll(f.getInputIDs()));
+        List<BoolFunc> checkedFunctions = new ArrayList<>(boolFuncs.size());
+        boolFuncs.forEach(f -> checkedFunctions.add(BoolFuncController.removeRedundantInputsIfAble(f)));
+        checkedFunctions.forEach(f -> inputIDSet.addAll(f.getInputIDs()));
         sortedInputIDs = new ArrayList<>(inputIDSet);
         Collections.sort(sortedInputIDs);
 
@@ -43,7 +45,7 @@ public class BoolVector extends AbstractNameHandler implements Serializable {
 
         for (int inputCombination = 0; inputCombination < numInputCombinations; inputCombination++) {
             for (int j = 0; j < getNumFunctions(); ++j) {
-                BoolFunc boolFunc = boolFuncs.get(j);
+                BoolFunc boolFunc = checkedFunctions.get(j);
                 List<String> inputIDs = boolFunc.getInputIDs();
                 int[] inputIndexes = new int[inputIDs.size()];
 

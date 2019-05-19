@@ -17,7 +17,9 @@ public class BoolFunc extends AbstractNameHandler implements Serializable {
     private static final String NAME_MSG = "boolean function's name";
     private static final String INPUT_IDS_MSG = "input IDs for function";
 
+    private int numInputs;
     private List<String> inputIDs;
+    private int numInputCombinations;
     private BitSet truthTable;
 
     public BoolFunc(String name, List<String> inputIDs, BitSet truthTable) {
@@ -25,6 +27,8 @@ public class BoolFunc extends AbstractNameHandler implements Serializable {
         this.inputIDs = Utility.checkIfValidCollection(inputIDs, INPUT_IDS_MSG);
         Utility.checkLimit(Constants.NUM_FUNCTION_INPUTS_LIMIT, inputIDs.size());
         this.truthTable = Utility.checkNull(truthTable, "truth table");
+        numInputs = inputIDs.size();
+        numInputCombinations = (int) Math.pow(2, numInputs);
 
         if (truthTable.length() > (1 << inputIDs.size())) {
             throw new IllegalArgumentException(String.format(
@@ -62,6 +66,14 @@ public class BoolFunc extends AbstractNameHandler implements Serializable {
 
     public BitSet getTruthTable() {
         return truthTable;
+    }
+
+    public int getNumInputs() {
+        return numInputs;
+    }
+
+    public int getNumInputCombinations() {
+        return numInputCombinations;
     }
 
     @Override

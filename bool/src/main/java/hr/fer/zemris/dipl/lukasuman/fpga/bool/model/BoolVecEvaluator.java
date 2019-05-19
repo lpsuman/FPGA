@@ -2,7 +2,7 @@ package hr.fer.zemris.dipl.lukasuman.fpga.bool.model;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.evaluator.AbstractLoggingEvaluator;
-import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
@@ -11,7 +11,7 @@ import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class BoolVecEvaluator extends AbstractLoggingEvaluator<IntArraySolution> implements CLBChangeListener{
+public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements CLBChangeListener{
 
     private BoolVecProblem problem;
 
@@ -41,7 +41,7 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<IntArraySolution>
     }
 
     @Override
-    public double evaluateSolution(IntArraySolution solution, boolean allowTermination) {
+    public double evaluateSolution(Solution<int[]> solution, boolean allowTermination) {
         int[] data = solution.getData();
         int numFunctions = getVector().getNumFunctions();
         int numCLB = getController().getNumCLB();
@@ -66,14 +66,18 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<IntArraySolution>
 
             double structureFitness = calcStructureFitness(numFunctions, numCLB, numInputCombinations);
 
-            if (structureFitness < 0.0 || structureFitness >= 1.0) {
+            if (Double.isNaN(structureFitness) || structureFitness < 0.0 || structureFitness >= 1.0) {
                 throw new IllegalStateException("Invalid structure fitness.");
             }
 
             fitness += structureFitness;
-            fitness = fitness / (numFunctions * numInputCombinations);
+            fitness /= (numFunctions * numInputCombinations);
             fitness *= Constants.FITNESS_SCALE;
         }
+
+//        if (Double.isNaN(fitness)) {
+//            throw new IllegalStateException(String.format("Invalid fitness with %d functions and %d input combinations", numFunctions, numInputCombinations));
+//        }
 
         solution.setFitness(fitness);
         notifyFitnessListeners(solution, false);
@@ -123,7 +127,6 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<IntArraySolution>
                 for (int j = 0; j < numFunctions; ++j) {
                     if (outputCLB == getVector().getTruthTable()[j].get(inputCombination)) {
                         numMatchingOutputs[k][j]++;
-                        assert(numMatchingOutputs[k][j] <= numInputCombinations);
                     }
                 }
             }
@@ -243,9 +246,10 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<IntArraySolution>
                 }
             }
 
-            if (enableLogging) {
-                System.out.println(String.format("F%d unused inputs and blocks: %s", i, blockUsage[i]));
-            }
+//            if (enableLogging) {
+//                System.out.println(String.format("F%d unused inputs and blocks: %s", i, blockUsage[i]));
+//            }
+
 
             if (i == 0) {
                 unusedBlocks.xor(blockUsage[i]);

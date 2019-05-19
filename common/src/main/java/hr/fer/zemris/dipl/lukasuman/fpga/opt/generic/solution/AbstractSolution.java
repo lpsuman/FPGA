@@ -2,7 +2,7 @@ package hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution;
 
 import java.util.Comparator;
 
-public abstract class AbstractSolution<T> implements Solution<T>, Comparable<Solution<T>> {
+public abstract class AbstractSolution<T> implements Solution<T> {
 
     public static final Comparator<Solution> COMPARATOR_BY_FITNESS =
             Comparator.comparingDouble(Solution::getFitness);
@@ -14,7 +14,7 @@ public abstract class AbstractSolution<T> implements Solution<T>, Comparable<Sol
 
     public AbstractSolution(T data, double fitness) {
         this.data = data;
-        this.fitness = fitness;
+        setFitness(fitness);
     }
 
     public AbstractSolution(T data) {
@@ -33,11 +33,15 @@ public abstract class AbstractSolution<T> implements Solution<T>, Comparable<Sol
 
     @Override
     public void setFitness(double fitness) {
+//        if (Double.isNaN(fitness)) {
+//            throw new IllegalArgumentException("Fitness must not be NaN.");
+//        }
+//
         this.fitness = fitness;
     }
 
     @Override
     public int compareTo(Solution<T> o) {
-        return -Double.compare(this.fitness, o.getFitness());
+        return -Double.compare(fitness, o.getFitness());
     }
 }

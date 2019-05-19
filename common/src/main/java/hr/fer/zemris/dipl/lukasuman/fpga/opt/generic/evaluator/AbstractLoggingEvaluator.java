@@ -1,12 +1,10 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.evaluator;
 
-import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public abstract class AbstractLoggingEvaluator<T extends Solution> extends AbstractEvaluator<T> {
+public abstract class AbstractLoggingEvaluator<T> extends AbstractEvaluator<T> {
 
     protected boolean enableLogging;
     private StringBuilder stringBuilder;

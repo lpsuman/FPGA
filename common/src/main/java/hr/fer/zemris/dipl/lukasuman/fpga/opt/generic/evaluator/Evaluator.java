@@ -4,9 +4,9 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.listener.FitnessListener;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.listener.TerminationListener;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 
-public interface Evaluator<T extends Solution> {
+public interface Evaluator<T> {
 
-    double evaluateSolution(T solution, boolean allowTermination);
+    double evaluateSolution(Solution<T> solution, boolean allowTermination);
     int getNumEvaluations();
     void resetNumEvaluations();
 

@@ -4,7 +4,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 
 import java.util.List;
 
-public interface Selection<T extends Solution> {
+public interface Selection<T> {
 
-    T selectFromPopulation(List<T> population);
+    Solution<T> selectFromPopulation(List<Solution<T>> population);
 }

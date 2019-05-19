@@ -7,7 +7,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.util.List;
 
-public class RandomizeCrossover<T extends Solution> extends AbstractRandomizeOperator implements Crossover<T> {
+public class RandomizeCrossover<T> extends AbstractRandomizeOperator implements Crossover<T> {
 
     private List<Crossover<T>> crossovers;
 
@@ -19,13 +19,13 @@ public class RandomizeCrossover<T extends Solution> extends AbstractRandomizeOpe
     }
 
     @Override
-    public List<T> crossover(T firstParent, T secondParent) {
+    public void crossover(Solution<T> firstParent, Solution<T> secondParent) {
         int indexOperator = calcRandomOperatorIndex();
-        List<T> children = crossovers.get(indexOperator).crossover(firstParent, secondParent);
+        crossovers.get(indexOperator).crossover(firstParent, secondParent);
         double betterFitness = Math.max(firstParent.getFitness(), secondParent.getFitness());
-        addWaitingSolution(children.get(0), betterFitness, indexOperator);
-        addWaitingSolution(children.get(1), betterFitness, indexOperator);
-        return children;
+
+        addWaitingSolution(firstParent, betterFitness, indexOperator);
+        addWaitingSolution(secondParent, betterFitness, indexOperator);
     }
 
     @Override

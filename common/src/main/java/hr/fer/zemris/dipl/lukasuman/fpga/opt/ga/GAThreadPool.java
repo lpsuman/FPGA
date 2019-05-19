@@ -4,11 +4,12 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 
 import java.util.List;
 
-public interface GAThreadPool<T extends Solution> {
+public interface GAThreadPool<T> {
 
     void runThreads();
-    boolean submitPopulation(List<T> population);
-    public List<T> takeChildren();
+    void setNewPopulation(List<Solution<T>> newPopulation, int currentSize);
+    boolean submitPopulation(List<Solution<T>> population);
+    void waitForCalculation();
     void shutdown();
     boolean isRunning();
 }

@@ -46,7 +46,7 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
         operatorChances = null;
     }
 
-    public AbstractRandomizeOperator(List<Operator> operators) {
+    public AbstractRandomizeOperator(List<? extends Operator> operators) {
         this(Utility.checkNull(operators, "operators").size());
 
         if (operators.isEmpty()) {
@@ -56,7 +56,7 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
         calcOperatorChances(operators);
     }
 
-    private void calcOperatorChances(List<Operator> operators) {
+    private void calcOperatorChances(List<? extends Operator> operators) {
         int numOperators = operators.size();
         operatorChances = new ArrayList<>(numOperators);
         double chanceSum = operators.stream().mapToDouble(Operator::getChance).sum();

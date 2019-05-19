@@ -5,6 +5,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFunc;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFuncController;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.IRNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
@@ -16,7 +17,7 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class BoolVecProblem implements Supplier<IntArraySolution> {
+public class BoolVecProblem implements Supplier<Solution<int[]>> {
 
     private BoolVector boolVector;
     private CLBController clbController;
@@ -27,7 +28,7 @@ public class BoolVecProblem implements Supplier<IntArraySolution> {
     }
 
     @Override
-    public IntArraySolution get() {
+    public Solution<int[]> get() {
         int numCLB = clbController.getNumCLB();
         int[] data = new int[numCLB * clbController.getIntsPerCLB() + boolVector.getNumFunctions()];
         IRNG random = RNG.getRNG();
@@ -60,7 +61,7 @@ public class BoolVecProblem implements Supplier<IntArraySolution> {
         return new BoolVecProblem(new BoolVector(boolFuncs), numCLBInputs);
     }
 
-    public String solutionToString(IntArraySolution solution, BitSet[] blockUsage) {
+    public String solutionToString(Solution<int[]> solution, BitSet[] blockUsage) {
         Utility.checkNull(solution, "solution");
         int[] data = solution.getData();
         int sizeCLB = clbController.getIntsPerCLB();
@@ -121,6 +122,10 @@ public class BoolVecProblem implements Supplier<IntArraySolution> {
         sb.append(" | ");
     }
 
+    public Solution<int[]> trimmedBoolSolution(Solution<int[]> source, BitSet unusedBlocks) {
+        return null;
+    }
+
     public static String toBinaryString(int value, int numBits) {
         return String.format("%" + numBits + "s", Integer.toBinaryString(value)).replace(' ', '0');
     }
@@ -139,7 +144,7 @@ public class BoolVecProblem implements Supplier<IntArraySolution> {
         return sb.toString();
     }
 
-    public BlockConfiguration generateBlockConfiguration(IntArraySolution solution) {
+    public BlockConfiguration generateBlockConfiguration(Solution<int[]> solution) {
         Utility.checkNull(solution, "solution");
         int numCLB = clbController.getNumCLB();
         int numCLBInputs = clbController.getNumCLBInputs();

@@ -42,7 +42,7 @@ public class Constants {
     public static final String PER_GENERATION_OUTPUT_MSG =
             "%6d. generation(%6d) => best: %10.4f, worst: %10.4f%n";
     public static final int GENERATION_PRINT_STEP = 100;
-    public static final boolean ENABLE_PRINT_GEN_STEP = true;
+    public static final boolean ENABLE_PRINT_GEN_STEP = false;
     public static final boolean ENABLE_PRINT_GEN_IF_BEST_IMPROVED = true;
 
     public static final int BOOL_VECTOR_PRINT_CELL_SIZE = 4;
@@ -59,6 +59,8 @@ public class Constants {
     public static final int DEFAULT_POPULATION_SIZE = 1000;
 
     public static final int DEFAULT_MAX_NUM_FAILS = 10;
+    public static final double BEST_FITNESS_THRESHOLD_TO_STOP_TRYING = FITNESS_SCALE * 0.94;
+    public static final int DEFAULT_MAX_NUM_BELOW_THRESHOLD_ATTEMPTS = (int)(DEFAULT_MAX_NUM_FAILS * 0.33);
     public static final double DEFAULT_FITNESS_THRESHOLD = Double.MAX_VALUE;
     public static final boolean DEFAULT_USE_TIME = true;
     public static final long DEFAULT_TIME = Long.MAX_VALUE;

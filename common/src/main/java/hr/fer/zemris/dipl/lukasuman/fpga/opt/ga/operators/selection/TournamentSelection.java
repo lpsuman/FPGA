@@ -8,7 +8,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.util.List;
 
-public class TournamentSelection<T extends Solution> implements Selection<T> {
+public class TournamentSelection<T> implements Selection<T> {
 
     private final int tournamentSize;
 
@@ -22,13 +22,13 @@ public class TournamentSelection<T extends Solution> implements Selection<T> {
     }
 
     @Override
-    public T selectFromPopulation(List<T> population) {
+    public Solution<T> selectFromPopulation(List<Solution<T>> population) {
         IRNG random = RNG.getRNG();
 
-        T candidate = pickRandom(population, random);
+        Solution<T> candidate = pickRandom(population, random);
 
         for (int i = 1; i < tournamentSize; ++i) {
-            T competitor = pickRandom(population, random);
+            Solution<T> competitor = pickRandom(population, random);
 
             if (competitor.getFitness() > candidate.getFitness()) {
                 candidate = competitor;
@@ -38,7 +38,7 @@ public class TournamentSelection<T extends Solution> implements Selection<T> {
         return candidate;
     }
 
-    private T pickRandom(List<T> population, IRNG random) {
+    private Solution<T> pickRandom(List<Solution<T>> population, IRNG random) {
         return population.get(random.nextInt(0, population.size()));
     }
 }

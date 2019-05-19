@@ -5,7 +5,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 
 import java.util.List;
 
-public interface Crossover<T extends Solution> extends Operator {
+public interface Crossover<T> extends Operator {
 
-    List<T> crossover(T firstParent, T secondParent);
+    void crossover(Solution<T> firstParent, Solution<T> secondParent);
 }

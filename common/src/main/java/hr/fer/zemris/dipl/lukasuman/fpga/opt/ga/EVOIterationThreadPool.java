@@ -8,6 +8,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.evaluator.Evaluator;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.listener.TerminationListener;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,28 +19,32 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class EVOIterationThreadPool<T extends Solution> implements GAThreadPool<T>, TerminationListener {
+public class EVOIterationThreadPool<T> implements GAThreadPool<T>, TerminationListener {
+
+    private final Object CALCULATION_SYNC_OBJECT = new Object();
 
     private final Thread[] threads;
     private final Function<Runnable, Thread> threadFactory;
-    private final List<T> RED_PILL;
+    private final List<Solution<T>> RED_PILL;
     private final Runnable runnable;
 
     private volatile boolean isRunning;
     private volatile boolean isShuttingDown;
     private volatile boolean isShutDown;
     private AtomicInteger remainingRedPills;
-
     private AtomicBoolean shouldTerminate;
     private AtomicInteger numRemainingTerminationAcknowledged;
+    private AtomicInteger numEvaluated;
 
-    private final BlockingQueue<List<T>> incoming = new LinkedBlockingDeque<>();
-    private final BlockingQueue<List<T>> calculated = new LinkedBlockingDeque<>();
+    private final BlockingQueue<List<Solution<T>>> incoming = new LinkedBlockingDeque<>();
 
     private final Selection<T> selection;
     private final Crossover<T> crossover;
     private final Mutation<T> mutation;
     private final ThreadLocal<Evaluator<T>> threadLocalEvaluator;
+
+    private List<Solution<T>> newPopulation;
+    private AtomicInteger copyOverIndex;
 
     public EVOIterationThreadPool(int numThreads, Selection<T> selection, Crossover<T> crossover,
                                   Mutation<T> mutation, Supplier<Evaluator<T>> evaluatorSupplier,
@@ -55,17 +60,20 @@ public class EVOIterationThreadPool<T extends Solution> implements GAThreadPool<
 
         shouldTerminate = new AtomicBoolean();
         numRemainingTerminationAcknowledged = new AtomicInteger();
+        numEvaluated = new AtomicInteger();
 
         this.selection = selection;
         this.crossover = crossover;
         this.mutation = mutation;
         this.threadLocalEvaluator = ThreadLocal.withInitial(evaluatorSupplier);
 
+        copyOverIndex = new AtomicInteger();
+
         runnable = () -> {
             threadLocalEvaluator.get().addTerminationListener(EVOIterationThreadPool.this);
 
             while (true) {
-                List<T> population = takeFromQueue(incoming);
+                List<Solution<T>> population = takeFromQueue(incoming);
 
                 if (population == RED_PILL) {
                     if (remainingRedPills.decrementAndGet() == 0) {
@@ -74,19 +82,32 @@ public class EVOIterationThreadPool<T extends Solution> implements GAThreadPool<
                     break;
                 }
 
-                List<T> parents = pickParents(population);
-                List<T> children = crossover.crossover(parents.get(0), parents.get(1));
-                List<T> mutatedChildren = new ArrayList<>(children.size());
+                Solution<T> firstParent = selection.selectFromPopulation(population);
+                Solution<T> firstChild = newPopulation.get(copyOverIndex.incrementAndGet());
+                firstParent.copyOver(firstChild);
 
-                for (T child : children) {
-                    threadLocalEvaluator.get().evaluateSolution(child, false);
-                    T mutated = mutation.mutate(child);
-                    threadLocalEvaluator.get().evaluateSolution(mutated, true);
-
-                    mutatedChildren.add(mutated);
+                Solution<T> secondParent = null;
+                while (secondParent == null || secondParent == firstParent) {
+                    secondParent = selection.selectFromPopulation(population);
                 }
+                Solution<T> secondChild = newPopulation.get(copyOverIndex.incrementAndGet());
+                secondParent.copyOver(secondChild);
 
-                putInQueue(calculated, mutatedChildren);
+                crossover.crossover(firstChild, secondChild);
+
+                threadLocalEvaluator.get().evaluateSolution(firstChild, false);
+                mutation.mutate(firstChild);
+                threadLocalEvaluator.get().evaluateSolution(firstChild, true);
+
+                threadLocalEvaluator.get().evaluateSolution(secondChild, false);
+                mutation.mutate(secondChild);
+                threadLocalEvaluator.get().evaluateSolution(secondChild, true);
+
+                if (numEvaluated.addAndGet(2) == newPopulation.size()) {
+                    synchronized (CALCULATION_SYNC_OBJECT) {
+                        CALCULATION_SYNC_OBJECT.notifyAll();
+                    }
+                }
 
                 if (shouldTerminate.get()) {
                     synchronized (EVOIterationThreadPool.this) {
@@ -106,9 +127,7 @@ public class EVOIterationThreadPool<T extends Solution> implements GAThreadPool<
                                 } catch (InterruptedException ignored) {
                                 }
                             }
-
                         }
-
 //                        System.out.println("Termination check complete.");
                     }
                 }
@@ -148,7 +167,6 @@ public class EVOIterationThreadPool<T extends Solution> implements GAThreadPool<
         isShutDown = false;
         isShuttingDown = false;
         incoming.clear();
-        calculated.clear();
         remainingRedPills.set(0);
 
         shouldTerminate.set(false);
@@ -160,6 +178,8 @@ public class EVOIterationThreadPool<T extends Solution> implements GAThreadPool<
             threads[i] = threadFactory.apply(runnable);
             threads[i].start();
         }
+
+        System.out.println(threads.length + " threads started.");
     }
 
     private synchronized void shutdownComplete() {
@@ -172,26 +192,25 @@ public class EVOIterationThreadPool<T extends Solution> implements GAThreadPool<
                     "Threadpool was shutdown with %d elements in incoming.", incoming.size()));
         }
 
-        if (!calculated.isEmpty()) {
-            System.out.println(String.format(
-                    "Threadpool was shutdown with %d elements in calculated.", calculated.size()));
-        }
-
         System.out.println("Threadpool shutdown is complete.");
         notifyAll();
+
+        synchronized (CALCULATION_SYNC_OBJECT) {
+            CALCULATION_SYNC_OBJECT.notifyAll();
+        }
     }
 
-    private static <T> void putInQueue(BlockingQueue<T> queue, T element) {
+    private static <T> void putInQueue(BlockingQueue<List<Solution<T>>> queue, List<Solution<T>> element) {
         while (true) {
             try {
                 queue.put(element);
-                break;
+                return;
             } catch (InterruptedException ignored) {
             }
         }
     }
 
-    private static <T> T takeFromQueue(BlockingQueue<T> queue) {
+    private static <T> List<Solution<T>> takeFromQueue(BlockingQueue<List<Solution<T>>> queue) {
         while (true) {
             try {
                 return queue.take();
@@ -200,35 +219,38 @@ public class EVOIterationThreadPool<T extends Solution> implements GAThreadPool<
         }
     }
 
-    private List<T> pickParents(List<T> population) {
-        List<T> parents = new ArrayList<>();
-        T firstParent = selection.selectFromPopulation(population);
-        T secondParent = null;
-
-        while (secondParent == null || secondParent == firstParent) {
-            secondParent = selection.selectFromPopulation(population);
-        }
-
-        parents.add(firstParent);
-        parents.add(secondParent);
-        return parents;
+    @Override
+    public void setNewPopulation(List<Solution<T>> newPopulation, int currentSize) {
+        this.newPopulation = Utility.checkNull(newPopulation, "new population");
+        copyOverIndex.set(currentSize - 1);
+        numEvaluated.set(currentSize);
     }
 
     @Override
-    public synchronized boolean submitPopulation(List<T> population) {
+    public synchronized boolean submitPopulation(List<Solution<T>> population) {
         if (!isRunning || isShutDown || isShuttingDown) {
             return false;
         }
+//        System.out.println("Submitting.");
         putInQueue(incoming, population);
         return true;
     }
 
     @Override
-    public List<T> takeChildren() {
-        if (isShutDown && calculated.isEmpty()) {
-            return null;
-        } else {
-            return takeFromQueue(calculated);
+    public void waitForCalculation() {
+        synchronized (CALCULATION_SYNC_OBJECT) {
+            if (numEvaluated.get() == newPopulation.size()) {
+                return;
+            }
+            while (true) {
+                try {
+//                    System.out.println("Waiting for calculation.");
+                    CALCULATION_SYNC_OBJECT.wait();
+//                    System.out.println("No longer wating for calculation");
+                    return;
+                } catch (InterruptedException ignored) {
+                }
+            }
         }
     }
 

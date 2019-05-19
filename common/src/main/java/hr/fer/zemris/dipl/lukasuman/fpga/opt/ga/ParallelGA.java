@@ -3,6 +3,7 @@ package hr.fer.zemris.dipl.lukasuman.fpga.opt.ga;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.algorithm.AbstractAlgorithm;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.AbstractSolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.evaluator.Evaluator;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class ParallelGA<T extends Solution> extends AbstractAlgorithm<T> {
+public class ParallelGA<T> extends AbstractAlgorithm<T> {
 
     private final int populationSize;
     private final int maxGenerations;
@@ -18,11 +19,11 @@ public class ParallelGA<T extends Solution> extends AbstractAlgorithm<T> {
     private final double threshold;
     private final long timeToStop;
 
-    private Supplier<T> candidateSupplier;
+    private Supplier<Solution<T>> candidateSupplier;
     private Evaluator<T> evaluator;
     private GAThreadPool<T> threadPool;
 
-    public ParallelGA(Supplier<T> candidateSupplier, Evaluator<T> evaluator, GAThreadPool threadPool,
+    public ParallelGA(Supplier<Solution<T>> candidateSupplier, Evaluator<T> evaluator, GAThreadPool<T> threadPool,
                       int populationSize, int maxGenerations, int elitismSize, double threshold, long timeToStop) {
 
         this.candidateSupplier = candidateSupplier;
@@ -35,14 +36,14 @@ public class ParallelGA<T extends Solution> extends AbstractAlgorithm<T> {
         this.timeToStop = timeToStop;
     }
 
-    public ParallelGA(Supplier<T> candidateSupplier, Evaluator<T> evaluator, GAThreadPool threadPool,
+    public ParallelGA(Supplier<Solution<T>> candidateSupplier, Evaluator<T> evaluator, GAThreadPool<T> threadPool,
                       int populationSize, int maxGenerations, int elitismSize, double threshold) {
 
         this(candidateSupplier, evaluator, threadPool, populationSize, maxGenerations, elitismSize,
                 threshold, Constants.DEFAULT_TIME);
     }
 
-    public ParallelGA(Supplier<T> candidateSupplier, Evaluator<T> evaluator, GAThreadPool threadPool,
+    public ParallelGA(Supplier<Solution<T>> candidateSupplier, Evaluator<T> evaluator, GAThreadPool<T> threadPool,
                       int populationSize, int maxGenerations) {
 
         this(candidateSupplier, evaluator, threadPool, populationSize, maxGenerations,
@@ -50,27 +51,35 @@ public class ParallelGA<T extends Solution> extends AbstractAlgorithm<T> {
                 Constants.DEFAULT_FITNESS_THRESHOLD);
     }
 
-    public ParallelGA(Supplier<T> candidateSupplier, Evaluator<T> evaluator, GAThreadPool threadPool) {
+    public ParallelGA(Supplier<Solution<T>> candidateSupplier, Evaluator<T> evaluator, GAThreadPool<T> threadPool) {
         this(candidateSupplier, evaluator, threadPool,
                 Constants.DEFAULT_POPULATION_SIZE, Constants.DEFAULT_MAX_NUM_GENERATIONS);
     }
 
     @Override
-    public T run() {
+    public Solution<T> run() {
         threadPool.runThreads();
 
-        List<T> population = generatePopulation();
-        T best = population.get(0);
+        List<Solution<T>> population = generatePopulation();
+        List<Solution<T>> newPopulation = new ArrayList<>(population.size());
+        for (Solution<T> solution : population) {
+            newPopulation.add(solution.duplicate());
+        }
+        List<Solution<T>> temp;
+        Solution<T> best = population.get(0);
 
         try {
             for (int i = 1; i <= maxGenerations; ++i) {
                 notifyFitnessListeners(best, true);
+                int copyOverIndex = 0;
 
-                List<T> newPopulation = new ArrayList<>(populationSize);
-                newPopulation.addAll(population.subList(0, elitismSize));
+                for (int j = 0; j < elitismSize; ++j) {
+                    population.get(j).copyOver(newPopulation.get(copyOverIndex));
+                    copyOverIndex++;
+                }
 
-                int remaining = populationSize - newPopulation.size();
-                int submitted = 0;
+                threadPool.setNewPopulation(newPopulation, copyOverIndex);
+                int remaining = populationSize - copyOverIndex;
 
                 while (remaining > 0) {
                     if (!threadPool.submitPopulation(population)) {
@@ -78,33 +87,28 @@ public class ParallelGA<T extends Solution> extends AbstractAlgorithm<T> {
                     }
 
                     remaining -= 2;
-                    submitted++;
                 }
 
-                for (int j = 0; j < submitted; ++j) {
-                    List<T> children = threadPool.takeChildren();
+                threadPool.waitForCalculation();
 
-                    if (children == null) {
-                        System.out.println("No children from threadpool.");
-                        break;
-                    }
-
-                    newPopulation.addAll(children);
-                }
-
-                newPopulation.sort(AbstractSolution.COMPARATOR_BY_FITNESS.reversed());
+                newPopulation.sort(null);
+                temp = population;
                 population = newPopulation;
+                newPopulation = temp;
                 double prevBestFitness = best.getFitness();
                 best = population.get(0);
 
                 if (best.getFitness() > threshold) {
+                    System.out.println(String.format("Fitness threshold of %.4f reached with fitness %.4f.",
+                            best.getFitness(), threshold));
                     break;
                 }
 
-                T worst = population.get(population.size() - 1);
+                Solution<T> worst = population.get(population.size() - 1);
 
                 if ((Constants.ENABLE_PRINT_GEN_STEP && (i % Constants.GENERATION_PRINT_STEP == 0))
-                        || (Constants.ENABLE_PRINT_GEN_IF_BEST_IMPROVED && (best.getFitness() > prevBestFitness))) {
+                        || (Constants.ENABLE_PRINT_GEN_IF_BEST_IMPROVED && (best.getFitness() > prevBestFitness))
+                        || (i == 1) || (i == maxGenerations)) {
 
                     System.out.printf(Constants.PER_GENERATION_OUTPUT_MSG, i, population.size(), best.getFitness(), worst.getFitness());
                 }
@@ -122,7 +126,6 @@ public class ParallelGA<T extends Solution> extends AbstractAlgorithm<T> {
                     break;
                 }
             }
-
         } finally {
             if (threadPool.isRunning()) {
                 System.out.println("Threadpool forced to shutdown.");
@@ -136,11 +139,11 @@ public class ParallelGA<T extends Solution> extends AbstractAlgorithm<T> {
         return best;
     }
 
-    private List<T> generatePopulation() {
-        List<T> population = new ArrayList<>(populationSize);
+    private List<Solution<T>> generatePopulation() {
+        List<Solution<T>> population = new ArrayList<>(populationSize);
 
         for (int i = 0; i < populationSize; ++i) {
-            T solution = candidateSupplier.get();
+            Solution<T> solution = candidateSupplier.get();
             evaluator.evaluateSolution(solution, false);
             population.add(solution);
         }

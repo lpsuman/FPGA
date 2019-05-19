@@ -14,4 +14,10 @@ public class IntArraySolution extends AbstractSolution<int[]> {
     public Solution<int[]> duplicate() {
         return new IntArraySolution(this.data.clone(), this.fitness);
     }
+
+    @Override
+    public void copyOver(Solution<int[]> other) {
+        System.arraycopy(data, 0, other.getData(), 0, data.length);
+        other.setFitness(fitness);
+    }
 }

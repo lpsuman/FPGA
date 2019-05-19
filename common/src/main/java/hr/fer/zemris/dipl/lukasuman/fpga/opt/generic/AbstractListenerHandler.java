@@ -7,7 +7,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AbstractListenerHandler<T extends Solution> implements ListenerHandler{
+public class AbstractListenerHandler<T> implements ListenerHandler{
 
     private Set<TerminationListener> terminationListeners;
     private Set<FitnessListener> fitnessListeners;
@@ -54,7 +54,7 @@ public class AbstractListenerHandler<T extends Solution> implements ListenerHand
         fitnessListeners.remove(fitnessListener);
     }
 
-    protected void notifyFitnessListeners(T solution, boolean isBest) {
+    protected void notifyFitnessListeners(Solution<T> solution, boolean isBest) {
         if (fitnessListeners == null || fitnessListeners.isEmpty()) {
             return;
         }

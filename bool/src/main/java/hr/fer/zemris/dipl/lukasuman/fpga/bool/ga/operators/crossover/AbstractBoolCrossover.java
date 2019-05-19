@@ -1,16 +1,13 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.crossover;
 
-import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.CLBController;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.crossover.Crossover;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.operator.AbstractOperator;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.IRNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
 
-import java.util.Arrays;
-import java.util.List;
-
-public abstract class AbstractBoolCrossover extends AbstractOperator implements Crossover<IntArraySolution> {
+public abstract class AbstractBoolCrossover extends AbstractOperator implements Crossover<int[]> {
 
     protected static final double ALIGNED_CHANCE_MODIFIER = 2.0;
 
@@ -22,19 +19,10 @@ public abstract class AbstractBoolCrossover extends AbstractOperator implements 
     }
 
     @Override
-    public List<IntArraySolution> crossover(IntArraySolution firstParent, IntArraySolution secondParent) {
-        IntArraySolution firstChild = (IntArraySolution) firstParent.duplicate();
-        IntArraySolution secondChild = (IntArraySolution) secondParent.duplicate();
-
+    public void crossover(Solution<int[]> firstParent, Solution<int[]> secondParent) {
         if (clbController.getNumCLB() >= 2) {
-            int[] first_data = firstChild.getData();
-            int[] second_data = secondChild.getData();
-            IRNG random = RNG.getRNG();
-
-            crossoverData(first_data, second_data, random);
+            crossoverData(firstParent.getData(), secondParent.getData(), RNG.getRNG());
         }
-
-        return Arrays.asList(firstChild, secondChild);
     }
 
     protected abstract void crossoverData(int[] firstData, int[] secondData, IRNG random);
