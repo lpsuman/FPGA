@@ -6,6 +6,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class BoolVectorSolution extends AbstractNameHandler implements Serializable {
 
@@ -43,5 +44,13 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
     @Override
     protected String getNameMessage() {
         return NAME_MSG;
+    }
+
+    public static BoolVectorSolution mergeSolutions(List<BoolVectorSolution> solutions) {
+        Utility.checkIfValidCollection(solutions, "list of solutions to merge");
+        int numSolutions = solutions.size();
+
+
+        return null;
     }
 }

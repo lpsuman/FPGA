@@ -1,81 +1,123 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.solver;
 
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BlockConfiguration;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFunc;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.crossover.AbstractBoolCrossover;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.crossover.IntervalBlockCrossover;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.crossover.SingleBlockCrossover;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.mutation.InputSingleMutation;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.mutation.TableCopyMutation;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.mutation.TableSingleMutation;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.mutation.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecEvaluator;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecProblem;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.CLBController;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.EVOIterationThreadPool;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.GAThreadPool;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.ParallelGA;
-import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.crossover.Crossover;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.crossover.RandomizeCrossover;
-import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.mutation.Mutation;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.mutation.RandomizeMutation;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.evaluator.AbstractEvaluator;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.evaluator.Evaluator;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.operator.OperatorStatistics;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Timer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class BoolSolver {
+
+    private static class RunResults {
+        private BoolVectorSolution result;
+        private RandomizeCrossover<int[]> randomizeCrossover;
+        private RandomizeMutation<int[]> randomizeMutation;
+        private int numEvaluations;
+        private int elapsedTime;
+
+        public RunResults(BoolVectorSolution result, RandomizeCrossover<int[]> randomizeCrossover, RandomizeMutation<int[]> randomizeMutation, int numEvaluations, int elapsedTime) {
+            this.result = result;
+            this.randomizeCrossover = randomizeCrossover;
+            this.randomizeMutation = randomizeMutation;
+            this.numEvaluations = numEvaluations;
+            this.elapsedTime = elapsedTime;
+        }
+    }
 
     private BoolSolver() {
     }
 
     public static BoolVectorSolution solve(BoolVecProblem problem) {
-        int numCLBInputs = problem.getClbController().getNumCLBInputs();
+        CLBController controller = problem.getClbController();
+        int numCLBInputs = controller.getNumCLBInputs();
         List<BoolFunc> functions = problem.getBoolVector().getBoolFunctions();
-        List<Integer> perFuncEstimates = new ArrayList<>(Arrays.asList(3, 3, 6, 6, 6));
+//        List<Integer> perFuncEstimates = new ArrayList<>(Arrays.asList(3, 3, 6, 6, 6));
 
-        List<BlockConfiguration> perFuncSolutions = new ArrayList<>();
+        List<RunResults> perFuncResults = new ArrayList<>();
 
         for (int i = 0; i < functions.size(); ++i) {
             BoolVecProblem singleFuncProblem = new BoolVecProblem(
                     new BoolVector(Collections.singletonList(functions.get(i))), numCLBInputs);
-            singleFuncProblem.getClbController().setNumCLB(perFuncEstimates.get(i));
-            perFuncSolutions.add(doARun(singleFuncProblem, true));
+//            singleFuncProblem.getClbController().setNumCLB(perFuncEstimates.get(i));
+            perFuncResults.add(doARun(singleFuncProblem, true, true));
         }
 
-        int numCLBEstimation = perFuncSolutions.stream()
-                .mapToInt(BlockConfiguration::getNumCLB)
+        List<OperatorStatistics> crossoverOperatorStatistics = perFuncResults.get(0).randomizeCrossover.getGlobalResults();
+        List<OperatorStatistics> mutationOperatorStatistics = perFuncResults.get(0).randomizeMutation.getGlobalResults();
+        for (int i = 1; i < functions.size(); ++i) {
+            OperatorStatistics.sumStatistics(crossoverOperatorStatistics, perFuncResults.get(i).randomizeCrossover.getGlobalResults());
+            OperatorStatistics.sumStatistics(mutationOperatorStatistics, perFuncResults.get(i).randomizeMutation.getGlobalResults());
+        }
+
+        System.out.println("Global operator statistics:");
+        int numEvaluations = perFuncResults.stream()
+                .mapToInt(result -> result.numEvaluations)
+                .sum();
+        printStats(perFuncResults.get(0).randomizeCrossover, crossoverOperatorStatistics,
+                perFuncResults.get(0).randomizeMutation, mutationOperatorStatistics, numEvaluations);
+
+        List<Integer> elapsedTimes = perFuncResults.stream()
+                .mapToInt(result -> result.elapsedTime)
+                .boxed()
+                .collect(Collectors.toList());
+
+        System.out.println("Elapsed times for functions.");
+        elapsedTimes.forEach(System.out::println);
+
+        int numCLBEstimation = perFuncResults.stream()
+                .mapToInt(result -> result.result.getBlockConfiguration().getNumCLB())
                 .sum() - 1;
 
         problem.getClbController().setNumCLB(numCLBEstimation);
-        BlockConfiguration solution = doARun(problem, true);
+        RunResults runResults = doARun(problem, true, false);
 
-        return new BoolVectorSolution(problem.getBoolVector(), solution);
+        if (runResults.result == null) {
+            System.out.println("Couldn't find a better solution than the merge of individual function's solutions.");
+            return null;
+        }
+
+        return runResults.result;
     }
 
-    private static BlockConfiguration doARun(BoolVecProblem problem, boolean shouldChangeNumCLB) {
+    private static RunResults doARun(BoolVecProblem problem, boolean canDecreaseNumCLB, boolean canIncreaseNumCLB) {
         CLBController controller = problem.getClbController();
-
-        List<Crossover<int[]>> crossoverList = new ArrayList<>();
+        List<AbstractBoolCrossover> crossoverList = new ArrayList<>();
         crossoverList.add(new SingleBlockCrossover(controller));
         crossoverList.add(new IntervalBlockCrossover(controller));
-//        crossoverList.add(new SingleBlockCrossover(controller, false));
-//        crossoverList.add(new IntervalBlockCrossover(controller, false));
+        crossoverList.add(new SingleBlockCrossover(controller, false));
+        crossoverList.add(new IntervalBlockCrossover(controller, false));
         RandomizeCrossover<int[]> randomCrossovers = new RandomizeCrossover<>(crossoverList);
 
-        List<Mutation<int[]>> mutationList = new ArrayList<>();
+        List<AbstractBoolMutation> mutationList = new ArrayList<>();
+        mutationList.add(new InputFullMutation(controller));
         mutationList.add(new InputSingleMutation(controller));
-//        mutationList.add(new InputFullMutation(controller));
         mutationList.add(new TableCopyMutation(controller));
+        mutationList.add(new TableFullMutation(controller));
         mutationList.add(new TableSingleMutation(controller));
-//        mutationList.add(new TableFullMutation(controller));
         RandomizeMutation<int[]> randomMutations = new RandomizeMutation<>(mutationList);
-
         List<BoolVecEvaluator> evaluators = new ArrayList<>();
+
         Supplier<Evaluator<int[]>> evaluatorSupplier = () -> {
             BoolVecEvaluator evaluator = new BoolVecEvaluator(problem);
             evaluators.add(evaluator);
@@ -100,10 +142,12 @@ public class BoolSolver {
         algorithm.addTerminationListener(randomMutations);
 
         Solution<int[]> bestSolution = null;
-        Solution<int[]> solution = null;
+        Solution<int[]> solution;
         int numCLBOfBest = -1;
         int numFailed = 0;
         int numConsecutiveBestFitnessBelowThreshold = 0;
+
+        Timer timer = new Timer();
 
         while (true) {
             System.out.println(String.format("Running GA with %6d CLB (attempt %d/%d)",
@@ -111,33 +155,33 @@ public class BoolSolver {
 
             solution = algorithm.run();
 
-            if (solution == null) {
-                return null;
-            }
-
-            if (bestSolution == null || solution.getFitness() >= bestSolution.getFitness()) {
-                bestSolution = solution;
-                numCLBOfBest = controller.getNumCLB();
-            }
-
             if (solution.getFitness() != Constants.FITNESS_SCALE) {
                 numFailed++;
 
                 if (numFailed >= Constants.DEFAULT_MAX_NUM_FAILS) {
-                    System.out.println("Failed to find a solution after maximum number of tries, aborting");
-                    break;
+                    numFailed = 0;
+
+                    System.out.print("Failed to find a solution after maximum number of tries, ");
+                    if (checkShouldBreak(bestSolution, controller, canIncreaseNumCLB)) {
+                        break;
+                    } else {
+                        continue;
+                    }
                 }
 
-                if (solution.getFitness() < Constants.BEST_FITNESS_THRESHOLD_TO_STOP_TRYING) {
+                if (solution.getFitness() < Constants.DEFAULT_BEST_FITNESS_THRESHOLD_TO_STOP_TRYING) {
                     numConsecutiveBestFitnessBelowThreshold++;
-//                    System.out.println("Consecutive below threshold: " + numConsecutiveBestFitnessBelowThreshold);
 
                     if (numConsecutiveBestFitnessBelowThreshold >= Constants.DEFAULT_MAX_NUM_BELOW_THRESHOLD_ATTEMPTS) {
-                        System.out.println(String.format("Exceeded maximum number of below threshold attempts. " +
-                                "Fitness of the best solution was below %.4f for %d consecutive attempts.",
-                                Constants.BEST_FITNESS_THRESHOLD_TO_STOP_TRYING,
+                        System.out.print(String.format("Exceeded maximum number of below threshold attempts. " +
+                                "Fitness of the best solution was below %.4f for %d consecutive attempts, ",
+                                Constants.DEFAULT_BEST_FITNESS_THRESHOLD_TO_STOP_TRYING,
                                 Constants.DEFAULT_MAX_NUM_BELOW_THRESHOLD_ATTEMPTS));
-                        break;
+                        if (checkShouldBreak(bestSolution, controller, canIncreaseNumCLB)) {
+                            break;
+                        } else {
+                            continue;
+                        }
                     }
                 } else {
                     numConsecutiveBestFitnessBelowThreshold = 0;
@@ -147,6 +191,9 @@ public class BoolSolver {
                 continue;
             }
 
+            bestSolution = solution;
+            numCLBOfBest = controller.getNumCLB();
+
             evaluator.setLogging(true);
             evaluator.evaluateSolution(solution, false);
             System.out.println(evaluator.getLog());
@@ -155,10 +202,10 @@ public class BoolSolver {
             System.out.println(problem.solutionToString(bestSolution, evaluator.getBlockUsage()));
 
             int numUnusedBlocks = evaluator.getUnusedBlocks().cardinality();
-            System.out.println(String.format("There were %d unused blocks.", numUnusedBlocks));
+            System.out.println(String.format("There were %d unused blocks.\n", numUnusedBlocks));
 
-            if (!shouldChangeNumCLB) {
-                System.out.println("Not allowed to change num of CLB, stopping.");
+            if (!canDecreaseNumCLB) {
+                System.out.println("Not allowed to decrease num of CLB, stopping.");
                 break;
             }
 
@@ -172,15 +219,55 @@ public class BoolSolver {
             numFailed = 0;
         }
 
-        System.out.println(randomCrossovers.resultsToString(randomCrossovers.getCumulativeResults()));
-        System.out.println(randomMutations.resultsToString(randomMutations.getCumulativeResults()));
-        System.out.println();
+        int numEvaluations = evaluators.stream()
+                .mapToInt(AbstractEvaluator::getNumEvaluations)
+                .sum();
+        printStats(randomCrossovers, randomCrossovers.getCumulativeResults(),
+                randomMutations, randomMutations.getCumulativeResults(), numEvaluations);
+        int elapsedTime = timer.getElapsedTime();
+
+        if (bestSolution == null) {
+            return new RunResults(null, randomCrossovers, randomMutations, numEvaluations, elapsedTime);
+        }
 
         controller.setNumCLB(numCLBOfBest);
         evaluator.evaluateSolution(bestSolution, false);
+        int numUnusedBlocksInBest = evaluator.getUnusedBlocks().cardinality();
+        if (numUnusedBlocksInBest > 0) {
+            bestSolution = problem.trimmedBoolSolution(bestSolution, evaluator.getUnusedBlocks());
+            controller.setNumCLB(numCLBOfBest -  numUnusedBlocksInBest);
+            evaluator.resetLog();
+            evaluator.evaluateSolution(bestSolution, false);
+        }
+
+        System.out.println(evaluator.getLog());
         System.out.println(problem.solutionToString(bestSolution, evaluator.getBlockUsage()));
         System.out.println(bestSolution.getFitness());
 
-        return problem.generateBlockConfiguration(bestSolution);
+        return new RunResults(new BoolVectorSolution(problem.getBoolVector(), problem.generateBlockConfiguration(bestSolution)),
+                randomCrossovers, randomMutations, numEvaluations, elapsedTime);
+    }
+
+    private static boolean checkShouldBreak(Solution<int[]> bestSolution, CLBController controller, boolean canIncreaseNumCLB) {
+        if (bestSolution == null) {
+            if (canIncreaseNumCLB) {
+                System.out.println("increasing number of CLBs.");
+                controller.setNumCLB(controller.getNumCLB() + 1);
+                return false;
+            } else {
+                System.out.println("not allowed to increase the number of CLBs, ");
+            }
+        }
+        System.out.println("aborting.");
+        return true;
+    }
+
+    private static void printStats(RandomizeCrossover<int[]> randomizeCrossover, List<OperatorStatistics> crossoverStats,
+                            RandomizeMutation<int[]> randomizeMutation, List<OperatorStatistics> mutationStats,
+                            int numEvaluations) {
+
+        System.out.println(randomizeCrossover.resultsToString(crossoverStats));
+        System.out.println(randomizeMutation.resultsToString(mutationStats));
+        System.out.println("Number of evaluations: " + numEvaluations + "\n");
     }
 }

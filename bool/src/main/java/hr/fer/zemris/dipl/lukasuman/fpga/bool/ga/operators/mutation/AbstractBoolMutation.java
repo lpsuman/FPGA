@@ -6,6 +6,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.operator.AbstractOperator;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.IRNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 
 public abstract class AbstractBoolMutation extends AbstractOperator implements Mutation<int[]> {
 
@@ -28,6 +29,13 @@ public abstract class AbstractBoolMutation extends AbstractOperator implements M
     protected abstract void mutateData(int[] data, IRNG random);
 
     protected int calcNumMutations() {
-        return (int) Math.ceil(mutationChance * clbController.getNumCLB());
+        if (Constants.OPERATOR_CHANCE_MULTIPLIER == 0.0) {
+            return 1;
+        }
+        return (int) Math.min(1, mutationChance * clbController.getNumCLB());
+    }
+
+    public void setClbController(CLBController clbController) {
+        this.clbController = clbController;
     }
 }

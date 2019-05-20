@@ -106,9 +106,12 @@ public class BoolVecProblem implements Supplier<Solution<int[]>> {
             sb.append('\n');
         }
 
-        for (int i = 0; i < boolVector.getNumFunctions(); ++i) {
+        for (int i = 0, n = boolVector.getNumFunctions(); i < n; ++i) {
             sb.append(String.format("F%d at %4d", i, data[numCLB * sizeCLB + i]));
-            sb.append('\n');
+
+            if (i < n - 1) {
+                sb.append('\n');
+            }
         }
 
         return sb.toString();
@@ -122,8 +125,70 @@ public class BoolVecProblem implements Supplier<Solution<int[]>> {
         sb.append(" | ");
     }
 
-    public Solution<int[]> trimmedBoolSolution(Solution<int[]> source, BitSet unusedBlocks) {
-        return null;
+    private void checkIfValidSolution(Solution<int[]> solution) {
+        Utility.checkNull(solution, "solution");
+        int numCLB = clbController.getNumCLB();
+        int blockSize = clbController.getIntsPerCLB();
+        int numFunctions = boolVector.getNumFunctions();
+        int[] solutionData = solution.getData();
+
+        if (solutionData.length != numCLB * blockSize + numFunctions) {
+            throw new IllegalArgumentException(String.format("Invalid solution (data size %d) for configuration:\n%s",
+                    solutionData.length, clbController));
+        }
+    }
+
+    public Solution<int[]> trimmedBoolSolution(Solution<int[]> solution, BitSet unusedBlocks) {
+        checkIfValidSolution(solution);
+        Utility.checkNull(unusedBlocks, "unused blocks");
+
+        int[] solutionData = solution.getData();
+        int numUnusedBlocks = unusedBlocks.cardinality();
+        int[] trimmedData = new int[solutionData.length - numUnusedBlocks * clbController.getIntsPerCLB()];
+        int numInputs = clbController.getNumInputs();
+        int numCLBInputs = clbController.getNumCLBInputs();
+        int numCLB = clbController.getNumCLB();
+        int[] newBlockIndices = new int[numCLB];
+        int currIndexInTrimmedData = 0;
+
+        for (int i = 0; i < numCLB; ++i) {
+            if (!unusedBlocks.get(numInputs + i)) {
+                int indexBlockOriginal = clbController.calcCLBOffset(i);
+                int indexBlockTrimmed = clbController.calcCLBOffset(currIndexInTrimmedData);
+
+                for (int j = 0; j < numCLBInputs; ++j) {
+                    int input = solutionData[indexBlockOriginal + j];
+                    if (input >= numInputs) {
+                        input = newBlockIndices[input - numInputs];
+                    }
+                    trimmedData[indexBlockTrimmed + j] = input;
+                }
+
+                System.arraycopy(solutionData, indexBlockOriginal + numCLBInputs,
+                        trimmedData, indexBlockTrimmed + numCLBInputs, clbController.getIntsPerLUT());
+
+                newBlockIndices[i] = currIndexInTrimmedData + numInputs;
+                currIndexInTrimmedData++;
+            }
+        }
+
+        int numFunctions = boolVector.getNumFunctions();
+
+        for (int i = 0; i < numFunctions; ++i) {
+            int indexFunctionOutputBlock = clbController.calcCLBOffset(numCLB) + i;
+            int funcOutputIndex = solutionData[indexFunctionOutputBlock];
+
+            if (funcOutputIndex >= numInputs) {
+                funcOutputIndex = newBlockIndices[funcOutputIndex - numInputs];
+            }
+
+            int indexInTrimmed = clbController.calcCLBOffset(currIndexInTrimmedData) + i;
+            trimmedData[indexInTrimmed] = funcOutputIndex;
+        }
+
+        Solution<int[]> trimmedSolution = new IntArraySolution(trimmedData);
+        trimmedSolution.setFitness(solution.getFitness());
+        return trimmedSolution;
     }
 
     public static String toBinaryString(int value, int numBits) {
@@ -145,24 +210,20 @@ public class BoolVecProblem implements Supplier<Solution<int[]>> {
     }
 
     public BlockConfiguration generateBlockConfiguration(Solution<int[]> solution) {
-        Utility.checkNull(solution, "solution");
-        int numCLB = clbController.getNumCLB();
-        int numCLBInputs = clbController.getNumCLBInputs();
-        int blockSize = clbController.getIntsPerCLB();
-        int numFunctions = boolVector.getNumFunctions();
-        int[] solutionData = solution.getData();
+        checkIfValidSolution(solution);
 
-        if (solutionData.length != numCLB * blockSize + numFunctions) {
-            throw new IllegalArgumentException(String.format("Invalid solution (data size %d) for configuration:\n%s",
-                    solutionData.length, clbController));
-        }
+        int numCLB = clbController.getNumCLB();
+        int blockSize = clbController.getIntsPerCLB();
+        int[] solutionData = solution.getData();
 
         int[] newData = Arrays.copyOf(solutionData, numCLB * blockSize);
         List<Integer> outputIndices = new ArrayList<>();
 
-        for (int i = 0; i < numFunctions; i++) {
+        for (int i = 0; i < boolVector.getNumFunctions(); i++) {
             outputIndices.add(solutionData[numCLB * blockSize + i]);
         }
+
+        int numCLBInputs = clbController.getNumCLBInputs();
 
         return new BlockConfiguration(numCLB, numCLBInputs, blockSize, newData, outputIndices);
     }

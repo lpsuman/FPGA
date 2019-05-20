@@ -6,4 +6,5 @@ public interface FitnessListener {
 
     void fitnessChanged(Solution solution);
     void updateBestFitness(Solution solution);
+    void setIgnoreFitnessChanges(boolean ignoreFitnessChanges);
 }

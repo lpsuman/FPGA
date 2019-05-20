@@ -5,12 +5,9 @@ public class Constants {
     private Constants() {
     }
 
-    public static final double DEFAULT_INPUT_FULL_MUTATION_CHANCE = 0.10;
-    public static final double DEFAULT_INPUT_SINGLE_MUTATION_CHANCE = 0.10;
-
-    public static final double DEFAULT_TABLE_FULL_MUTATION_CHANCE = 0.10;
-    public static final double DEFAULT_TABLE_SINGLE_MUTATION_CHANCE = 0.10;
-    public static final double DEFAULT_TABLE_COPY_MUTATION_CHANCE = 0.10;
+    public static final int DEFAULT_MAX_NUM_GENERATIONS = 2000;
+    public static final int DEFAULT_POPULATION_SIZE = 1000;
+    public static final double OPERATOR_CHANCE_MULTIPLIER = 0.0;
 
     public static final ArgumentLimit<Integer> NUM_FUNCTION_INPUTS_LIMIT =
             new ArgumentIntervalLimit<>("number of inputs for boolean function", 1, 16);
@@ -55,13 +52,13 @@ public class Constants {
     public static final int DEFAULT_MIN_ELITISM_SIZE = 2;
     public static final double DEFAULT_ELITISM_RATIO = 0.002;
     public static final int DEFAULT_TOURNAMENT_SIZE = 3;
-    public static final int DEFAULT_MAX_NUM_GENERATIONS = 2000;
-    public static final int DEFAULT_POPULATION_SIZE = 1000;
 
+    public static final double DEFAULT_IMPROVING_GENERATION_CONTINUE_RATIO = 0.2;
+    public static final double DEFAULT_NON_IMPROVING_GENERATION_STOP_RATIO = 0.5;
     public static final int DEFAULT_MAX_NUM_FAILS = 10;
-    public static final double BEST_FITNESS_THRESHOLD_TO_STOP_TRYING = FITNESS_SCALE * 0.94;
-    public static final int DEFAULT_MAX_NUM_BELOW_THRESHOLD_ATTEMPTS = (int)(DEFAULT_MAX_NUM_FAILS * 0.33);
+    public static final double DEFAULT_BEST_FITNESS_THRESHOLD_TO_STOP_TRYING = FITNESS_SCALE * 0.94;
+    public static final int DEFAULT_MAX_NUM_BELOW_THRESHOLD_ATTEMPTS = (int)(DEFAULT_MAX_NUM_FAILS * 0.4);
     public static final double DEFAULT_FITNESS_THRESHOLD = Double.MAX_VALUE;
     public static final boolean DEFAULT_USE_TIME = true;
-    public static final long DEFAULT_TIME = Long.MAX_VALUE;
+    public static final long DEFAULT_TIME = 0;
 }

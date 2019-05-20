@@ -110,8 +110,6 @@ public class CLBController {
                 .sum();
     }
 
-
-
     public void randomizeTable(int[] data, int blockIndex, IRNG random) {
         int offset = calcLUTOffset(blockIndex);
 
@@ -143,6 +141,61 @@ public class CLBController {
 
     public int calcLUTOffset(int index) {
         return calcCLBOffset(index) + numCLBInputs;
+    }
+
+    public static void swapSingleData(int[] firstData, int[] secondData, int firstIndex, int secondIndex) {
+        int temp = firstData[firstIndex];
+        firstData[firstIndex] = secondData[secondIndex];
+        secondData[secondIndex] = temp;
+    }
+
+    public static void swapSingleData(int[] data, int firstIndex, int secondIndex) {
+        swapSingleData(data, data, firstIndex, secondIndex);
+    }
+
+    public void swapSingleCLB(int[] firstData, int[] secondData, int firstIndex, int secondIndex,
+                                 boolean switchInputs, boolean switchLUT) {
+
+        int firstOffset = calcCLBOffset(firstIndex);
+        int secondOffset = calcCLBOffset(secondIndex);
+        int numCLBInputs = getNumCLBInputs();
+
+        if (switchInputs) {
+            for (int i = 0; i < numCLBInputs; ++i) {
+                swapSingleData(firstData, secondData, firstOffset + i, secondOffset + i);
+
+                if (firstIndex != secondIndex) {
+                    if (firstIndex > secondIndex) {
+                        checkInput(secondData, secondIndex, i);
+                    } else {
+                        checkInput(firstData, firstIndex, i);
+                    }
+                }
+            }
+        }
+
+        firstOffset += numCLBInputs;
+        secondOffset += numCLBInputs;
+
+        if (switchLUT) {
+            for (int i = 0, m = getIntsPerLUT(); i < m; ++i) {
+                swapSingleData(firstData, secondData, firstOffset + i, secondOffset + i);
+            }
+        }
+    }
+
+    public void swapSingleCLB(int[] firstData, int[] secondData, int firstIndex, int secondIndex) {
+        swapSingleCLB(firstData, secondData, firstIndex, secondIndex, true, true);
+    }
+
+    public void swapSingleCLB(int[] firstData, int[] secondData, int index,
+                                 boolean switchInputs, boolean switchLUT) {
+
+        swapSingleCLB(firstData, secondData, index, index, switchInputs, switchLUT);
+    }
+
+    public void swapSingleCLB(int[] firstData, int[] secondData, int index) {
+        swapSingleCLB(firstData, secondData, index, true, true);
     }
 
     public int calcRandomInput(int index) {

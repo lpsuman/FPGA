@@ -172,14 +172,12 @@ public class EVOIterationThreadPool<T> implements GAThreadPool<T>, TerminationLi
         shouldTerminate.set(false);
         numRemainingTerminationAcknowledged.set(-1);
 
-        System.out.println("Threadpool starting.");
+        System.out.println(String.format("Threadpool starting with %d threads.", threads.length));
 
         for (int i = 0; i < threads.length; ++i) {
             threads[i] = threadFactory.apply(runnable);
             threads[i].start();
         }
-
-        System.out.println(threads.length + " threads started.");
     }
 
     private synchronized void shutdownComplete() {
@@ -239,7 +237,7 @@ public class EVOIterationThreadPool<T> implements GAThreadPool<T>, TerminationLi
     @Override
     public void waitForCalculation() {
         synchronized (CALCULATION_SYNC_OBJECT) {
-            if (numEvaluated.get() == newPopulation.size()) {
+            if (!isRunning || numEvaluated.get() == newPopulation.size()) {
                 return;
             }
             while (true) {
@@ -279,5 +277,10 @@ public class EVOIterationThreadPool<T> implements GAThreadPool<T>, TerminationLi
         if (!isShuttingDown) {
             shouldTerminate.set(true);
         }
+    }
+
+    @Override
+    public void setIgnoreTermination(boolean ignoreTermination) {
+        // do nothing
     }
 }

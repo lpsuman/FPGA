@@ -1,6 +1,5 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.crossover;
 
-import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.operator.Operator;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.operator.AbstractRandomizeOperator;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
@@ -9,11 +8,10 @@ import java.util.List;
 
 public class RandomizeCrossover<T> extends AbstractRandomizeOperator implements Crossover<T> {
 
-    private List<Crossover<T>> crossovers;
+    private List<? extends Crossover<T>> crossovers;
 
-    @SuppressWarnings("unchecked")
-    public RandomizeCrossover(List<Crossover<T>> crossovers) {
-        super((List<Operator>) (List<?>) Utility.checkNull(crossovers, "list of crossovers"));
+    public RandomizeCrossover(List<? extends Crossover<T>> crossovers) {
+        super(Utility.checkNull(crossovers, "list of crossovers"));
         this.crossovers = crossovers;
         this.crossovers.forEach(c -> operatorNames.add(c.getClass().getSimpleName()));
     }

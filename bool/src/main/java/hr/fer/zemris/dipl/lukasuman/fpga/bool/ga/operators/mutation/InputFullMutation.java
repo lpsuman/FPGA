@@ -6,14 +6,15 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 
 public class InputFullMutation extends AbstractBoolMutation {
 
-    private static final double DEFAULT_CHANCE = 1.0;
+    private static final double DEFAULT_OPERATOR_CHANCE = 1.0;
+    public static final double DEFAULT_INPUT_FULL_MUTATION_CHANCE = Constants.OPERATOR_CHANCE_MULTIPLIER * 0.10;
 
     public InputFullMutation(CLBController clbController, double mutationChance) {
-        super(clbController, DEFAULT_CHANCE, mutationChance);
+        super(clbController, DEFAULT_OPERATOR_CHANCE, mutationChance);
     }
 
     public InputFullMutation(CLBController clbController) {
-        this(clbController, Constants.DEFAULT_INPUT_FULL_MUTATION_CHANCE);
+        this(clbController, DEFAULT_INPUT_FULL_MUTATION_CHANCE);
     }
 
     @Override

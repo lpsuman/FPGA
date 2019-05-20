@@ -6,6 +6,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.evaluator.Evaluator;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Timer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +61,11 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
     public Solution<T> run() {
         threadPool.runThreads();
 
+        int lastImprovingGeneration = 0;
+        int maxNonImprovingGenerations = (int)(maxGenerations * Constants.DEFAULT_NON_IMPROVING_GENERATION_STOP_RATIO);
+        int minImprovingGenerations = (int)(maxGenerations * Constants.DEFAULT_IMPROVING_GENERATION_CONTINUE_RATIO);
+        boolean continuedAfterMaxGenerations = false;
+
         List<Solution<T>> population = generatePopulation();
         List<Solution<T>> newPopulation = new ArrayList<>(population.size());
         for (Solution<T> solution : population) {
@@ -68,8 +74,15 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
         List<Solution<T>> temp;
         Solution<T> best = population.get(0);
 
+        Timer timer = null;
+        if (timeToStop > 0) {
+            timer = new Timer(timeToStop);
+        }
+
         try {
-            for (int i = 1; i <= maxGenerations; ++i) {
+            int i = 0;
+            while (true) {
+                i++;
                 notifyFitnessListeners(best, true);
                 int copyOverIndex = 0;
 
@@ -104,17 +117,22 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
                     break;
                 }
 
+                if (best.getFitness() > prevBestFitness) {
+                    lastImprovingGeneration = i;
+                }
+
                 Solution<T> worst = population.get(population.size() - 1);
 
                 if ((Constants.ENABLE_PRINT_GEN_STEP && (i % Constants.GENERATION_PRINT_STEP == 0))
                         || (Constants.ENABLE_PRINT_GEN_IF_BEST_IMPROVED && (best.getFitness() > prevBestFitness))
                         || (i == 1) || (i == maxGenerations)) {
 
-                    System.out.printf(Constants.PER_GENERATION_OUTPUT_MSG, i, population.size(), best.getFitness(), worst.getFitness());
+                    System.out.printf(Constants.PER_GENERATION_OUTPUT_MSG, i, population.size(),
+                            best.getFitness(), worst.getFitness());
                 }
 
-                if (System.currentTimeMillis() >= timeToStop) {
-                    System.out.println("Execution time limit reached. Max number of generations not reached");
+                if (timer != null && timer.isTimeLimitReached()) {
+                    System.out.println(String.format("Execution time limit of %d seconds reached.", timeToStop / 1000));
                     break;
                 }
 
@@ -124,6 +142,32 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
                     }
                     System.out.println("Threadpool stopping. Max number of generations not reached.");
                     break;
+                }
+
+                int numGenerationsSinceLastImprovement = i - lastImprovingGeneration;
+
+                if (numGenerationsSinceLastImprovement >= maxNonImprovingGenerations) {
+                    System.out.println(String.format("Past %d generations failed to improve the best solution, stopping.",
+                            numGenerationsSinceLastImprovement));
+                    break;
+                }
+
+                if (i >= maxGenerations) {
+                    if (numGenerationsSinceLastImprovement <= minImprovingGenerations) {
+                        if (!continuedAfterMaxGenerations) {
+                            System.out.println(String.format("Maximum number of generations reached, but the best " +
+                                    "solution was improved %d generations ago (below the threshold of %d), continuing.",
+                                    numGenerationsSinceLastImprovement, minImprovingGenerations));
+                            continuedAfterMaxGenerations = true;
+                        }
+                    } else {
+                        if (continuedAfterMaxGenerations) {
+                            System.out.println("Failed to find a solution after continuing.");
+                        } else {
+                            System.out.println("Maxiumum number of generations reached.");
+                        }
+                        break;
+                    }
                 }
             }
         } finally {

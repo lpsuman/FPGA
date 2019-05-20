@@ -8,9 +8,9 @@ import java.util.List;
 
 public class RandomizeMutation<T> extends AbstractRandomizeOperator implements Mutation<T> {
 
-    private List<Mutation<T>> mutations;
+    private List<? extends Mutation<T>> mutations;
 
-    public RandomizeMutation(List<Mutation<T>> mutations) {
+    public RandomizeMutation(List<? extends Mutation<T>> mutations) {
         super(Utility.checkNull(mutations, "list of mutations"));
         this.mutations = mutations;
         this.mutations.forEach(m -> operatorNames.add(m.getClass().getSimpleName()));

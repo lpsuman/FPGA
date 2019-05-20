@@ -60,4 +60,12 @@ public class BlockConfiguration implements Serializable {
     public List<Integer> getOutputIndices() {
         return outputIndices;
     }
+
+    public boolean isCompatibleWith(BlockConfiguration other) {
+        if (numCLBInputs == other.numCLBInputs && blockSize == other.blockSize) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

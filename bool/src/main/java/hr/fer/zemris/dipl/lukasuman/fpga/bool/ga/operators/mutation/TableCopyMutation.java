@@ -6,14 +6,15 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 
 public class TableCopyMutation extends AbstractBoolMutation {
 
-    private static final double DEFAULT_CHANCE = 1.0;
+    private static final double DEFAULT_OPERATOR_CHANCE = 2.0;
+    public static final double DEFAULT_TABLE_COPY_MUTATION_CHANCE = Constants.OPERATOR_CHANCE_MULTIPLIER * 0.10;
 
     public TableCopyMutation(CLBController clbController, double mutationChance) {
-        super(clbController, DEFAULT_CHANCE, mutationChance);
+        super(clbController, DEFAULT_OPERATOR_CHANCE, mutationChance);
     }
 
     public TableCopyMutation(CLBController clbController) {
-        this(clbController, Constants.DEFAULT_TABLE_COPY_MUTATION_CHANCE);
+        this(clbController, DEFAULT_TABLE_COPY_MUTATION_CHANCE);
     }
 
     @Override
@@ -21,8 +22,6 @@ public class TableCopyMutation extends AbstractBoolMutation {
         int firstOffset = clbController.calcLUTOffset(random.nextInt(0, clbController.getNumCLB()));
         int secondOffset = clbController.calcLUTOffset(random.nextInt(0, clbController.getNumCLB()));
 
-        for (int i = 0, n = clbController.getIntsPerLUT(); i < n; ++i) {
-            data[firstOffset + i] = data[secondOffset + i];
-        }
+        System.arraycopy(data, firstOffset, data, secondOffset, clbController.getIntsPerLUT());
     }
 }
