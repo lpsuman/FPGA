@@ -7,6 +7,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A concrete implementation of {@link GenericFactory}.
+ * Stores names in a map and creates new instances through Java reflections.
+ * @param <T> Type of the generated objects.
+ */
 public class SimpleGenericFactory<T> implements GenericFactory<T> {
 
     private Map<String, Class<? extends T>> nameToClassMap;

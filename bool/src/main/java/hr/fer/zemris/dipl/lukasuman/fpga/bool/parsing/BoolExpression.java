@@ -10,6 +10,10 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * This class represents a boolean expression which stores its operators in a tree in order to maintain
+ * operator priority. A string representation is also stored.
+ */
 public class BoolExpression implements InputProvider {
 
     private List<String> inputIDs;

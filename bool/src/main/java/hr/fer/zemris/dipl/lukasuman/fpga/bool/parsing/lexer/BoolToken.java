@@ -4,6 +4,9 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.util.Objects;
 
+/**
+ * A {@link Token} which stores a {@link BoolTokenType} and a string value.
+ */
 public class BoolToken implements Token<BoolTokenType, String> {
 
     private BoolTokenType type;

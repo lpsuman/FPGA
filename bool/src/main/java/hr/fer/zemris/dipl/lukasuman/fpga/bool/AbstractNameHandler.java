@@ -2,6 +2,9 @@ package hr.fer.zemris.dipl.lukasuman.fpga.bool;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
+/**
+ * This class can be extended in order to provide storage of a name string.
+ */
 public abstract class AbstractNameHandler {
 
     private String name;
@@ -10,7 +13,9 @@ public abstract class AbstractNameHandler {
         this.name = Utility.checkIfValidString(name, getNameMessage());
     }
 
-    protected abstract String getNameMessage();
+    private String getNameMessage() {
+        return getClass().getSimpleName() + "'s name";
+    }
 
     public String getName() {
         return name;

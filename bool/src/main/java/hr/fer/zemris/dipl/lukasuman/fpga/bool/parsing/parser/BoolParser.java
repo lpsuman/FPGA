@@ -8,6 +8,10 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.operators.BoolOperator;
 
 import java.util.*;
 
+/**
+ * Implementation of {@link Parser}. Tokens are read sequentially and an operator tree is generated using stacks.
+ * Finally a {@link BoolExpression} is generated if the token sequence is valid.
+ */
 public class BoolParser implements Parser<BoolToken, BoolExpression> {
 
     private LinkedList<BoolOperator> stack;

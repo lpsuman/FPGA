@@ -8,19 +8,27 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * This class represents a vector of boolean functions. Multiple boolean functions are joined in the following way:
+ * <ul>
+ *     <li>their input IDs are merged into a single set without duplications (same inputs overlap)</li>
+ *     <li>their truth tables are put into a matrix</li>
+ *     <li>functions which don't use all of the variables have shorter truth tables than required so their tables
+ *     are copied as required</li>
+ * </ul>
+ */
 public class BoolVector extends AbstractNameHandler implements Serializable {
 
     private static final long serialVersionUID = -7755696151775719987L;
 
     private static final String DEFAULT_NAME = "BoolVector";
-    private static final String NAME_MSG = "boolean vector's name";
 
     private List<BoolFunc> boolFunctions;
     private int numInputCombinations;
     private BitSet[] truthTable;
     private List<String> sortedInputIDs;
 
-    public BoolVector(String name, List<BoolFunc> boolFunctions) {
+    public BoolVector(List<BoolFunc> boolFunctions, String name) {
         super(name);
         this.boolFunctions = Utility.checkIfValidCollection(boolFunctions, "boolean functions for vector");
         Utility.checkLimit(Constants.NUM_FUNCTIONS_LIMIT, boolFunctions.size());
@@ -29,7 +37,7 @@ public class BoolVector extends AbstractNameHandler implements Serializable {
     }
 
     public BoolVector(List<BoolFunc> boolFunctions) {
-        this(DEFAULT_NAME, boolFunctions);
+        this(boolFunctions, DEFAULT_NAME);
     }
 
     private void fillTable(List<BoolFunc> boolFuncs) {
@@ -82,10 +90,5 @@ public class BoolVector extends AbstractNameHandler implements Serializable {
 
     public List<String> getSortedInputIDs() {
         return sortedInputIDs;
-    }
-
-    @Override
-    protected String getNameMessage() {
-        return NAME_MSG;
     }
 }

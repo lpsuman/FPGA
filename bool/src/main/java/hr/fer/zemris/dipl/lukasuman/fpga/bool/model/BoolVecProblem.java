@@ -1,5 +1,6 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.model;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.AbstractNameHandler;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BlockConfiguration;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFunc;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFuncController;
@@ -17,14 +18,21 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class BoolVecProblem implements Supplier<Solution<int[]>> {
+public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solution<int[]>> {
+
+    private static final String DEFAULT_NAME = "BoolProblem";
 
     private BoolVector boolVector;
     private CLBController clbController;
 
-    public BoolVecProblem(BoolVector boolVector, int numCLBInputs) {
+    public BoolVecProblem(BoolVector boolVector, int numCLBInputs, String name) {
+        super(name);
         this.boolVector = Utility.checkNull(boolVector, "boolean vector");
         clbController = new CLBController(boolVector, numCLBInputs);
+    }
+
+    public BoolVecProblem(BoolVector boolVector, int numCLBInputs) {
+        this(boolVector, numCLBInputs, DEFAULT_NAME);
     }
 
     @Override
@@ -225,7 +233,7 @@ public class BoolVecProblem implements Supplier<Solution<int[]>> {
 
         int numCLBInputs = clbController.getNumCLBInputs();
 
-        return new BlockConfiguration(numCLB, numCLBInputs, blockSize, newData, outputIndices);
+        return new BlockConfiguration(numCLBInputs, numCLB, newData, outputIndices);
     }
 
     public BoolVector getBoolVector() {

@@ -4,6 +4,11 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.*;
 
+/**
+ * This class represents a lexicographical analyzer of boolean expressions. {@link StreamTokenizer} is used on the
+ * given input stream in order to handle special characters and whitespaces.
+ * See {@link BoolTokenType} for the token types.
+ */
 public class BoolLexer implements Lexer<BoolToken> {
 
     private static final char[] LEFT_PARENTHESIS_CHARS = new char[]{'(', '[', '{'};
@@ -70,7 +75,7 @@ public class BoolLexer implements Lexer<BoolToken> {
                     }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new BoolLexerException(e.getMessage());
         }
 
         return new BoolToken(type, value);

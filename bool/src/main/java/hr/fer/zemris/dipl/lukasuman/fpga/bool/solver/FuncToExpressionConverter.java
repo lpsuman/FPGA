@@ -5,11 +5,36 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class contains the required mappings for converting boolean functions of two variables into their boolean
+ * expression string equivalents. All 16 different boolean functions of two variables are supported, along with 3
+ * different mappings for some functions, see {@link FuncToStringMappingTypes}.
+ */
 public class FuncToExpressionConverter {
 
+    /**
+     * There are 3 different mapping levels:
+     * <ul>
+     *     <li>{@link #NOT_AND_OR_XOR_NAND_NOR_XNOR}</li>
+     *     <li>{@link #NOT_AND_OR_XOR}</li>
+     *     <li>{@link #NOT_AND_OR}.</li>
+     * </ul>
+     */
     public enum FuncToStringMappingTypes {
+
+        /**
+         * Full mapping containing NOT, AND, OR, XOR, NAND, NOR and XNOR.
+         */
         NOT_AND_OR_XOR_NAND_NOR_XNOR(0),
+
+        /**
+         * Default mapping containing NOT, AND, OR and XOR.
+         */
         NOT_AND_OR_XOR(1),
+
+        /**
+         * Simplest mapping containing just NOT, AND and OR.
+         */
         NOT_AND_OR(2)
         ;
 
@@ -20,6 +45,9 @@ public class FuncToExpressionConverter {
         }
     }
 
+    /**
+     * This class is used to simplify the generation of the various mappings. It also served testing purposes.
+     */
     private static class FuncToString {
         private final String formatString;
         private final boolean usesFirstVariable;
@@ -132,11 +160,26 @@ public class FuncToExpressionConverter {
     private FuncToExpressionConverter() {
     }
 
+    /**
+     * Sets the mapping type.
+     * @param mappingType Mapping type to set, see {@link FuncToStringMappingTypes}. Must not be {@code null}.
+     */
     public static void setMapping(FuncToStringMappingTypes mappingType) {
         Utility.checkNull(mappingType, "mapping type");
         CURRENT_MAPPING_TYPE = mappingType;
     }
 
+    /**
+     * Generates a boolean expression from the given boolean function of two variables.
+     * See {@link #setMapping(FuncToStringMappingTypes)} for mapping types.
+     * @param truthTable The truth table of the boolean function. Only the lowest 8 bits are used.
+     *                   Must be between 0 (inclusive) and 15 (inclusive).
+     * @param strA String representation of the first operand. May be {@code null} if the function doesn't use it.
+     *             Must not be empty.
+     * @param strB String representation of the first operand. May be {@code null} if the function doesn't use it.
+     *             Must not be empty.
+     * @return A string representing the boolean expression of the given boolean function.
+     */
     public static String getString(int truthTable, String strA, String strB) {
         Utility.checkRange(truthTable, 0, 15);
         FuncToString funcToString = FUNC_TO_STRING_MAPPINGS.get(CURRENT_MAPPING_TYPE.index)[truthTable];

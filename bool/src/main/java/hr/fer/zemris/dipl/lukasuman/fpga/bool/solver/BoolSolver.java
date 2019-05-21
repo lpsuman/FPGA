@@ -106,20 +106,9 @@ public class BoolSolver {
 
     private static RunResults doARun(BoolVecProblem problem, boolean canDecreaseNumCLB, boolean canIncreaseNumCLB) {
         CLBController controller = problem.getClbController();
-        List<AbstractBoolCrossover> crossoverList = new ArrayList<>();
-        crossoverList.add(new SingleBlockCrossover(controller));
-        crossoverList.add(new IntervalBlockCrossover(controller));
-        crossoverList.add(new SingleBlockCrossover(controller, false));
-        crossoverList.add(new IntervalBlockCrossover(controller, false));
-        RandomizeCrossover<int[]> randomCrossovers = new RandomizeCrossover<>(crossoverList);
+        RandomizeCrossover<int[]> randomCrossovers = generateRandomizeCrossover(controller);
+        RandomizeMutation<int[]> randomMutations = generateRandomizeMutation(controller);
 
-        List<AbstractBoolMutation> mutationList = new ArrayList<>();
-        mutationList.add(new InputFullMutation(controller));
-        mutationList.add(new InputSingleMutation(controller));
-        mutationList.add(new TableCopyMutation(controller));
-        mutationList.add(new TableFullMutation(controller));
-        mutationList.add(new TableSingleMutation(controller));
-        RandomizeMutation<int[]> randomMutations = new RandomizeMutation<>(mutationList);
         List<BoolVecEvaluator> evaluators = new ArrayList<>();
 
         Supplier<Evaluator<int[]>> evaluatorSupplier = () -> {
@@ -131,15 +120,9 @@ public class BoolSolver {
         };
 
         BoolVecEvaluator evaluator = new BoolVecEvaluator(problem);
-        ParallelGA<int[]> algorithm;
+
         GAThreadPool<int[]> threadPool = new EVOIterationThreadPool<>(randomCrossovers, randomMutations, evaluatorSupplier);
-
-        if (Constants.DEFAULT_USE_TIME) {
-            algorithm = new ParallelGA<>(problem, evaluator, threadPool);
-        } else {
-            algorithm = new ParallelGA<>(problem, evaluator, threadPool);
-        }
-
+        ParallelGA<int[]> algorithm = new ParallelGA<>(problem, evaluator, threadPool);
         algorithm.addFitnessListener(randomCrossovers);
         algorithm.addTerminationListener(randomCrossovers);
         algorithm.addFitnessListener(randomMutations);
@@ -151,7 +134,6 @@ public class BoolSolver {
         int numCLBOfBest = -1;
         int numFailed = 0;
         int numConsecutiveBestFitnessBelowThreshold = 0;
-
         Timer timer = new Timer();
 
         while (true) {
@@ -168,8 +150,8 @@ public class BoolSolver {
                 numFailed++;
 
                 if (numFailed >= Constants.DEFAULT_MAX_NUM_FAILS) {
-
                     System.out.print("Failed to find a solution after maximum number of tries, ");
+
                     if (checkShouldBreak(bestSolution, bestFitness, controller, canIncreaseNumCLB)) {
                         break;
                     } else {
@@ -187,6 +169,7 @@ public class BoolSolver {
                                 "Fitness of the best solution was below %.4f for %d consecutive attempts, ",
                                 Constants.DEFAULT_BEST_FITNESS_THRESHOLD_TO_STOP_TRYING,
                                 Constants.DEFAULT_MAX_NUM_BELOW_THRESHOLD_ATTEMPTS));
+
                         if (checkShouldBreak(bestSolution, bestFitness, controller, canIncreaseNumCLB)) {
                             break;
                         } else {
@@ -243,8 +226,10 @@ public class BoolSolver {
         }
 
         controller.setNumCLB(numCLBOfBest);
+        evaluator.setLogging(true);
         evaluator.evaluateSolution(bestSolution, false);
         int numUnusedBlocksInBest = evaluator.getUnusedBlocks().cardinality();
+
         if (numUnusedBlocksInBest > 0) {
             bestSolution = problem.trimmedBoolSolution(bestSolution, evaluator.getUnusedBlocks());
             controller.setNumCLB(numCLBOfBest -  numUnusedBlocksInBest);
@@ -252,6 +237,7 @@ public class BoolSolver {
             evaluator.evaluateSolution(bestSolution, false);
         }
 
+        evaluator.setLogging(false);
         System.out.println(evaluator.getLog());
         System.out.println(problem.solutionToString(bestSolution, evaluator.getBlockUsage()));
         System.out.println(bestSolution.getFitness());
@@ -260,7 +246,9 @@ public class BoolSolver {
                 randomCrossovers, randomMutations, numEvaluations, elapsedTime);
     }
 
-    private static boolean checkShouldBreak(Solution<int[]> bestSolution, double bestFitness, CLBController controller, boolean canIncreaseNumCLB) {
+    private static boolean checkShouldBreak(Solution<int[]> bestSolution, double bestFitness,
+                                            CLBController controller, boolean canIncreaseNumCLB) {
+
         if (bestSolution == null) {
             if (canIncreaseNumCLB) {
                 int numCLBIncreaseAmount = 1;
@@ -289,5 +277,24 @@ public class BoolSolver {
         System.out.println(randomizeCrossover.resultsToString(crossoverStats));
         System.out.println(randomizeMutation.resultsToString(mutationStats));
         System.out.println("Number of evaluations: " + numEvaluations + "\n");
+    }
+
+    private static RandomizeCrossover<int[]> generateRandomizeCrossover(CLBController controller) {
+        List<AbstractBoolCrossover> crossoverList = new ArrayList<>();
+        crossoverList.add(new SingleBlockCrossover(controller));
+        crossoverList.add(new IntervalBlockCrossover(controller));
+        crossoverList.add(new SingleBlockCrossover(controller, false));
+        crossoverList.add(new IntervalBlockCrossover(controller, false));
+        return new RandomizeCrossover<>(crossoverList);
+    }
+
+    private static RandomizeMutation<int[]> generateRandomizeMutation(CLBController controller) {
+        List<AbstractBoolMutation> mutationList = new ArrayList<>();
+        mutationList.add(new InputFullMutation(controller));
+        mutationList.add(new InputSingleMutation(controller));
+        mutationList.add(new TableCopyMutation(controller));
+        mutationList.add(new TableFullMutation(controller));
+        mutationList.add(new TableSingleMutation(controller));
+        return new RandomizeMutation<>(mutationList);
     }
 }

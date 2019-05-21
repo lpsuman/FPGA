@@ -6,9 +6,13 @@ import java.nio.charset.Charset;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
- *
+ * This is a static Utility class which contains various useful methods. Some of the most used ones are:
+ * argument checking, BitSet and Integer operations, String manipulation, etc...
  */
 public class Utility {
 
@@ -207,5 +211,9 @@ public class Utility {
         }
 
         return prefixFunction;
+    }
+
+    public static Set<Integer> generateRangeSet(int fromIndex, int toIndex) {
+        return IntStream.range(fromIndex, toIndex).boxed().collect(Collectors.toSet());
     }
 }

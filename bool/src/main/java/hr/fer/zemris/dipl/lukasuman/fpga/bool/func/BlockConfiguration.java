@@ -5,6 +5,9 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * This class represents a configuration of CLBs. It is used as a data storage and can't be evaluated by itself.
+ */
 public class BlockConfiguration implements Serializable {
 
     private static final long serialVersionUID = 4470315848595252310L;
@@ -16,9 +19,10 @@ public class BlockConfiguration implements Serializable {
 
     private List<Integer> outputIndices;
 
-    public BlockConfiguration(int numCLB, int numCLBInputs, int blockSize, int[] data, List<Integer> outputIndices) {
+    public BlockConfiguration(int numCLBInputs, int numCLB, int[] data, List<Integer> outputIndices) {
         this.data = Utility.checkNull(data, "CLB data");
         this.outputIndices = Utility.checkIfValidCollection(outputIndices, "list of output indices");
+        this.blockSize = (int) Math.ceil(Math.pow(2, numCLBInputs) / 32.0);
 
         if (this.data.length % blockSize != 0) {
             throw new IllegalArgumentException(String.format(
@@ -38,7 +42,6 @@ public class BlockConfiguration implements Serializable {
 
         this.numCLB = numCLB;
         this.numCLBInputs = numCLBInputs;
-        this.blockSize = blockSize;
     }
 
     public int getNumCLB() {
@@ -62,10 +65,6 @@ public class BlockConfiguration implements Serializable {
     }
 
     public boolean isCompatibleWith(BlockConfiguration other) {
-        if (numCLBInputs == other.numCLBInputs && blockSize == other.blockSize) {
-            return true;
-        } else {
-            return false;
-        }
+        return numCLBInputs == other.numCLBInputs;
     }
 }

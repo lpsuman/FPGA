@@ -9,12 +9,15 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * This class represents the lowest level representation of a boolean function. It is uniquely defined by a truth table.
+ * It also stores a name (for easier handling) and a list of input IDs in string form ("a", "b", etc.).
+ */
 public class BoolFunc extends AbstractNameHandler implements Serializable {
 
     private static final long serialVersionUID = -3337214107238850818L;
 
     private static final String DEFAULT_NAME = "BoolFunc";
-    private static final String NAME_MSG = "boolean function's name";
     private static final String INPUT_IDS_MSG = "input IDs for function";
 
     private int numInputs;
@@ -22,7 +25,7 @@ public class BoolFunc extends AbstractNameHandler implements Serializable {
     private int numInputCombinations;
     private BitSet truthTable;
 
-    public BoolFunc(String name, List<String> inputIDs, BitSet truthTable) {
+    public BoolFunc(List<String> inputIDs, BitSet truthTable, String name) {
         super(name);
         this.inputIDs = Utility.checkIfValidCollection(inputIDs, INPUT_IDS_MSG);
         Utility.checkLimit(Constants.NUM_FUNCTION_INPUTS_LIMIT, inputIDs.size());
@@ -38,15 +41,15 @@ public class BoolFunc extends AbstractNameHandler implements Serializable {
     }
 
     public BoolFunc(List<String> inputIDs, BitSet truthTable) {
-        this(DEFAULT_NAME, inputIDs, truthTable);
+        this(inputIDs, truthTable, DEFAULT_NAME);
     }
 
-    public BoolFunc(String name, int numInputs, BitSet truthTable) {
-        this(name, BoolFuncController.generateDefaultInputIDs(numInputs), truthTable);
+    public BoolFunc(int numInputs, BitSet truthTable, String name) {
+        this(BoolFuncController.generateDefaultInputIDs(numInputs), truthTable, name);
     }
 
     public BoolFunc(int numInputs, BitSet truthTable) {
-        this(DEFAULT_NAME, numInputs, truthTable);
+        this(numInputs, truthTable, DEFAULT_NAME);
     }
 
     public List<String> getInputIDs() {
@@ -74,11 +77,6 @@ public class BoolFunc extends AbstractNameHandler implements Serializable {
 
     public int getNumInputCombinations() {
         return numInputCombinations;
-    }
-
-    @Override
-    protected String getNameMessage() {
-        return NAME_MSG;
     }
 
     @Override
