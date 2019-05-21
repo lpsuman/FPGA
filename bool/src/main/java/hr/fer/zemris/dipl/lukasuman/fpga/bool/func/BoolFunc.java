@@ -38,7 +38,7 @@ public class BoolFunc extends AbstractNameHandler implements Serializable {
     }
 
     public BoolFunc(List<String> inputIDs, BitSet truthTable) {
-        this (DEFAULT_NAME, inputIDs, truthTable);
+        this(DEFAULT_NAME, inputIDs, truthTable);
     }
 
     public BoolFunc(String name, int numInputs, BitSet truthTable) {

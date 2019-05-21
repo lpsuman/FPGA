@@ -186,7 +186,7 @@ public class EVOIterationThreadPool<T> implements GAThreadPool<T>, TerminationLi
         isRunning = false;
 
         if (!incoming.isEmpty()) {
-            throw new IllegalStateException(String.format(
+            System.err.println(String.format(
                     "Threadpool was shutdown with %d elements in incoming.", incoming.size()));
         }
 

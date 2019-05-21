@@ -32,7 +32,7 @@ public abstract class AbstractBoolMutation extends AbstractOperator implements M
         if (Constants.OPERATOR_CHANCE_MULTIPLIER == 0.0) {
             return 1;
         }
-        return (int) Math.min(1, mutationChance * clbController.getNumCLB());
+        return (int) Math.max(1, mutationChance * clbController.getNumCLB());
     }
 
     public void setClbController(CLBController clbController) {

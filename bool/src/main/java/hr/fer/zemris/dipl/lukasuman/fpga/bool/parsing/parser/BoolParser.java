@@ -229,7 +229,8 @@ public class BoolParser implements Parser<BoolToken, BoolExpression> {
         popElements(numEnclosedElements);
     }
 
-    private void reset() {
+    @Override
+    public void reset() {
         stack.clear();
         roots.clear();
         parenthesesElementsCount.clear();

@@ -119,18 +119,24 @@ public abstract class AbstractBoolOperator implements BoolOperator {
 
     @Override
     public void buildExpression(StringBuilder sb) {
-        sb.append("(");
+        if (priority != 0) {
+            sb.append("(");
+        }
 
         if (isUsingLeft) {
             left.buildExpression(sb);
+            sb.append(" ");
         }
 
-        sb.append(" ").append(name).append(" ");
+        sb.append(name);
 
         if (isUsingRight) {
+            sb.append(" ");
             right.buildExpression(sb);
         }
 
-        sb.append(")");
+        if (priority != 0) {
+            sb.append(")");
+        }
     }
 }

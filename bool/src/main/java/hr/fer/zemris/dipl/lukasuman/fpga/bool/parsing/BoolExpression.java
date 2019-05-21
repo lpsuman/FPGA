@@ -63,7 +63,12 @@ public class BoolExpression implements InputProvider {
         calcTruthTable();
         StringBuilder sb = new StringBuilder();
         root.buildExpression(sb);
-        expressionString = sb.toString().substring(1, sb.length() - 1);
+
+        if (root.getPriority() > 0) {
+            expressionString = sb.toString().substring(1, sb.length() - 1);
+        } else {
+            expressionString = sb.toString();
+        }
     }
 
     public boolean evaluate(int inputCombination) {

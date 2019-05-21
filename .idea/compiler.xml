@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="bool" />
         <module name="common" />
+        <module name="GUI" />
         <module name="test" />
       </profile>
     </annotationProcessing>

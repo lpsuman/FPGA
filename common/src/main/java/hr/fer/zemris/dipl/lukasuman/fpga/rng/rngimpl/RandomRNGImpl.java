@@ -50,8 +50,14 @@ public class RandomRNGImpl implements IRNG {
 
     @Override
     public BitSet nextBitSet(int size) {
-        byte[] randomBytes = new byte[size / 8];
+        byte[] randomBytes = new byte[Math.max(1, size / 8)];
         random.nextBytes(randomBytes);
-        return BitSet.valueOf(randomBytes);
+        BitSet result = BitSet.valueOf(randomBytes);
+
+        if (size < 8) {
+            result.clear(8 - size, 8);
+        }
+
+        return result;
     }
 }

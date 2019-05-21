@@ -46,10 +46,53 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
         return NAME_MSG;
     }
 
+    public boolean canBeConvertedToExpression() {
+        return blockConfiguration.getNumCLBInputs() == 2;
+    }
+
+    public String getAsExpression(int indexBoolFunc) {
+        if (!canBeConvertedToExpression()) {
+            throw new UnsupportedOperationException(
+                    "Only solutions with 2 CLB inputs can be converted to an expression.");
+        }
+        Utility.checkRange(indexBoolFunc, 0, boolVector.getBoolFunctions().size() - 1);
+
+        int indexFuncOutputBlock = blockConfiguration.getOutputIndices().get((indexBoolFunc));
+        String[] perBlockStrings = new String[boolVector.getNumInputs() + blockConfiguration.getNumCLB()];
+
+        return recursiveBlockToString(indexFuncOutputBlock, perBlockStrings);
+    }
+
+    private String recursiveBlockToString(int indexCLB, String[] perBlockStrings) {
+        int numInputs = boolVector.getNumInputs();
+        if (indexCLB < numInputs) {
+            return boolVector.getSortedInputIDs().get(indexCLB);
+        }
+        int[] data = blockConfiguration.getData();
+
+        int inputA = data[(indexCLB - numInputs) * 3];
+        String leftString = perBlockStrings[inputA];
+        if (leftString == null) {
+            leftString = recursiveBlockToString(inputA, perBlockStrings);
+            perBlockStrings[inputA] = leftString;
+        }
+
+        int inputB = data[(indexCLB - numInputs) * 3 + 1];
+        String rightString = perBlockStrings[inputB];
+        if (rightString == null) {
+            rightString = recursiveBlockToString(inputB, perBlockStrings);
+            perBlockStrings[inputB] = rightString;
+        }
+
+        int truthTable = data[(indexCLB - numInputs) * 3 + 2];
+        return FuncToExpressionConverter.getString(truthTable, leftString, rightString);
+    }
+
     public static BoolVectorSolution mergeSolutions(List<BoolVectorSolution> solutions) {
         Utility.checkIfValidCollection(solutions, "list of solutions to merge");
         int numSolutions = solutions.size();
 
+        //TODO do this ASAP
 
         return null;
     }

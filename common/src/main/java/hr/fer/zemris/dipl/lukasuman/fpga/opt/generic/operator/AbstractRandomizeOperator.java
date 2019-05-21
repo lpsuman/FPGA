@@ -33,6 +33,9 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
     protected List<String> operatorNames;
     protected List<Double> operatorChances;
 
+    //TODO modification of operator chances
+    //TODO operator chances in constructor
+
     public AbstractRandomizeOperator(int numOperators) {
         Utility.checkLimit(Constants.NUM_OPERATORS_LIMIT, numOperators);
 

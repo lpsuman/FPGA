@@ -24,26 +24,25 @@ public class CLBController {
 
     private Set<CLBChangeListener> clbChangeListeners;
 
-    public CLBController(BoolVector boolVector, int numCLBInputs, int numCLB) {
-        this(numCLBInputs, boolVector);
+    public CLBController(int numInputs, int numCLBInputs, int numCLB) {
+        this(numInputs, numCLBInputs);
         setNumCLB(numCLB);
     }
 
     public CLBController(BoolVector boolVector, int numCLBInputs) {
-        this(numCLBInputs, boolVector);
+        this(boolVector.getNumInputs(), numCLBInputs);
         setNumCLB(estimateMaxNumCLBForVector(boolVector));
     }
 
-    private CLBController(int numCLBInputs, BoolVector boolVector) {
-        Utility.checkNull(boolVector, "boolean vector");
-        this.numInputs = boolVector.getNumInputs();
+    private CLBController(int numInputs, int numCLBInputs) {
+        this.numInputs = numInputs;
         setNumCLBInputs(numCLBInputs);
     }
 
     public void setNumCLBInputs(int numCLBInputs) {
         Utility.checkLimit(Constants.NUM_CLB_INPUTS_LIMIT, numCLBInputs);
 
-        if (numCLBInputs >= numInputs) {
+        if (numCLBInputs > numInputs) {
             throw new IllegalArgumentException(String.format(
                     "Number of CLB inputs (%d given) should be smaller than the number of boolean vector inputs (%d).",
                     numCLBInputs, numInputs));
@@ -97,7 +96,7 @@ public class CLBController {
             return 1;
         }
 
-        int result = (int) Math.pow(3, numFuncInputs - numCLBInputs);
+        int result = (int)(Math.pow(2, numFuncInputs - numCLBInputs + 1)) - 1;
 //        if (numCLBInputs == 2) {
 //            result *= 2;
 //        }

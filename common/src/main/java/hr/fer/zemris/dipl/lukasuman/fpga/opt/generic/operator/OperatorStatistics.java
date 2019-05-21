@@ -1,10 +1,11 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.operator;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Resetable;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.util.List;
 
-public interface OperatorStatistics {
+public interface OperatorStatistics extends Resetable {
 
     void incrementNumUsed(double prevFitness, double newFitness, double bestFitness);
     int getNumUsed();
@@ -12,7 +13,6 @@ public interface OperatorStatistics {
     int getNumIncreasedFitness();
     int getNumIncreasedBestFitness();
     void add(OperatorStatistics other);
-    void reset();
 
     static void sumStatistics(List<OperatorStatistics> target, List<OperatorStatistics> other) {
         Utility.checkNull(target, "target list of operator statistics");

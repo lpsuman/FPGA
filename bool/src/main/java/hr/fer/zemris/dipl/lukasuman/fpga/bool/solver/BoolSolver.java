@@ -85,6 +85,10 @@ public class BoolSolver {
         System.out.println("Elapsed times for functions.");
         elapsedTimes.forEach(System.out::println);
 
+        if (functions.size() == 1) {
+            return perFuncResults.get(0).result;
+        }
+
         int numCLBEstimation = perFuncResults.stream()
                 .mapToInt(result -> result.result.getBlockConfiguration().getNumCLB())
                 .sum() - 1;
@@ -143,6 +147,7 @@ public class BoolSolver {
 
         Solution<int[]> bestSolution = null;
         Solution<int[]> solution;
+        double bestFitness = 0.0;
         int numCLBOfBest = -1;
         int numFailed = 0;
         int numConsecutiveBestFitnessBelowThreshold = 0;
@@ -155,16 +160,21 @@ public class BoolSolver {
 
             solution = algorithm.run();
 
+            if (bestSolution == null) {
+                bestFitness = solution.getFitness();
+            }
+
             if (solution.getFitness() != Constants.FITNESS_SCALE) {
                 numFailed++;
 
                 if (numFailed >= Constants.DEFAULT_MAX_NUM_FAILS) {
-                    numFailed = 0;
 
                     System.out.print("Failed to find a solution after maximum number of tries, ");
-                    if (checkShouldBreak(bestSolution, controller, canIncreaseNumCLB)) {
+                    if (checkShouldBreak(bestSolution, bestFitness, controller, canIncreaseNumCLB)) {
                         break;
                     } else {
+                        numFailed = 0;
+                        numConsecutiveBestFitnessBelowThreshold = 0;
                         continue;
                     }
                 }
@@ -177,9 +187,11 @@ public class BoolSolver {
                                 "Fitness of the best solution was below %.4f for %d consecutive attempts, ",
                                 Constants.DEFAULT_BEST_FITNESS_THRESHOLD_TO_STOP_TRYING,
                                 Constants.DEFAULT_MAX_NUM_BELOW_THRESHOLD_ATTEMPTS));
-                        if (checkShouldBreak(bestSolution, controller, canIncreaseNumCLB)) {
+                        if (checkShouldBreak(bestSolution, bestFitness, controller, canIncreaseNumCLB)) {
                             break;
                         } else {
+                            numFailed = 0;
+                            numConsecutiveBestFitnessBelowThreshold = 0;
                             continue;
                         }
                     }
@@ -248,16 +260,24 @@ public class BoolSolver {
                 randomCrossovers, randomMutations, numEvaluations, elapsedTime);
     }
 
-    private static boolean checkShouldBreak(Solution<int[]> bestSolution, CLBController controller, boolean canIncreaseNumCLB) {
+    private static boolean checkShouldBreak(Solution<int[]> bestSolution, double bestFitness, CLBController controller, boolean canIncreaseNumCLB) {
         if (bestSolution == null) {
             if (canIncreaseNumCLB) {
-                System.out.println("increasing number of CLBs.");
-                controller.setNumCLB(controller.getNumCLB() + 1);
+                int numCLBIncreaseAmount = 1;
+
+                if (bestFitness < Constants.DEFAULT_SKIP_INCREASE_NUM_CLB_FITNESS_THRESHOLD) {
+                    numCLBIncreaseAmount = Math.max(1,
+                            (int)(controller.getNumCLB() * Constants.DEFAULT_SKIP_INCREASE_NUM_CLB_AMOUNT));
+                }
+
+                System.out.println(String.format("increasing number of CLBs by %d.", numCLBIncreaseAmount));
+                controller.setNumCLB(controller.getNumCLB() + numCLBIncreaseAmount);
                 return false;
             } else {
                 System.out.println("not allowed to increase the number of CLBs, ");
             }
         }
+
         System.out.println("aborting.");
         return true;
     }
