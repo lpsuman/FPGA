@@ -16,6 +16,7 @@ import java.util.List;
 
 public class BoolMain {
 
+    private static final boolean USE_NON_RANDOM_FUNCTIONS = true;
     private static final boolean SHOW_TWO_VARIABLE_FUNC_CONVERSION = true;
     private static final int NUM_FUNCTIONS = 5;
     private static final int NUM_FUNC_INPUTS = 5;
@@ -31,10 +32,19 @@ public class BoolMain {
             numRemainingFunctions = 0;
             numFuncInputs = 4;
             numCLBInputs = 2;
-            functions.add(BoolFuncController.generateRandomFunction(numFuncInputs));
+
+            if (USE_NON_RANDOM_FUNCTIONS) {
+//                BoolParser parser = new BoolParser();
+//                BoolExpression boolExpression = parser.parse(new BoolLexer(Utility.getInputStreamFromString(
+//                        "(not a or c) xor (b and not a) or d")));
+//                functions.add(BoolFuncController.generateFromExpression(boolExpression));
+                functions.add(new BoolFunc(4, Utility.bitSetFromMask(0b1011101000110110, 16)));
+            } else {
+                functions.add(BoolFuncController.generateRandomFunction(numFuncInputs));
+            }
         }
 
-        if (NUM_FUNC_INPUTS == 5 && numRemainingFunctions >= 2) {
+        if (USE_NON_RANDOM_FUNCTIONS && NUM_FUNC_INPUTS == 5 && numRemainingFunctions >= 2) {
             functions.add(BoolFuncController.generateFromMask(0b11101110111100011111111100011111, 5));
             functions.add(BoolFuncController.generateFromMask(0b00000000111100000001000100011110, 5));
             numRemainingFunctions -= 2;
@@ -45,7 +55,8 @@ public class BoolMain {
         }
 
         BoolVecProblem problem = new BoolVecProblem(new BoolVector(functions), numCLBInputs);
-        BoolVectorSolution solution = BoolSolver.solve(problem);
+        BoolSolver solver = new BoolSolver();
+        BoolVectorSolution solution = solver.solve(problem);
 
         if (solution == null) {
             System.out.println("No merged solution.");

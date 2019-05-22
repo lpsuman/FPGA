@@ -25,6 +25,10 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
     private BoolVector boolVector;
     private CLBController clbController;
 
+    private List<Solution<int[]>> nextToSupplyList;
+    Solution<int[]> nextToSupply;
+    private int indexCurrToSupply;
+
     public BoolVecProblem(BoolVector boolVector, int numCLBInputs, String name) {
         super(name);
         this.boolVector = Utility.checkNull(boolVector, "boolean vector");
@@ -35,8 +39,34 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         this(boolVector, numCLBInputs, DEFAULT_NAME);
     }
 
+    public void setNextToSupply(Solution<int[]> solution) {
+        Utility.checkNull(solution, "solution");
+        this.nextToSupply = solution;
+    }
+
+    public void setNextToSupplyList(List<Solution<int[]>> solutions, int indexCurrToSupply) {
+        this.nextToSupplyList = Utility.checkIfValidCollection(solutions, "list of solutions to supply next");
+        this.indexCurrToSupply = Utility.checkRange(indexCurrToSupply, 0, solutions.size() - 1);
+    }
+
     @Override
     public Solution<int[]> get() {
+        if (nextToSupply != null) {
+            Solution<int[]> result = nextToSupply;
+            nextToSupply = null;
+            return result;
+        }
+
+        if (nextToSupplyList != null) {
+            Solution<int[]> result = nextToSupplyList.get(indexCurrToSupply);
+            indexCurrToSupply++;
+
+            if (indexCurrToSupply >= nextToSupplyList.size()) {
+                nextToSupplyList = null;
+            }
+            return result;
+        }
+
         int numCLB = clbController.getNumCLB();
         int[] data = new int[numCLB * clbController.getIntsPerCLB() + boolVector.getNumFunctions()];
         IRNG random = RNG.getRNG();

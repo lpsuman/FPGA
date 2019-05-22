@@ -13,7 +13,7 @@ public class RandomizeMutation<T> extends AbstractRandomizeOperator implements M
     public RandomizeMutation(List<? extends Mutation<T>> mutations) {
         super(Utility.checkNull(mutations, "list of mutations"));
         this.mutations = mutations;
-        this.mutations.forEach(m -> operatorNames.add(m.getClass().getSimpleName()));
+        this.mutations.forEach(m -> operatorNames.add(m.toString()));
     }
 
     @Override

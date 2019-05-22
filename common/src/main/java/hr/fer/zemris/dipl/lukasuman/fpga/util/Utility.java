@@ -31,11 +31,13 @@ public class Utility {
         }
     }
 
-    public static void checkRange(int index, int minValue, int maxValue) {
-        if (index < minValue || index > maxValue) {
+    public static int checkRange(int value, int minValue, int maxValue) {
+        if (value < minValue || value > maxValue) {
             throw new IllegalArgumentException(String.format(
-                    "Index %d is out of range (must be between %d and %d).", index, minValue, maxValue));
+                    "Value %d is out of range (must be between %d and %d).", value, minValue, maxValue));
         }
+
+        return value;
     }
 
     public static <T> T checkLimit(ArgumentLimit<T> limit, T arg) {

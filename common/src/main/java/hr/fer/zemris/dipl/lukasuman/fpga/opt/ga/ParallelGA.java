@@ -84,6 +84,7 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
             while (true) {
                 i++;
                 notifyFitnessListeners(best, true);
+                notifyGenerationListeners((double) i / maxGenerations);
                 int copyOverIndex = 0;
 
                 for (int j = 0; j < elitismSize; ++j) {

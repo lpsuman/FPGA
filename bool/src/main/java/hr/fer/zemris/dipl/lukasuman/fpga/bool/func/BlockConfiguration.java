@@ -22,7 +22,7 @@ public class BlockConfiguration implements Serializable {
     public BlockConfiguration(int numCLBInputs, int numCLB, int[] data, List<Integer> outputIndices) {
         this.data = Utility.checkNull(data, "CLB data");
         this.outputIndices = Utility.checkIfValidCollection(outputIndices, "list of output indices");
-        this.blockSize = (int) Math.ceil(Math.pow(2, numCLBInputs) / 32.0);
+        this.blockSize = numCLBInputs + (int) Math.ceil(Math.pow(2, numCLBInputs) / 32.0);
 
         if (this.data.length % blockSize != 0) {
             throw new IllegalArgumentException(String.format(

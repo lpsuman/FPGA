@@ -5,8 +5,11 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.mutation.Mutation;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.selection.Selection;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.selection.TournamentSelection;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.evaluator.Evaluator;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.listener.GenerationListener;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.listener.TerminationListener;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
+import hr.fer.zemris.dipl.lukasuman.fpga.rng.IRNG;
+import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
@@ -19,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class EVOIterationThreadPool<T> implements GAThreadPool<T>, TerminationListener {
+public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListener {
 
     private final Object CALCULATION_SYNC_OBJECT = new Object();
 
@@ -42,13 +45,28 @@ public class EVOIterationThreadPool<T> implements GAThreadPool<T>, TerminationLi
     private final Crossover<T> crossover;
     private final Mutation<T> mutation;
     private final ThreadLocal<Evaluator<T>> threadLocalEvaluator;
+    private double generationProgress;
+    private double annealingThreshold;
 
     private List<Solution<T>> newPopulation;
     private AtomicInteger copyOverIndex;
 
-    public EVOIterationThreadPool(int numThreads, Selection<T> selection, Crossover<T> crossover,
-                                  Mutation<T> mutation, Supplier<Evaluator<T>> evaluatorSupplier,
-                                  Function<Runnable, Thread> threadFactory) {
+    public AnnealedThreadPool(Crossover<T> crossover, Mutation<T> mutation, Supplier<Evaluator<T>> evaluatorSupplier,
+                              double annealingThreshold, int numThreads, Selection<T> selection,
+                              Function<Runnable, Thread> threadFactory) {
+
+        this.selection = selection;
+        this.crossover = crossover;
+        this.mutation = mutation;
+        this.threadLocalEvaluator = ThreadLocal.withInitial(evaluatorSupplier);
+
+        Utility.checkLimit(Constants.ANNEALING_THRESHOLD_LIMIT, annealingThreshold);
+        this.annealingThreshold = annealingThreshold;
+
+        shouldTerminate = new AtomicBoolean();
+        numRemainingTerminationAcknowledged = new AtomicInteger();
+        numEvaluated = new AtomicInteger();
+        copyOverIndex = new AtomicInteger();
 
         this.threads = new Thread[numThreads];
         this.threadFactory = threadFactory;
@@ -58,19 +76,9 @@ public class EVOIterationThreadPool<T> implements GAThreadPool<T>, TerminationLi
         isShutDown = true;
         remainingRedPills = new AtomicInteger();
 
-        shouldTerminate = new AtomicBoolean();
-        numRemainingTerminationAcknowledged = new AtomicInteger();
-        numEvaluated = new AtomicInteger();
-
-        this.selection = selection;
-        this.crossover = crossover;
-        this.mutation = mutation;
-        this.threadLocalEvaluator = ThreadLocal.withInitial(evaluatorSupplier);
-
-        copyOverIndex = new AtomicInteger();
-
         runnable = () -> {
-            threadLocalEvaluator.get().addTerminationListener(EVOIterationThreadPool.this);
+            threadLocalEvaluator.get().addTerminationListener(AnnealedThreadPool.this);
+            IRNG random = RNG.getRNG();
 
             while (true) {
                 List<Solution<T>> population = takeFromQueue(incoming);
@@ -82,26 +90,47 @@ public class EVOIterationThreadPool<T> implements GAThreadPool<T>, TerminationLi
                     break;
                 }
 
-                Solution<T> firstParent = selection.selectFromPopulation(population);
+                Solution<T> firstParent = AnnealedThreadPool.this.selection.selectFromPopulation(population);
                 Solution<T> firstChild = newPopulation.get(copyOverIndex.incrementAndGet());
                 firstParent.copyOver(firstChild);
 
                 Solution<T> secondParent = null;
                 while (secondParent == null || secondParent == firstParent) {
-                    secondParent = selection.selectFromPopulation(population);
+                    secondParent = AnnealedThreadPool.this.selection.selectFromPopulation(population);
                 }
                 Solution<T> secondChild = newPopulation.get(copyOverIndex.incrementAndGet());
                 secondParent.copyOver(secondChild);
 
-                crossover.crossover(firstChild, secondChild);
-
+                AnnealedThreadPool.this.crossover.crossover(firstChild, secondChild);
                 threadLocalEvaluator.get().evaluateSolution(firstChild, false);
-                mutation.mutate(firstChild);
-                threadLocalEvaluator.get().evaluateSolution(firstChild, true);
-
                 threadLocalEvaluator.get().evaluateSolution(secondChild, false);
-                mutation.mutate(secondChild);
-                threadLocalEvaluator.get().evaluateSolution(secondChild, true);
+
+                boolean acceptyOnlyImproving = true;
+                if (generationProgress < AnnealedThreadPool.this.annealingThreshold
+                        && random.nextDouble(0.0, AnnealedThreadPool.this.annealingThreshold) > generationProgress) {
+                    acceptyOnlyImproving = false;
+                }
+
+                if (!acceptyOnlyImproving
+                        || (firstChild.getFitness() < firstParent.getFitness())) {
+                    AnnealedThreadPool.this.mutation.mutate(firstChild);
+                    threadLocalEvaluator.get().evaluateSolution(firstChild, true);
+                }
+
+                if (!acceptyOnlyImproving
+                        || (secondChild.getFitness() < secondParent.getFitness())) {
+                    AnnealedThreadPool.this.mutation.mutate(secondChild);
+                    threadLocalEvaluator.get().evaluateSolution(secondChild, true);
+                }
+
+                if (acceptyOnlyImproving) {
+                    if (firstChild.getFitness() < firstParent.getFitness()) {
+                        firstParent.copyOver(firstChild);
+                    }
+                    if (secondChild.getFitness() < secondParent.getFitness()) {
+                        secondParent.copyOver(secondChild);
+                    }
+                }
 
                 if (numEvaluated.addAndGet(2) == newPopulation.size()) {
                     synchronized (CALCULATION_SYNC_OBJECT) {
@@ -110,7 +139,7 @@ public class EVOIterationThreadPool<T> implements GAThreadPool<T>, TerminationLi
                 }
 
                 if (shouldTerminate.get()) {
-                    synchronized (EVOIterationThreadPool.this) {
+                    synchronized (AnnealedThreadPool.this) {
                         if (numRemainingTerminationAcknowledged.compareAndSet(-1, threads.length)) {
                             System.out.println("Terminate called.");
                         }
@@ -135,22 +164,26 @@ public class EVOIterationThreadPool<T> implements GAThreadPool<T>, TerminationLi
         };
     }
 
-    public EVOIterationThreadPool(int numThreads, Selection<T> selection, Crossover<T> crossover,
-                                  Mutation<T> mutation, Supplier<Evaluator<T>> evaluatorSupplier) {
+    public AnnealedThreadPool(Crossover<T> crossover, Mutation<T> mutation, Supplier<Evaluator<T>> evaluatorSupplier,
+                              double annealingThreshold, int numThreads, Selection<T> selection) {
 
-        this(numThreads, selection, crossover, mutation, evaluatorSupplier, Thread::new);
+        this(crossover, mutation, evaluatorSupplier, annealingThreshold, numThreads, selection, Thread::new);
     }
 
-    public EVOIterationThreadPool(int numThreads, Crossover<T> crossover,
-                                  Mutation<T> mutation, Supplier<Evaluator<T>> evaluatorSupplier) {
+    public AnnealedThreadPool(Crossover<T> crossover, Mutation<T> mutation, Supplier<Evaluator<T>> evaluatorSupplier,
+                              double annealingThreshold, int numThreads) {
 
-        this(numThreads, new TournamentSelection<>(), crossover, mutation, evaluatorSupplier);
+        this(crossover, mutation, evaluatorSupplier, annealingThreshold, numThreads, new TournamentSelection<>());
     }
 
-    public EVOIterationThreadPool(Crossover<T> crossover, Mutation<T> mutation,
-                                  Supplier<Evaluator<T>> evaluatorSupplier) {
+    public AnnealedThreadPool(Crossover<T> crossover, Mutation<T> mutation, Supplier<Evaluator<T>> evaluatorSupplier,
+                              double annealingThreshold) {
 
-        this(Constants.DEFAULT_NUM_WORKERS, crossover, mutation, evaluatorSupplier);
+        this(crossover, mutation, evaluatorSupplier, annealingThreshold, Constants.DEFAULT_NUM_WORKERS);
+    }
+
+    public AnnealedThreadPool(Crossover<T> crossover, Mutation<T> mutation, Supplier<Evaluator<T>> evaluatorSupplier) {
+        this(crossover, mutation, evaluatorSupplier, Constants.DEFAULT_ANNEALING_THRESHOLD);
     }
 
     @Override
@@ -168,6 +201,7 @@ public class EVOIterationThreadPool<T> implements GAThreadPool<T>, TerminationLi
         isShuttingDown = false;
         incoming.clear();
         remainingRedPills.set(0);
+        generationProgress = 0.0;
 
         shouldTerminate.set(false);
         numRemainingTerminationAcknowledged.set(-1);
@@ -177,24 +211,6 @@ public class EVOIterationThreadPool<T> implements GAThreadPool<T>, TerminationLi
         for (int i = 0; i < threads.length; ++i) {
             threads[i] = threadFactory.apply(runnable);
             threads[i].start();
-        }
-    }
-
-    private synchronized void shutdownComplete() {
-        isShuttingDown = false;
-        isShutDown = true;
-        isRunning = false;
-
-        if (!incoming.isEmpty()) {
-            System.err.println(String.format(
-                    "Threadpool was shutdown with %d elements in incoming.", incoming.size()));
-        }
-
-        System.out.println("Threadpool shutdown is complete.");
-        notifyAll();
-
-        synchronized (CALCULATION_SYNC_OBJECT) {
-            CALCULATION_SYNC_OBJECT.notifyAll();
         }
     }
 
@@ -267,6 +283,24 @@ public class EVOIterationThreadPool<T> implements GAThreadPool<T>, TerminationLi
         }
     }
 
+    private synchronized void shutdownComplete() {
+        isShuttingDown = false;
+        isShutDown = true;
+        isRunning = false;
+
+        if (!incoming.isEmpty()) {
+            System.err.println(String.format(
+                    "Threadpool was shutdown with %d elements in incoming.", incoming.size()));
+        }
+
+        System.out.println("Threadpool shutdown is complete.");
+        notifyAll();
+
+        synchronized (CALCULATION_SYNC_OBJECT) {
+            CALCULATION_SYNC_OBJECT.notifyAll();
+        }
+    }
+
     @Override
     public synchronized boolean isRunning() {
         return isRunning && (!isShutDown && !isShuttingDown);
@@ -282,5 +316,10 @@ public class EVOIterationThreadPool<T> implements GAThreadPool<T>, TerminationLi
     @Override
     public void setIgnoreTermination(boolean ignoreTermination) {
         // do nothing
+    }
+
+    @Override
+    public void generationProgress(double generationProgress) {
+        this.generationProgress = generationProgress;
     }
 }

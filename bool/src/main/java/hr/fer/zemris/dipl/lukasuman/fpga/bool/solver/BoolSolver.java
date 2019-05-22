@@ -8,8 +8,9 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.crossover.SingleBlock
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.mutation.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecEvaluator;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecProblem;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.CLBChangeListener;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.CLBController;
-import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.EVOIterationThreadPool;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.AnnealedThreadPool;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.GAThreadPool;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.ParallelGA;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.crossover.RandomizeCrossover;
@@ -19,6 +20,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.evaluator.Evaluator;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.operator.OperatorStatistics;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Resetable;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Timer;
 
 import java.util.ArrayList;
@@ -27,7 +29,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class BoolSolver {
+public class BoolSolver implements Resetable {
 
     private static class RunResults {
         private BoolVectorSolution result;
@@ -45,10 +47,12 @@ public class BoolSolver {
         }
     }
 
-    private BoolSolver() {
+    private Solution<int[]> bestSolutionWithCurrentNumCLB;
+
+    public BoolSolver() {
     }
 
-    public static BoolVectorSolution solve(BoolVecProblem problem) {
+    public BoolVectorSolution solve(BoolVecProblem problem) {
         CLBController controller = problem.getClbController();
         int numCLBInputs = controller.getNumCLBInputs();
         List<BoolFunc> functions = problem.getBoolVector().getBoolFunctions();
@@ -104,7 +108,7 @@ public class BoolSolver {
         return runResults.result;
     }
 
-    private static RunResults doARun(BoolVecProblem problem, boolean canDecreaseNumCLB, boolean canIncreaseNumCLB) {
+    private RunResults doARun(BoolVecProblem problem, boolean canDecreaseNumCLB, boolean canIncreaseNumCLB) {
         CLBController controller = problem.getClbController();
         RandomizeCrossover<int[]> randomCrossovers = generateRandomizeCrossover(controller);
         RandomizeMutation<int[]> randomMutations = generateRandomizeMutation(controller);
@@ -121,7 +125,7 @@ public class BoolSolver {
 
         BoolVecEvaluator evaluator = new BoolVecEvaluator(problem);
 
-        GAThreadPool<int[]> threadPool = new EVOIterationThreadPool<>(randomCrossovers, randomMutations, evaluatorSupplier);
+        GAThreadPool<int[]> threadPool = new AnnealedThreadPool<>(randomCrossovers, randomMutations, evaluatorSupplier);
         ParallelGA<int[]> algorithm = new ParallelGA<>(problem, evaluator, threadPool);
         algorithm.addFitnessListener(randomCrossovers);
         algorithm.addTerminationListener(randomCrossovers);
@@ -130,7 +134,20 @@ public class BoolSolver {
 
         Solution<int[]> bestSolution = null;
         Solution<int[]> solution;
-        double bestFitness = 0.0;
+        Solution<int[]> bestButNotSolvedSolution = null;
+
+        controller.addCLBChangeListener(new CLBChangeListener() {
+            @Override
+            public void numCLBInputsChanged(int prevNumCLBInputs, int newNumCLBInputs) {
+                // do nothing
+            }
+
+            @Override
+            public void numCLBChanged(int prevNumCLB, int newNumCLB) {
+                bestSolutionWithCurrentNumCLB = null;
+            }
+        });
+
         int numCLBOfBest = -1;
         int numFailed = 0;
         int numConsecutiveBestFitnessBelowThreshold = 0;
@@ -140,10 +157,19 @@ public class BoolSolver {
             System.out.println(String.format("Running GA with %6d CLB (attempt %d/%d)",
                     controller.getNumCLB(), numFailed + 1, Constants.DEFAULT_MAX_NUM_FAILS));
 
+            if (bestSolutionWithCurrentNumCLB != null) {
+                problem.setNextToSupply(bestSolutionWithCurrentNumCLB);
+            }
+
             solution = algorithm.run();
 
             if (bestSolution == null) {
-                bestFitness = solution.getFitness();
+                bestButNotSolvedSolution = solution;
+            }
+
+            if (bestSolutionWithCurrentNumCLB == null
+                    || solution.getFitness() > bestSolutionWithCurrentNumCLB.getFitness()) {
+                bestSolutionWithCurrentNumCLB = solution;
             }
 
             if (solution.getFitness() != Constants.FITNESS_SCALE) {
@@ -152,7 +178,8 @@ public class BoolSolver {
                 if (numFailed >= Constants.DEFAULT_MAX_NUM_FAILS) {
                     System.out.print("Failed to find a solution after maximum number of tries, ");
 
-                    if (checkShouldBreak(bestSolution, bestFitness, controller, canIncreaseNumCLB)) {
+                    if (checkShouldBreak(bestSolution, bestButNotSolvedSolution.getFitness(),
+                            controller, canIncreaseNumCLB)) {
                         break;
                     } else {
                         numFailed = 0;
@@ -161,16 +188,21 @@ public class BoolSolver {
                     }
                 }
 
-                if (solution.getFitness() < Constants.DEFAULT_BEST_FITNESS_THRESHOLD_TO_STOP_TRYING) {
+                double stopTryingThreshold = Constants.DEFAULT_NO_BEST_THRESHOLD_TO_STOP_TRYING;
+                if (bestSolution != null) {
+                    stopTryingThreshold = Constants.DEFAULT_BEST_EXISTS_THRESHOLD_TO_STOP_TRYING;
+                }
+
+                if (solution.getFitness() < stopTryingThreshold) {
                     numConsecutiveBestFitnessBelowThreshold++;
 
                     if (numConsecutiveBestFitnessBelowThreshold >= Constants.DEFAULT_MAX_NUM_BELOW_THRESHOLD_ATTEMPTS) {
                         System.out.print(String.format("Exceeded maximum number of below threshold attempts. " +
                                 "Fitness of the best solution was below %.4f for %d consecutive attempts, ",
-                                Constants.DEFAULT_BEST_FITNESS_THRESHOLD_TO_STOP_TRYING,
-                                Constants.DEFAULT_MAX_NUM_BELOW_THRESHOLD_ATTEMPTS));
+                                stopTryingThreshold, Constants.DEFAULT_MAX_NUM_BELOW_THRESHOLD_ATTEMPTS));
 
-                        if (checkShouldBreak(bestSolution, bestFitness, controller, canIncreaseNumCLB)) {
+                        if (checkShouldBreak(bestSolution, bestButNotSolvedSolution.getFitness(),
+                                controller, canIncreaseNumCLB)) {
                             break;
                         } else {
                             numFailed = 0;
@@ -214,6 +246,15 @@ public class BoolSolver {
             numFailed = 0;
         }
 
+        return handleResults(bestSolution, numCLBOfBest, problem,
+                randomCrossovers, randomMutations, evaluators, evaluator, timer);
+    }
+
+    private static RunResults handleResults(Solution<int[]> bestSolution, int numCLBOfBest, BoolVecProblem problem,
+                                      RandomizeCrossover<int[]> randomCrossovers,
+                                      RandomizeMutation<int[]> randomMutations,
+                                      List<BoolVecEvaluator> evaluators, BoolVecEvaluator evaluator, Timer timer) {
+
         int numEvaluations = evaluators.stream()
                 .mapToInt(AbstractEvaluator::getNumEvaluations)
                 .sum();
@@ -225,14 +266,14 @@ public class BoolSolver {
             return new RunResults(null, randomCrossovers, randomMutations, numEvaluations, elapsedTime);
         }
 
-        controller.setNumCLB(numCLBOfBest);
+        problem.getClbController().setNumCLB(numCLBOfBest);
         evaluator.setLogging(true);
         evaluator.evaluateSolution(bestSolution, false);
         int numUnusedBlocksInBest = evaluator.getUnusedBlocks().cardinality();
 
         if (numUnusedBlocksInBest > 0) {
             bestSolution = problem.trimmedBoolSolution(bestSolution, evaluator.getUnusedBlocks());
-            controller.setNumCLB(numCLBOfBest -  numUnusedBlocksInBest);
+            problem.getClbController().setNumCLB(numCLBOfBest -  numUnusedBlocksInBest);
             evaluator.resetLog();
             evaluator.evaluateSolution(bestSolution, false);
         }
@@ -254,6 +295,7 @@ public class BoolSolver {
                 int numCLBIncreaseAmount = 1;
 
                 if (bestFitness < Constants.DEFAULT_SKIP_INCREASE_NUM_CLB_FITNESS_THRESHOLD) {
+                    System.out.print("doing a skip, ");
                     numCLBIncreaseAmount = Math.max(1,
                             (int)(controller.getNumCLB() * Constants.DEFAULT_SKIP_INCREASE_NUM_CLB_AMOUNT));
                 }
@@ -296,5 +338,10 @@ public class BoolSolver {
         mutationList.add(new TableFullMutation(controller));
         mutationList.add(new TableSingleMutation(controller));
         return new RandomizeMutation<>(mutationList);
+    }
+
+    @Override
+    public void reset() {
+        bestSolutionWithCurrentNumCLB = null;
     }
 }

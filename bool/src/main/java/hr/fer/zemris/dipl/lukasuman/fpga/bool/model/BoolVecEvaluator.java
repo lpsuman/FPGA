@@ -11,7 +11,7 @@ import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements CLBChangeListener{
+public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements CLBChangeListener {
 
     private BoolVecProblem problem;
 
@@ -23,7 +23,7 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
 
     public BoolVecEvaluator(BoolVecProblem problem) {
         this.problem = problem;
-        getController().addCLBChangeListern(this);
+        getController().addCLBChangeListener(this);
         bestMatchingCounts = new int[getVector().getNumFunctions()];
         updateDataStructures();
     }

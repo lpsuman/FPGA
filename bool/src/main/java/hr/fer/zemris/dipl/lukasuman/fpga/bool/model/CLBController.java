@@ -96,11 +96,7 @@ public class CLBController {
             return 1;
         }
 
-        int result = (int)(Math.pow(2, numFuncInputs - numCLBInputs + 1)) - 1;
-//        if (numCLBInputs == 2) {
-//            result *= 2;
-//        }
-        return result;
+        return (int)((Math.pow(2, numFuncInputs - numCLBInputs + 1) - 1) * Constants.NUM_CLB_ESTIMATION_MULTIPLIER);
     }
 
     private int estimateMaxNumCLBForVector(BoolVector boolVector) {
@@ -247,6 +243,11 @@ public class CLBController {
 
     public void setNumCLB(int numCLB) {
         Utility.checkLimit(Constants.NUM_CLB_LIMIT, numCLB);
+
+        if (numCLB == this.numCLB) {
+            return;
+        }
+
         int prevNumCLB = this.numCLB;
         this.numCLB = numCLB;
 
@@ -255,7 +256,7 @@ public class CLBController {
         }
     }
 
-    public void addCLBChangeListern(CLBChangeListener clbChangeListener) {
+    public void addCLBChangeListener(CLBChangeListener clbChangeListener) {
         Utility.checkNull(clbChangeListener, "listener");
         if (clbChangeListeners == null) {
             clbChangeListeners = new HashSet<>();

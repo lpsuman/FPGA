@@ -4,8 +4,6 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.AbstractNameHandler;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BlockConfiguration;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFunc;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolVector;
-import hr.fer.zemris.dipl.lukasuman.fpga.rng.IRNG;
-import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.Serializable;
@@ -57,8 +55,14 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
 
         int indexFuncOutputBlock = blockConfiguration.getOutputIndices().get((indexBoolFunc));
         String[] perBlockStrings = new String[boolVector.getNumInputs() + blockConfiguration.getNumCLB()];
+        String recursiveResult = recursiveBlockToString(indexFuncOutputBlock, perBlockStrings);
 
-        return recursiveBlockToString(indexFuncOutputBlock, perBlockStrings);
+        if (FuncToExpressionConverter.isEnclosedInParentheses(
+                blockConfiguration.getData()[(indexFuncOutputBlock - boolVector.getNumInputs()) * 3 + 2])) {
+            recursiveResult = recursiveResult.substring(1, recursiveResult.length() - 1);
+        }
+
+        return recursiveResult;
     }
 
     private String recursiveBlockToString(int indexCLB, String[] perBlockStrings) {
@@ -87,9 +91,10 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
     }
 
     public static BoolVectorSolution mergeSolutions(List<BoolVectorSolution> solutions) {
-        checkIfCompatible(solutions);
+        if (!checkIfCompatible(solutions)) {
+            throw new IllegalArgumentException("Can't merge incompatible solutions.");
+        }
         int numSolutions = solutions.size();
-
         if (numSolutions == 1) {
             throw new IllegalArgumentException("At least two solutions are required for merging.");
         }
@@ -98,56 +103,137 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
                 .map(solution -> solution.boolVector.getBoolFunctions())
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
+
         BoolVector mergedVector = new BoolVector(mergedBoolFuncs);
         List<String> mergedInputIDs = mergedVector.getSortedInputIDs();
+        int numMergedInputs = mergedInputIDs.size();
+
+        List<int[]> inputMappedData = mapCLBInputsToMerged(solutions, mergedInputIDs);
+        List<int[]> indexBlockInMerged = new ArrayList<>();
+        solutions.forEach(s -> indexBlockInMerged.add(new int[s.blockConfiguration.getNumCLB()]));
 
         int numCLBMerged = solutions.stream().mapToInt(solution -> solution.blockConfiguration.getNumCLB()).sum();
         int[] mergedData = new int[numCLBMerged];
         int currIndexInMergedData = 0;
-        List<Integer> mergedOutputIndices = new ArrayList<>();
 
         Set<Integer> remainingSolutions = Utility.generateRangeSet(0, numSolutions);
         int[] currIndicesInSolutions = new int[numSolutions];
         int currentTier = 0;
-        IRNG random = RNG.getRNG();
+        int numCLBInputs = solutions.get(0).blockConfiguration.getNumCLBInputs();
+        int blockSize = solutions.get(0).blockConfiguration.getBlockSize();
 
         while (!remainingSolutions.isEmpty()) {
             Iterator<Integer> remainingSolutionsIterator = remainingSolutions.iterator();
 
             while (remainingSolutionsIterator.hasNext()) {
                 int indexCurrSolution = remainingSolutionsIterator.next();
-                BlockConfiguration blockConfiguration = solutions.get(indexCurrSolution).blockConfiguration;
-                int[] blockData = blockConfiguration.getData();
-                int blockSize = blockConfiguration.getBlockSize();
-                int blockOffset = currIndicesInSolutions[indexCurrSolution] * blockSize;
+                int[] blockData = inputMappedData.get(indexCurrSolution);
+                int currIndexBlock = currIndicesInSolutions[indexCurrSolution];
+                int leftMostNotUsed = -1;
 
+                outer:
                 while (true) {
-                    boolean areInputsLowerTier = true;
-
-                    for (int i = 0, n = blockConfiguration.getNumCLBInputs(); i < n; ++i) {
-                        int input = blockData[blockOffset + i];
-                        if (input > currentTier) {
-                            areInputsLowerTier = false;
-                            break;
-                        }
-                    }
-
-                    if (!areInputsLowerTier) {
+                    int blockOffset = currIndexBlock * blockSize;
+                    if (blockOffset > blockData.length) {
                         break;
                     }
 
-                    //TODO gotta keep going :)
+                    for (int i = 0; i < numCLBInputs; ++i) {
+                        int input = blockData[blockOffset + i];
+                        if (input > currentTier) {
+                            if (leftMostNotUsed == -1) {
+                                leftMostNotUsed = currIndexBlock;
+                            }
+                            currIndexBlock++;
+                            continue outer;
+                        }
+                    }
+
+                    int mergedDataCurrBlockOffset = currIndexInMergedData * blockSize;
+
+                    for (int i = 0; i < numCLBInputs; ++i) {
+                        int input = blockData[blockOffset + i];
+
+                        if (input < numMergedInputs) {
+                            mergedData[mergedDataCurrBlockOffset + i] = input;
+                        } else {
+                            mergedData[mergedDataCurrBlockOffset + i] =
+                                    indexBlockInMerged.get(indexCurrSolution)[input - numMergedInputs];
+                        }
+                    }
+
+                    System.arraycopy(blockData, blockOffset + numCLBInputs, mergedData,
+                            mergedDataCurrBlockOffset + numCLBInputs, blockSize - numCLBInputs);
+                    indexBlockInMerged.get(indexCurrSolution)[currIndexBlock] = currIndexInMergedData;
+                    currIndexInMergedData++;
+
+                    currIndexBlock++;
+                }
+
+                if (leftMostNotUsed == -1) {
+                    remainingSolutionsIterator.remove();
+                } else {
+                    currIndicesInSolutions[indexCurrSolution] = leftMostNotUsed;
                 }
             }
 
             currentTier++;
         }
 
-        return null;
+        List<Integer> mergedOutputIndices = new ArrayList<>();
+
+        for (int i = 0; i < solutions.size(); i++) {
+            BoolVectorSolution currSolution = solutions.get(i);
+            List<Integer> outputIndices = currSolution.blockConfiguration.getOutputIndices();
+            int deltaNumInputs = mergedInputIDs.size() - currSolution.boolVector.getNumInputs();
+
+            for (Integer outputIndex : outputIndices) {
+                mergedOutputIndices.add(indexBlockInMerged.get(i)[outputIndex + deltaNumInputs - numMergedInputs]);
+            }
+        }
+
+        return new BoolVectorSolution(mergedVector,
+                new BlockConfiguration(numCLBInputs, numCLBMerged, mergedData, mergedOutputIndices));
     }
 
-    private static boolean checkIfCompatible(List<BoolVectorSolution> solutions) {
-        Utility.checkIfValidCollection(solutions, "list of solutions");
+    private static List<int[]> mapCLBInputsToMerged(List<BoolVectorSolution> solutions, List<String> mergedInputIDs) {
+        Utility.checkIfValidCollection(solutions, "solutions");
+        Utility.checkIfValidCollection(mergedInputIDs, "merged input IDs");
+        List<int[]> result = new ArrayList<>();
+
+        for (BoolVectorSolution solution : solutions) {
+            List<String> inputIDs = solution.boolVector.getSortedInputIDs();
+            int numInputs = inputIDs.size();
+            int deltaNumInputs = mergedInputIDs.size() - numInputs;
+            BlockConfiguration blockConfiguration = solution.blockConfiguration;
+            int[] data = Arrays.copyOf(blockConfiguration.getData(), blockConfiguration.getData().length);
+            int blockSize = blockConfiguration.getBlockSize();
+
+            for (int i = 0, n = blockConfiguration.getNumCLB(); i < n; ++i) {
+                for (int j = 0, m = blockConfiguration.getNumCLBInputs(); j < m; ++j) {
+                    int inputIndex = i * blockSize + j;
+
+                    if (data[inputIndex] < numInputs) {
+                        int indexInMerged = mergedInputIDs.indexOf(inputIDs.get(data[inputIndex]));
+                        data[inputIndex] = indexInMerged;
+                    } else {
+                        data[inputIndex] += deltaNumInputs;
+                    }
+                }
+            }
+
+            result.add(data);
+        }
+
+        return result;
+    }
+
+    public static boolean checkIfCompatible(List<BoolVectorSolution> solutions) {
+        try {
+            Utility.checkIfValidCollection(solutions, "list of solutions");
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
 
         BoolVectorSolution firstSolution = solutions.get(0);
 

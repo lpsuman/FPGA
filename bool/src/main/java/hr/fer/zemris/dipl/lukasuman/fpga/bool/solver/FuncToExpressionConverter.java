@@ -181,8 +181,7 @@ public class FuncToExpressionConverter {
      * @return A string representing the boolean expression of the given boolean function.
      */
     public static String getString(int truthTable, String strA, String strB) {
-        Utility.checkRange(truthTable, 0, 15);
-        FuncToString funcToString = FUNC_TO_STRING_MAPPINGS.get(CURRENT_MAPPING_TYPE.index)[truthTable];
+        FuncToString funcToString = getMapping(truthTable);
 
         if (funcToString.isDNF) {
             checkA(strA);
@@ -206,6 +205,21 @@ public class FuncToExpressionConverter {
                 return funcToString.formatString;
             }
         }
+    }
+
+    /**
+     * Used to check if the format string is enclosed in parentheses. Useful for removing redundant top-level
+     * parentheses from boolean expressions.
+     * @param truthTable The truth table of the function. Must be between 0 (inclusive) and 15 (inclusive).
+     * @return Returns {@code true} if the string format for the given function has parentheses at its ends.
+     */
+    public static boolean isEnclosedInParentheses(int truthTable) {
+        return getMapping(truthTable).formatString.charAt(0) == '(';
+    }
+
+    private static FuncToString getMapping(int truthTable) {
+        Utility.checkRange(truthTable, 0, 15);
+        return FUNC_TO_STRING_MAPPINGS.get(CURRENT_MAPPING_TYPE.index)[truthTable];
     }
 
     private static void checkA(String strA) {

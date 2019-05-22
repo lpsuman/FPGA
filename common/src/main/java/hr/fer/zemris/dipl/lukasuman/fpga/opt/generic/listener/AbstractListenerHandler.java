@@ -54,9 +54,9 @@ public class AbstractListenerHandler<T> {
         generationListeners.removeListener(generationListener);
     }
 
-    protected void notifyGenerationListeners(int generation, int maxGenerations) {
+    protected void notifyGenerationListeners(double generationProgress) {
         if (generationListeners.hasListeners()) {
-            generationListeners.getListeners().forEach(l -> l.generationStep(generation, maxGenerations));
+            generationListeners.getListeners().forEach(l -> l.generationProgress(generationProgress));
         }
     }
 }

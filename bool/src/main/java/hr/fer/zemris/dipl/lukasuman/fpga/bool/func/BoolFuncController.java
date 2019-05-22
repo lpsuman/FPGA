@@ -1,5 +1,8 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.func;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.BoolExpression;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.lexer.BoolLexer;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.parser.BoolParser;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
@@ -134,5 +137,9 @@ public class BoolFuncController {
         } else {
             return removeInputs(func, redundantIndices);
         }
+    }
+
+    public static BoolFunc generateFromExpression(BoolExpression boolExpression) {
+        return new BoolFunc(boolExpression.getInputIDs(), boolExpression.getTruthTable());
     }
 }

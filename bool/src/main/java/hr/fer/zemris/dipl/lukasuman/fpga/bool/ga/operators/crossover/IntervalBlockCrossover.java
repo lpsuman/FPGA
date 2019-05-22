@@ -31,4 +31,10 @@ public class IntervalBlockCrossover extends AbstractBoolCrossover {
             crossoverInterval(firstData, secondData, firstIndex, secondIndex, intervalSize);
         }
     }
+
+    @Override
+    public String toString() {
+        String alignment = isAligned ? "aligned" : "not aligned";
+        return getClass().getSimpleName() + " (" + alignment + ")";
+    }
 }

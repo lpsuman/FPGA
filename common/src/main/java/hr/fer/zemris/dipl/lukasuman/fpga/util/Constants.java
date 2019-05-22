@@ -12,10 +12,13 @@ public class Constants {
     public static final int DEFAULT_POPULATION_SIZE = 1000;
     public static final double OPERATOR_CHANCE_MULTIPLIER = 0.0;
 
-    public static final double DEFAULT_IMPROVING_GENERATION_CONTINUE_RATIO = 0.2;
+    public static final double NUM_CLB_ESTIMATION_MULTIPLIER = 1.5;
+    public static final double DEFAULT_ANNEALING_THRESHOLD = 0.8;
+    public static final double DEFAULT_IMPROVING_GENERATION_CONTINUE_RATIO = 0.25;
     public static final double DEFAULT_NON_IMPROVING_GENERATION_STOP_RATIO = 0.5;
     public static final int DEFAULT_MAX_NUM_FAILS = 10;
-    public static final double DEFAULT_BEST_FITNESS_THRESHOLD_TO_STOP_TRYING = FITNESS_SCALE * 0.94;
+    public static final double DEFAULT_BEST_EXISTS_THRESHOLD_TO_STOP_TRYING = FITNESS_SCALE * 0.90;
+    public static final double DEFAULT_NO_BEST_THRESHOLD_TO_STOP_TRYING = FITNESS_SCALE * 0.95;
     public static final int DEFAULT_MAX_NUM_BELOW_THRESHOLD_ATTEMPTS = (int)(DEFAULT_MAX_NUM_FAILS * 0.4);
     public static final double DEFAULT_SKIP_INCREASE_NUM_CLB_FITNESS_THRESHOLD = 0.97;
     public static final double DEFAULT_SKIP_INCREASE_NUM_CLB_AMOUNT = 1.5;
@@ -44,6 +47,9 @@ public class Constants {
 
     public static final ArgumentLimit<Integer> INTEGER_LENGTH_LIMIT =
             new ArgumentIntervalLimit<>("length of integer", 0, 32);
+
+    public static final ArgumentLimit<Double> ANNEALING_THRESHOLD_LIMIT =
+            new ArgumentIntervalLimit<>("annealing threshold", 0.0, 1.0);
 
     public static final String SOLUTION_PRINT_FORMAT = "%4d   ";
 
