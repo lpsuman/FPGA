@@ -9,9 +9,11 @@ import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
 
 public abstract class AbstractBoolCrossover extends AbstractOperator implements Crossover<int[]> {
 
-    protected static final double ALIGNED_CHANCE_MODIFIER = 0.5;
+    protected static final double ALIGNED_CHANCE_MODIFIER = 2.0;
 
     protected CLBController clbController;
+
+    protected boolean isAligned;
 
     public AbstractBoolCrossover(CLBController clbController, double chance) {
         super(chance);
@@ -30,7 +32,7 @@ public abstract class AbstractBoolCrossover extends AbstractOperator implements 
     protected void crossoverInterval(int[] firstData, int[] secondData, int firstIndex, int secondIndex, int length,
                                      boolean switchInputs, boolean switchLUT) {
 
-        for (int i = 0; i < length; ++i) {
+        for (int i = 0; i < length; i++) {
             clbController.swapSingleCLB(firstData, secondData, firstIndex + i, secondIndex + i,
                     switchInputs, switchLUT);
         }
@@ -42,5 +44,11 @@ public abstract class AbstractBoolCrossover extends AbstractOperator implements 
 
     public void setClbController(CLBController clbController) {
         this.clbController = clbController;
+    }
+
+    @Override
+    public String toString() {
+        String alignment = isAligned ? "aligned" : "not aligned";
+        return getClass().getSimpleName() + " (" + alignment + ")";
     }
 }

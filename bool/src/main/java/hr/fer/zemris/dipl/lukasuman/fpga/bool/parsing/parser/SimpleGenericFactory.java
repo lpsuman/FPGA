@@ -66,7 +66,7 @@ public class SimpleGenericFactory<T> implements GenericFactory<T> {
         try {
             if (arguments != null) {
                 Class<?>[] classes = (Class<?>[]) new Class[arguments.length];
-                for (int i = 0; i < arguments.length; ++i) {
+                for (int i = 0; i < arguments.length; i++) {
                     classes[i] = arguments[i].getClass();
                 }
                 ctr = clazz.getConstructor(classes);

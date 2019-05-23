@@ -48,7 +48,8 @@ public class BoolVector extends AbstractNameHandler implements Serializable {
         sortedInputIDs = new ArrayList<>(inputIDSet);
         Collections.sort(sortedInputIDs);
 
-        numInputCombinations = (int) Math.pow(2, getNumInputs());
+        int numInputs = getNumInputs();
+        numInputCombinations = (int) Math.pow(2, numInputs);
         truthTable = Utility.newBitSetArray(boolFunctions.size(), numInputCombinations);
 
         for (int inputCombination = 0; inputCombination < numInputCombinations; inputCombination++) {
@@ -57,11 +58,11 @@ public class BoolVector extends AbstractNameHandler implements Serializable {
                 List<String> inputIDs = boolFunc.getInputIDs();
                 int[] inputIndexes = new int[inputIDs.size()];
 
-                for (int i = 0, n = inputIndexes.length; i < n; ++i) {
+                for (int i = 0, n = inputIndexes.length; i < n; i++) {
                     inputIndexes[i] = sortedInputIDs.indexOf(inputIDs.get(i));
                 }
 
-                int extendedIndex = CLBController.calcExtendedIndex(inputCombination, inputIndexes);
+                int extendedIndex = CLBController.calcExtendedIndex(inputCombination, numInputs, inputIndexes);
 
                 truthTable[j].set(inputCombination, boolFunc.getTruthTable().get(extendedIndex));
             }
@@ -90,5 +91,23 @@ public class BoolVector extends AbstractNameHandler implements Serializable {
 
     public List<String> getSortedInputIDs() {
         return sortedInputIDs;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format("Boolean Vector, name={%s}, with functions:\n", getName()));
+        boolFunctions.forEach(func -> sb.append(func).append('\n'));
+        sb.append("Combined inputs = {");
+        Utility.appendStringList(sb, sortedInputIDs);
+        sb.append("}\nCombined truth tables:\n");
+        for (BitSet bitSet : truthTable) {
+            Utility.appendBitSet(sb, bitSet, numInputCombinations);
+            sb.append('\n');
+        }
+        sb.setLength(sb.length() - 1);
+
+        return sb.toString();
     }
 }

@@ -91,4 +91,16 @@ public class BoolFunc extends AbstractNameHandler implements Serializable {
     public int hashCode() {
         return Objects.hash(truthTable);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format("Boolean Function, name={%s}, inputs={", getName()));
+        Utility.appendStringList(sb, inputIDs);
+        sb.append("}\n");
+        Utility.appendBitSet(sb, truthTable, numInputCombinations);
+
+        return sb.toString();
+    }
 }

@@ -14,6 +14,7 @@ import java.util.Queue;
 public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements CLBChangeListener {
 
     private BoolVecProblem problem;
+    private boolean useStructureFitness;
 
     private BitSet perCLBOutputs;
     private int[][] numMatchingOutputs;
@@ -21,11 +22,16 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
     private BitSet[] blockUsage;
     private BitSet unusedBlocks;
 
-    public BoolVecEvaluator(BoolVecProblem problem) {
+    public BoolVecEvaluator(BoolVecProblem problem, boolean useStructureFitness) {
         this.problem = problem;
+        this.useStructureFitness = useStructureFitness;
         getController().addCLBChangeListener(this);
         bestMatchingCounts = new int[getVector().getNumFunctions()];
         updateDataStructures();
+    }
+
+    public BoolVecEvaluator(BoolVecProblem problem) {
+        this(problem, Constants.USE_STRUCTURE_FITNESS);
     }
 
     private void updateDataStructures() {
@@ -49,7 +55,10 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
 
         calculateNumMatchingOutputs(data, numFunctions, numCLB, numInputCombinations);
         int numPerfectMatching = calculateBestMatchingOutputs(data, numFunctions, numCLB, numInputCombinations);
-        calcBlockUsage(data, numFunctions, numCLB);
+
+        if (useStructureFitness || enableLogging) {
+            calcBlockUsage(data, numFunctions, numCLB);
+        }
 
         double fitness = 0.0;
 
@@ -60,17 +69,18 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
 
             fitness = Constants.FITNESS_SCALE;
         } else {
-            for (int i = 0; i < numFunctions; ++i) {
+            for (int i = 0; i < numFunctions; i++) {
                 fitness += bestMatchingCounts[i];
             }
 
-            double structureFitness = calcStructureFitness(numFunctions, numCLB, numInputCombinations);
-
-            if (Double.isNaN(structureFitness) || structureFitness < 0.0 || structureFitness >= 1.0) {
-                throw new IllegalStateException("Invalid structure fitness.");
+            if (useStructureFitness) {
+                double structureFitness = calcStructureFitness(numFunctions, numCLB);
+                if (Double.isNaN(structureFitness) || structureFitness < 0.0 || structureFitness >= 1.0) {
+                    throw new IllegalStateException("Invalid structure fitness.");
+                }
+                fitness += structureFitness;
             }
 
-            fitness += structureFitness;
             fitness /= (numFunctions * numInputCombinations);
             fitness *= Constants.FITNESS_SCALE;
         }
@@ -88,11 +98,11 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
     private void calculateNumMatchingOutputs(int[] data, int numFunctions, int numCLB,
                                              int numInputCombinations) {
 
-        for (int i = 0; i < numCLB; ++i) {
+        for (int i = 0; i < numCLB; i++) {
             Arrays.fill(numMatchingOutputs[i], 0);
         }
 
-        for (int i = 0, n = getController().getNumInputs() + numCLB; i < n; ++i) {
+        for (int i = 0, n = getController().getNumInputs() + numCLB; i < n; i++) {
             if (i == getController().getNumInputs()) {
                 logPadding();
             }
@@ -113,7 +123,7 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
         for (int inputCombination = 0; inputCombination < numInputCombinations; inputCombination++) {
             final int inputCombinationFinal = inputCombination;
 
-            log(() -> BoolVecProblem.toBinaryString(inputCombinationFinal, getVector().getNumInputs(),
+            log(() -> Utility.toBinaryString(inputCombinationFinal, getVector().getNumInputs(),
                     Constants.BOOL_VECTOR_PRINT_CELL_SIZE - 1));
 
             logPadding();
@@ -150,7 +160,7 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
     private int calculateBestMatchingOutputs(int[] data, int numFunctions, int numCLB, int numInputCombinations) {
         int numPerfectMatching = 0;
 
-        for (int i = 0; i < numFunctions; ++i) {
+        for (int i = 0; i < numFunctions; i++) {
             int indexBestMatchingOutput = -1;
             bestMatchingCounts[i] = Integer.MIN_VALUE;
 
@@ -172,10 +182,10 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
         return numPerfectMatching;
     }
 
-    private double calcStructureFitness(int numFunctions, int numCLB, int numInputCombinations) {
+    private double calcStructureFitness(int numFunctions, int numCLB) {
         double fitness = 0.0;
 
-        for (int i = 0; i < numCLB; ++i) {
+        for (int i = 0; i < numCLB; i++) {
             int numFuncUsingCurrBlock = 0;
 
             for (int j = 0; j < numFunctions; ++j) {
@@ -202,7 +212,7 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
 //            System.out.println(String.format("Num of functions: %d\nNum of inputs: %d\nNum of CLB: %d", numFunctions, numInputs, numCLB));
 //        }
 
-        for (int i = 0; i < numFunctions; ++i) {
+        for (int i = 0; i < numFunctions; i++) {
             blockUsage[i].clear();
             int indexBestMatchingOutput = data[numCLB * getController().getIntsPerCLB() + i];
 
@@ -264,7 +274,7 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
         int extendedIndex = 0;
         int numInputs = getVector().getNumInputs();
 
-        for (int i = 0; i < getController().getNumCLBInputs(); ++i) {
+        for (int i = 0; i < getController().getNumCLBInputs(); i++) {
             int inputID = data[offset + i];
 
             if (inputID >= numInputs) {

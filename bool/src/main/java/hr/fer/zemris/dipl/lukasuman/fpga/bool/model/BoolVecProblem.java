@@ -9,7 +9,6 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.IRNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
-import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.util.ArrayList;
@@ -17,6 +16,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solution<int[]>> {
 
@@ -71,7 +71,7 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         int[] data = new int[numCLB * clbController.getIntsPerCLB() + boolVector.getNumFunctions()];
         IRNG random = RNG.getRNG();
 
-        for (int i = 0; i < numCLB; ++i) {
+        for (int i = 0; i < numCLB; i++) {
             int offset = clbController.calcCLBOffset(i);
             int numCLBInputs = clbController.getNumCLBInputs();
 
@@ -83,7 +83,7 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         }
 
         int numFunctions = boolVector.getNumFunctions();
-        for (int i = 0; i < numFunctions; ++i) {
+        for (int i = 0; i < numFunctions; i++) {
             data[data.length - numFunctions + i] = random.nextInt(0, boolVector.getNumInputs() + numCLB);
         }
 
@@ -92,7 +92,7 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
 
     public static BoolVecProblem generateRandomProblem(int numFunctions, int numInputs, int numCLBInputs) {
         List<BoolFunc> boolFuncs = new ArrayList<>();
-        for (int i = 0; i < numFunctions; ++i) {
+        for (int i = 0; i < numFunctions; i++) {
             boolFuncs.add(BoolFuncController.generateRandomFunction(numInputs));
         }
 
@@ -107,60 +107,33 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         List<String> sortedIDs = boolVector.getSortedInputIDs();
         StringBuilder sb = new StringBuilder();
 
-        for (int i = 0, n = sortedIDs.size(); i < n; ++i) {
-            if (blockUsage != null) {
-                printBlockUsage(sb, blockUsage, i);
-            }
-            sb.append(String.format(Constants.SOLUTION_PRINT_FORMAT + "%s\n", i, sortedIDs.get(i)));
-        }
 
-        for (int i = 0; i < numCLB; ++i) {
-            if (blockUsage != null) {
-                printBlockUsage(sb, blockUsage, i + boolVector.getNumInputs());
-            }
-            sb.append(String.format(Constants.SOLUTION_PRINT_FORMAT, i + boolVector.getNumInputs()));
-            int numCLBInputs = clbController.getNumCLBInputs();
-
-            for (int j = 0; j < numCLBInputs; ++j) {
-                sb.append(String.format("%4d", data[i * sizeCLB + j]));
-                if (j < numCLBInputs - 1) {
-                    sb.append(' ');
-                }
-            }
-
-//            sb.append('\n');
-//            sb.append(String.format(Constants.SOLUTION_PRINT_FORMAT, i + boolVector.getNumInputs()));
-            sb.append("    ");
-
-            for (int j = 0; j < clbController.getIntsPerLUT(); ++j) {
-                int intValue = data[i * sizeCLB + numCLBInputs + j];
-                int numUsedBits = 32;
-                if (j == 0) {
-                    numUsedBits = clbController.getUsedBitsInFirstInt();
-                }
-                sb.append(toBinaryString(intValue, numUsedBits));
-            }
-
-            sb.append('\n');
-        }
-
-        for (int i = 0, n = boolVector.getNumFunctions(); i < n; ++i) {
-            sb.append(String.format("F%d at %4d", i, data[numCLB * sizeCLB + i]));
-
-            if (i < n - 1) {
-                sb.append('\n');
-            }
-        }
 
         return sb.toString();
     }
 
-    private void printBlockUsage(StringBuilder sb, BitSet[] usage, int blockIndex) {
-        sb.append(" |  ");
-        for (BitSet bitSet : usage) {
-            sb.append(bitSet.get(blockIndex) ? "1 " : "0 ");
-        }
-        sb.append(" | ");
+    public String getSolutionTestResults(Solution<int[]> solution, BoolVecEvaluator evaluator) {
+        StringBuilder sb = new StringBuilder();
+
+        evaluator.setLogging(true);
+        evaluator.evaluateSolution(solution, false);
+        sb.append(evaluator.getLog()).append('\n');
+        evaluator.resetLog();
+        evaluator.setLogging(false);
+        sb.append(solutionToString(solution, evaluator.getBlockUsage())).append('\n');
+        BitSet[] blockUsage = evaluator.getBlockUsage();
+
+        BlockConfiguration.appendFormattedInputData(sb, boolVector.getSortedInputIDs(), blockUsage);
+        BlockConfiguration.appendFormattedCLBData(sb, clbController, solution.getData(), blockUsage);
+        List<Integer> outputIndices = Arrays.stream(solution.getData())
+                .boxed()
+                .collect(Collectors.toList());
+        BlockConfiguration.appendFormattedOutputData(sb, outputIndices);
+
+        int numUnusedBlocks = evaluator.getUnusedBlocks().cardinality();
+        sb.append(String.format("There were %d unused blocks.\n", numUnusedBlocks)).append('\n');
+
+        return sb.toString();
     }
 
     private void checkIfValidSolution(Solution<int[]> solution) {
@@ -189,7 +162,7 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         int[] newBlockIndices = new int[numCLB];
         int currIndexInTrimmedData = 0;
 
-        for (int i = 0; i < numCLB; ++i) {
+        for (int i = 0; i < numCLB; i++) {
             if (!unusedBlocks.get(numInputs + i)) {
                 int indexBlockOriginal = clbController.calcCLBOffset(i);
                 int indexBlockTrimmed = clbController.calcCLBOffset(currIndexInTrimmedData);
@@ -212,7 +185,7 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
 
         int numFunctions = boolVector.getNumFunctions();
 
-        for (int i = 0; i < numFunctions; ++i) {
+        for (int i = 0; i < numFunctions; i++) {
             int indexFunctionOutputBlock = clbController.calcCLBOffset(numCLB) + i;
             int funcOutputIndex = solutionData[indexFunctionOutputBlock];
 
@@ -227,24 +200,6 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         Solution<int[]> trimmedSolution = new IntArraySolution(trimmedData);
         trimmedSolution.setFitness(solution.getFitness());
         return trimmedSolution;
-    }
-
-    public static String toBinaryString(int value, int numBits) {
-        return String.format("%" + numBits + "s", Integer.toBinaryString(value)).replace(' ', '0');
-    }
-
-    public static String toBinaryString(int value, int numBits, int numSpaces) {
-        StringBuilder sb = new StringBuilder();
-        String strWithoutSpaces = toBinaryString(value, numBits);
-        if (numSpaces < 1) {
-            return strWithoutSpaces;
-        }
-
-        for (int i = 0, n = strWithoutSpaces.length(); i < n; ++i) {
-            sb.append(Utility.paddedChar(strWithoutSpaces.charAt(i), Constants.BOOL_VECTOR_PRINT_CELL_SIZE));
-        }
-
-        return sb.toString();
     }
 
     public BlockConfiguration generateBlockConfiguration(Solution<int[]> solution) {

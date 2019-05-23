@@ -111,16 +111,22 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
         List<int[]> inputMappedData = mapCLBInputsToMerged(solutions, mergedInputIDs);
         List<int[]> indexBlockInMerged = new ArrayList<>();
         solutions.forEach(s -> indexBlockInMerged.add(new int[s.blockConfiguration.getNumCLB()]));
+        for (int[] indices : indexBlockInMerged) {
+            for (int i = 0; i < indices.length; i++) {
+                indices[i] = -1;
+            }
+        }
 
+        int blockSize = solutions.get(0).blockConfiguration.getBlockSize();
         int numCLBMerged = solutions.stream().mapToInt(solution -> solution.blockConfiguration.getNumCLB()).sum();
-        int[] mergedData = new int[numCLBMerged];
+        int[] mergedData = new int[numCLBMerged * blockSize];
         int currIndexInMergedData = 0;
 
         Set<Integer> remainingSolutions = Utility.generateRangeSet(0, numSolutions);
         int[] currIndicesInSolutions = new int[numSolutions];
         int currentTier = 0;
         int numCLBInputs = solutions.get(0).blockConfiguration.getNumCLBInputs();
-        int blockSize = solutions.get(0).blockConfiguration.getBlockSize();
+
 
         while (!remainingSolutions.isEmpty()) {
             Iterator<Integer> remainingSolutionsIterator = remainingSolutions.iterator();
@@ -134,11 +140,16 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
                 outer:
                 while (true) {
                     int blockOffset = currIndexBlock * blockSize;
-                    if (blockOffset > blockData.length) {
+                    if (blockOffset >= blockData.length) {
                         break;
                     }
 
-                    for (int i = 0; i < numCLBInputs; ++i) {
+                    if (indexBlockInMerged.get(indexCurrSolution)[currIndexBlock] != -1) {
+                        currIndexBlock++;
+                        continue;
+                    }
+
+                    for (int i = 0; i < numCLBInputs; i++) {
                         int input = blockData[blockOffset + i];
                         if (input > currentTier) {
                             if (leftMostNotUsed == -1) {
@@ -151,14 +162,14 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
 
                     int mergedDataCurrBlockOffset = currIndexInMergedData * blockSize;
 
-                    for (int i = 0; i < numCLBInputs; ++i) {
+                    for (int i = 0; i < numCLBInputs; i++) {
                         int input = blockData[blockOffset + i];
 
                         if (input < numMergedInputs) {
                             mergedData[mergedDataCurrBlockOffset + i] = input;
                         } else {
                             mergedData[mergedDataCurrBlockOffset + i] =
-                                    indexBlockInMerged.get(indexCurrSolution)[input - numMergedInputs];
+                                    indexBlockInMerged.get(indexCurrSolution)[input - numMergedInputs] + numMergedInputs;
                         }
                     }
 
@@ -209,7 +220,7 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
             int[] data = Arrays.copyOf(blockConfiguration.getData(), blockConfiguration.getData().length);
             int blockSize = blockConfiguration.getBlockSize();
 
-            for (int i = 0, n = blockConfiguration.getNumCLB(); i < n; ++i) {
+            for (int i = 0, n = blockConfiguration.getNumCLB(); i < n; i++) {
                 for (int j = 0, m = blockConfiguration.getNumCLBInputs(); j < m; ++j) {
                     int inputIndex = i * blockSize + j;
 
@@ -237,7 +248,7 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
 
         BoolVectorSolution firstSolution = solutions.get(0);
 
-        for (int i = 1, n = solutions.size(); i < n; ++i) {
+        for (int i = 1, n = solutions.size(); i < n; i++) {
             if (!firstSolution.blockConfiguration.isCompatibleWith(solutions.get(i).blockConfiguration)) {
                 return false;
             }

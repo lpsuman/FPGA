@@ -88,7 +88,7 @@ public class BoolExpression implements InputProvider {
     private void calcTruthTable() {
         truthTable = new BitSet(numInputCombinations);
 
-        for (int i = 0; i < numInputCombinations; ++i) {
+        for (int i = 0; i < numInputCombinations; i++) {
             this.inputCombination = i;
             truthTable.set(i, root.interpret());
         }

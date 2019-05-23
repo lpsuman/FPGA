@@ -27,7 +27,7 @@ public class TournamentSelection<T> implements Selection<T> {
 
         Solution<T> candidate = pickRandom(population, random);
 
-        for (int i = 1; i < tournamentSize; ++i) {
+        for (int i = 1; i < tournamentSize; i++) {
             Solution<T> competitor = pickRandom(population, random);
 
             if (competitor.getFitness() > candidate.getFitness()) {

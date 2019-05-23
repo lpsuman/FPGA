@@ -61,13 +61,13 @@ public class CLBController {
         }
     }
 
-    public static int calcExtendedIndex(int inputCombination, int[] inputIDs) {
-        return calcExtendedIndex(inputCombination, inputIDs, 0, inputIDs.length);
+    public static int calcExtendedIndex(int inputCombination, int numInputs, int[] inputIDs) {
+        return calcExtendedIndex(inputCombination, numInputs, inputIDs, 0, inputIDs.length);
     }
 
-    public static int calcExtendedIndex(int inputCombination, int[] inputIDs, int startIndex, int numInputs) {
+    public static int calcExtendedIndex(int inputCombination, int numInputs, int[] inputIDs, int startIndex, int endIndex) {
         int extendedIndex = 0;
-        for (int i = 0; i < numInputs; ++i) {
+        for (int i = 0, n = endIndex - startIndex; i < n; i++) {
             if (testInputBit(inputCombination, numInputs, inputIDs[startIndex + i])) {
                 extendedIndex++;
             }
@@ -156,7 +156,7 @@ public class CLBController {
         int numCLBInputs = getNumCLBInputs();
 
         if (switchInputs) {
-            for (int i = 0; i < numCLBInputs; ++i) {
+            for (int i = 0; i < numCLBInputs; i++) {
                 swapSingleData(firstData, secondData, firstOffset + i, secondOffset + i);
 
                 if (firstIndex != secondIndex) {
@@ -173,7 +173,7 @@ public class CLBController {
         secondOffset += numCLBInputs;
 
         if (switchLUT) {
-            for (int i = 0, m = getIntsPerLUT(); i < m; ++i) {
+            for (int i = 0, m = getIntsPerLUT(); i < m; i++) {
                 swapSingleData(firstData, secondData, firstOffset + i, secondOffset + i);
             }
         }

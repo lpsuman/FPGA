@@ -243,7 +243,7 @@ public class BoolParser implements Parser<BoolToken, BoolExpression> {
     }
 
     private void popElements(int count) {
-        for (int i = 0; i < count; ++i) {
+        for (int i = 0; i < count; i++) {
             stack.pop();
         }
     }

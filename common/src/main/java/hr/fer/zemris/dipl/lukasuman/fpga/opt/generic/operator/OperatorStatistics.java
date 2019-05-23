@@ -22,7 +22,7 @@ public interface OperatorStatistics extends Resetable {
             throw new IllegalArgumentException(String.format("Both lists of operators statistics must have the same size (%d and %d).", target.size(), other.size()));
         }
 
-        for (int i = 0, n = target.size(); i < n; ++i) {
+        for (int i = 0, n = target.size(); i < n; i++) {
             target.get(i).add(other.get(i));
         }
     }

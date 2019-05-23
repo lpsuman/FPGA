@@ -3,7 +3,6 @@ package hr.fer.zemris.dipl.lukasuman.fpga.opt.ga;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.algorithm.AbstractAlgorithm;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.AbstractSolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.evaluator.Evaluator;
-import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Timer;
@@ -24,6 +23,8 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
     private Evaluator<T> evaluator;
     private GAThreadPool<T> threadPool;
 
+    private boolean shouldDoFullRuns;
+
     public ParallelGA(Supplier<Solution<T>> candidateSupplier, Evaluator<T> evaluator, GAThreadPool<T> threadPool,
                       int populationSize, int maxGenerations, int elitismSize, double threshold, long timeToStop) {
 
@@ -35,13 +36,14 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
         this.elitismSize = elitismSize;
         this.threshold = threshold;
         this.timeToStop = timeToStop;
+        shouldDoFullRuns = false;
     }
 
     public ParallelGA(Supplier<Solution<T>> candidateSupplier, Evaluator<T> evaluator, GAThreadPool<T> threadPool,
                       int populationSize, int maxGenerations, int elitismSize, double threshold) {
 
         this(candidateSupplier, evaluator, threadPool, populationSize, maxGenerations, elitismSize,
-                threshold, Constants.DEFAULT_TIME);
+                threshold, Constants.DEFAULT_TIME_LIMIT);
     }
 
     public ParallelGA(Supplier<Solution<T>> candidateSupplier, Evaluator<T> evaluator, GAThreadPool<T> threadPool,
@@ -55,6 +57,10 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
     public ParallelGA(Supplier<Solution<T>> candidateSupplier, Evaluator<T> evaluator, GAThreadPool<T> threadPool) {
         this(candidateSupplier, evaluator, threadPool,
                 Constants.DEFAULT_POPULATION_SIZE, Constants.DEFAULT_MAX_NUM_GENERATIONS);
+    }
+
+    public void setDoFullRuns(boolean shouldDoFullRuns) {
+        this.shouldDoFullRuns = shouldDoFullRuns;
     }
 
     @Override
@@ -132,7 +138,7 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
                             best.getFitness(), worst.getFitness());
                 }
 
-                if (timer != null && timer.isTimeLimitReached()) {
+                if (!shouldDoFullRuns && timer != null && timer.isTimeLimitReached()) {
                     System.out.println(String.format("Execution time limit of %d seconds reached.", timeToStop / 1000));
                     break;
                 }
@@ -147,7 +153,7 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
 
                 int numGenerationsSinceLastImprovement = i - lastImprovingGeneration;
 
-                if (numGenerationsSinceLastImprovement >= maxNonImprovingGenerations) {
+                if (!shouldDoFullRuns && numGenerationsSinceLastImprovement >= maxNonImprovingGenerations) {
                     System.out.println(String.format("Past %d generations failed to improve the best solution, stopping.",
                             numGenerationsSinceLastImprovement));
                     break;
@@ -187,7 +193,7 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
     private List<Solution<T>> generatePopulation() {
         List<Solution<T>> population = new ArrayList<>(populationSize);
 
-        for (int i = 0; i < populationSize; ++i) {
+        for (int i = 0; i < populationSize; i++) {
             Solution<T> solution = candidateSupplier.get();
             evaluator.evaluateSolution(solution, false);
             population.add(solution);

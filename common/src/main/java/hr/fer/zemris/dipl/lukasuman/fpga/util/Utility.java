@@ -3,10 +3,7 @@ package hr.fer.zemris.dipl.lukasuman.fpga.util;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -15,6 +12,8 @@ import java.util.stream.IntStream;
  * argument checking, BitSet and Integer operations, String manipulation, etc...
  */
 public class Utility {
+
+    private static final String DEFAULT_STRING_LIST_DELIMITER = ", ";
 
     private Utility() {
     }
@@ -87,7 +86,7 @@ public class Utility {
         Utility.checkLimit(Constants.BITSET_SIZE_LIMIT, bitSetSize);
         BitSet[] result = new BitSet[arraySize];
 
-        for (int i = 0; i < arraySize; ++i) {
+        for (int i = 0; i < arraySize; i++) {
             result[i] = new BitSet(bitSetSize);
         }
 
@@ -97,7 +96,7 @@ public class Utility {
     public static void setBitSet(BitSet bitSet, int mask, int length) {
         Utility.checkNull(bitSet, "bitset");
         Utility.checkLimit(Constants.INTEGER_LENGTH_LIMIT, length);
-        for (int i = 0; i < length; ++i) {
+        for (int i = 0; i < length; i++) {
             bitSet.set(i, testBitFromRight(mask, length - 1 - i));
         }
     }
@@ -112,9 +111,39 @@ public class Utility {
     public static void appendBitSet(StringBuilder sb, BitSet bitSet, int length) {
         Utility.checkNull(bitSet, "bitset");
 
-        for (int i = 0; i < length; ++i) {
+        for (int i = 0; i < length; i++) {
             sb.append(bitSet.get(i) ? '1' : '0');
         }
+    }
+
+    public static void appendStringList(StringBuilder sb, List<String> stringList, String delimiter) {
+        checkNull(sb, "string builder");
+        checkNull(stringList, "list of strings");
+        checkNull(delimiter, "string list delimiter");
+        stringList.forEach(str -> sb.append(str).append(delimiter));
+        sb.setLength(sb.length() - delimiter.length());
+    }
+
+    public static void appendStringList(StringBuilder sb, List<String> stringList) {
+        appendStringList(sb, stringList, DEFAULT_STRING_LIST_DELIMITER);
+    }
+
+    public static String toBinaryString(int value, int numBits, int numSpaces) {
+        StringBuilder sb = new StringBuilder();
+        String strWithoutSpaces = toBinaryString(value, numBits);
+        if (numSpaces < 1) {
+            return strWithoutSpaces;
+        }
+
+        for (int i = 0, n = strWithoutSpaces.length(); i < n; i++) {
+            sb.append(paddedChar(strWithoutSpaces.charAt(i), Constants.BOOL_VECTOR_PRINT_CELL_SIZE));
+        }
+
+        return sb.toString();
+    }
+
+    public static String toBinaryString(int value, int numBits) {
+        return String.format("%" + numBits + "s", Integer.toBinaryString(value)).replace(' ', '0');
     }
 
     public static String capitalizedString(String str) {
@@ -172,7 +201,7 @@ public class Utility {
         int m = needle.length;
         int q = 0;
 
-        for (int i = 0; i < n; ++i) {
+        for (int i = 0; i < n; i++) {
             while (q > 0 && needle[q] != haystack[i]) {
                 q = prefixArray[q - 1];
             }

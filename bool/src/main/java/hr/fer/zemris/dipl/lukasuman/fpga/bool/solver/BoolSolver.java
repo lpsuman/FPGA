@@ -60,7 +60,7 @@ public class BoolSolver implements Resetable {
 
         List<RunResults> perFuncResults = new ArrayList<>();
 
-        for (int i = 0; i < functions.size(); ++i) {
+        for (int i = 0; i < functions.size(); i++) {
             BoolVecProblem singleFuncProblem = new BoolVecProblem(
                     new BoolVector(Collections.singletonList(functions.get(i))), numCLBInputs);
 //            singleFuncProblem.getClbController().setNumCLB(perFuncEstimates.get(i));
@@ -69,7 +69,7 @@ public class BoolSolver implements Resetable {
 
         List<OperatorStatistics> crossoverOperatorStatistics = perFuncResults.get(0).randomizeCrossover.getGlobalResults();
         List<OperatorStatistics> mutationOperatorStatistics = perFuncResults.get(0).randomizeMutation.getGlobalResults();
-        for (int i = 1; i < functions.size(); ++i) {
+        for (int i = 1; i < functions.size(); i++) {
             OperatorStatistics.sumStatistics(crossoverOperatorStatistics, perFuncResults.get(i).randomizeCrossover.getGlobalResults());
             OperatorStatistics.sumStatistics(mutationOperatorStatistics, perFuncResults.get(i).randomizeMutation.getGlobalResults());
         }
@@ -86,11 +86,29 @@ public class BoolSolver implements Resetable {
                 .boxed()
                 .collect(Collectors.toList());
 
-        System.out.println("Elapsed times for functions.");
-        elapsedTimes.forEach(System.out::println);
+        List<Integer> numberOfCLBs = perFuncResults.stream()
+                .mapToInt(result -> result.result.getBlockConfiguration().getNumCLB())
+                .boxed()
+                .collect(Collectors.toList());
+
+        System.out.println(String.format("Results for functions (index, number of CLBs, elapsed time), average time is %10.3f seconds):",
+                (double)(elapsedTimes.stream().mapToInt(i -> i).sum() / elapsedTimes.size()) / 1000.0));
+
+        for (int i = 0; i < elapsedTimes.size(); i++) {
+            System.out.println(String.format("%4d   %4d   %10.3f", i, numberOfCLBs.get(i), elapsedTimes.get(i) / 1000.0));
+        }
 
         if (functions.size() == 1) {
             return perFuncResults.get(0).result;
+        }
+
+        List<BoolVectorSolution> perFuncSolutions = perFuncResults.stream()
+                .map(result -> result.result)
+                .collect(Collectors.toList());
+        BoolVectorSolution mergedSolution = BoolVectorSolution.mergeSolutions(perFuncSolutions);
+
+        if (Constants.STOP_AFTER_MERGING) {
+            return mergedSolution;
         }
 
         int numCLBEstimation = perFuncResults.stream()
@@ -98,14 +116,14 @@ public class BoolSolver implements Resetable {
                 .sum() - 1;
 
         problem.getClbController().setNumCLB(numCLBEstimation);
-        RunResults runResults = doARun(problem, true, false);
+        RunResults mergedRunResult = doARun(problem, true, false);
 
-        if (runResults.result == null) {
+        if (mergedRunResult.result == null) {
             System.out.println("Couldn't find a better solution than the merge of individual function's solutions.");
-            return null;
+            return mergedSolution;
+        } else {
+            return mergedRunResult.result;
         }
-
-        return runResults.result;
     }
 
     private RunResults doARun(BoolVecProblem problem, boolean canDecreaseNumCLB, boolean canIncreaseNumCLB) {
@@ -131,6 +149,10 @@ public class BoolSolver implements Resetable {
         algorithm.addTerminationListener(randomCrossovers);
         algorithm.addFitnessListener(randomMutations);
         algorithm.addTerminationListener(randomMutations);
+
+        if (!canIncreaseNumCLB) {
+            algorithm.setDoFullRuns(true);
+        }
 
         Solution<int[]> bestSolution = null;
         Solution<int[]> solution;
@@ -220,16 +242,9 @@ public class BoolSolver implements Resetable {
 
             bestSolution = solution;
             numCLBOfBest = controller.getNumCLB();
-
-            evaluator.setLogging(true);
-            evaluator.evaluateSolution(solution, false);
-            System.out.println(evaluator.getLog());
-            evaluator.resetLog();
-            evaluator.setLogging(false);
-            System.out.println(problem.solutionToString(bestSolution, evaluator.getBlockUsage()));
-
+            algorithm.setDoFullRuns(true);
+            System.out.println(problem.getSolutionTestResults(bestSolution, evaluator));
             int numUnusedBlocks = evaluator.getUnusedBlocks().cardinality();
-            System.out.println(String.format("There were %d unused blocks.\n", numUnusedBlocks));
 
             if (!canDecreaseNumCLB) {
                 System.out.println("Not allowed to decrease num of CLB, stopping.");

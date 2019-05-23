@@ -16,9 +16,9 @@ import java.util.List;
 
 public class BoolMain {
 
-    private static final boolean USE_NON_RANDOM_FUNCTIONS = true;
-    private static final boolean SHOW_TWO_VARIABLE_FUNC_CONVERSION = true;
-    private static final int NUM_FUNCTIONS = 5;
+    private static final boolean USE_NON_RANDOM_FUNCTIONS = false;
+    private static final boolean SHOW_TWO_VARIABLE_FUNC_CONVERSION = false;
+    private static final int NUM_FUNCTIONS = 10;
     private static final int NUM_FUNC_INPUTS = 5;
     private static final int NUM_CLB_INPUTS = 3;
 
@@ -50,7 +50,7 @@ public class BoolMain {
             numRemainingFunctions -= 2;
         }
 
-        for (int i = 0; i < numRemainingFunctions; ++i) {
+        for (int i = 0; i < numRemainingFunctions; i++) {
             functions.add(BoolFuncController.generateRandomFunction(numFuncInputs));
         }
 
@@ -65,7 +65,7 @@ public class BoolMain {
 
         if (solution.canBeConvertedToExpression()) {
             BoolParser parser = new BoolParser();
-            for (int i = 0; i < functions.size(); ++i) {
+            for (int i = 0; i < functions.size(); i++) {
                 String solutionString = solution.getAsExpression(i);
                 System.out.println("F" + i + "\nSolution string:\n" + solutionString);
                 BoolExpression boolExpression = parser.parse(new BoolLexer(Utility.getInputStreamFromString(solutionString)));

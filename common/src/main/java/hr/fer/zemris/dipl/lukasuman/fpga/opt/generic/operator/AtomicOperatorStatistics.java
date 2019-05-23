@@ -10,7 +10,7 @@ public class AtomicOperatorStatistics implements OperatorStatistics {
 
     public AtomicOperatorStatistics() {
         stats = new ArrayList<>();
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 4; i++) {
             stats.add(new AtomicInteger());
         }
     }
@@ -61,14 +61,14 @@ public class AtomicOperatorStatistics implements OperatorStatistics {
 
     @Override
     public void reset() {
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 4; i++) {
             stats.get(i).set(0);
         }
     }
 
     @Override
     public String toString() {
-        return String.format("%10d %10d (%.2f) %10d (%.2f) %6d (%.5f)",
+        return String.format("%14d %14d (%2.4f) %12d (%2.4f) %6d (%.8f)",
                 getNumUsed(),
                 getNumDecreasedFitness(), 100.0 * getNumDecreasedFitness() / getNumUsed(),
                 getNumIncreasedFitness(), 100.0 * getNumIncreasedFitness() / getNumUsed(),

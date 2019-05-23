@@ -7,8 +7,6 @@ public class IntervalBlockCrossover extends AbstractBoolCrossover {
 
     private static final double DEFAULT_OPERATOR_CHANCE = 4.0;
 
-    private boolean isAligned;
-
     public IntervalBlockCrossover(CLBController clbController, boolean isAligned) {
         super(clbController, isAligned ? DEFAULT_OPERATOR_CHANCE * ALIGNED_CHANCE_MODIFIER : DEFAULT_OPERATOR_CHANCE);
         this.isAligned = isAligned;
@@ -30,11 +28,5 @@ public class IntervalBlockCrossover extends AbstractBoolCrossover {
             int secondIndex = random.nextInt(0, numCLB - intervalSize);
             crossoverInterval(firstData, secondData, firstIndex, secondIndex, intervalSize);
         }
-    }
-
-    @Override
-    public String toString() {
-        String alignment = isAligned ? "aligned" : "not aligned";
-        return getClass().getSimpleName() + " (" + alignment + ")";
     }
 }

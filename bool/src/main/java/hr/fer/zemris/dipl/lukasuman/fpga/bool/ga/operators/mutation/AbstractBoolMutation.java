@@ -21,7 +21,7 @@ public abstract class AbstractBoolMutation extends AbstractOperator implements M
 
     @Override
     public void mutate(Solution<int[]> candidate) {
-        for (int i = 0, n = calcNumMutations(); i < n; ++i) {
+        for (int i = 0, n = calcNumMutations(); i < n; i++) {
             mutateData(candidate.getData(), RNG.getRNG());
         }
     }

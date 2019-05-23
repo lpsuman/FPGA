@@ -60,7 +60,7 @@ public class BoolFuncController {
         List<Integer> result = null;
 
         outer:
-        for (int i = 0; i < numInputs; ++i) {
+        for (int i = 0; i < numInputs; i++) {
             int numJumps = 1 << (i);
             int sizeOfJump = numInputCombinations / numJumps;
             int numConsecutive = 1 << (numInputs - 1 - i);

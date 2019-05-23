@@ -208,7 +208,7 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
 
         System.out.println(String.format("Threadpool starting with %d threads.", threads.length));
 
-        for (int i = 0; i < threads.length; ++i) {
+        for (int i = 0; i < threads.length; i++) {
             threads[i] = threadFactory.apply(runnable);
             threads[i].start();
         }
@@ -277,7 +277,7 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
         isShuttingDown = true;
         System.out.println("Threadpool is shutting down.");
 
-        for (int i = 0; i < threads.length; ++i) {
+        for (int i = 0; i < threads.length; i++) {
             putInQueue(incoming, RED_PILL);
             remainingRedPills.incrementAndGet();
         }

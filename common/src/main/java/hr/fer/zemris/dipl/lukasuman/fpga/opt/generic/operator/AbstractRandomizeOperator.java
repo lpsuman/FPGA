@@ -42,7 +42,7 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
         statsList = new ArrayList<>(numOperators);
         cumulativeStatsList = new ArrayList<>(numOperators);
         globalStatsList = new ArrayList<>(numOperators);
-        for (int i = 0; i < numOperators; ++i) {
+        for (int i = 0; i < numOperators; i++) {
             statsList.add(new AtomicOperatorStatistics());
             cumulativeStatsList.add(new AtomicOperatorStatistics());
             globalStatsList.add(new AtomicOperatorStatistics());
@@ -82,7 +82,7 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
         } else {
             double chance = random.nextDouble(0.0, 1.0);
 
-            for (int i = 0, n = operatorChances.size(); i < n; ++i) {
+            for (int i = 0, n = operatorChances.size(); i < n; i++) {
                 chance -= operatorChances.get(i);
                 if (chance <= 0.0) {
                     return i;
@@ -121,7 +121,7 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
         sb.append("Used   DecreasedFitness   IncreasedFitness   IncreasedBest");
         sb.append('\n');
 
-        for (int i = 0, n = operatorStatistics.size(); i < n; ++i) {
+        for (int i = 0, n = operatorStatistics.size(); i < n; i++) {
             sb.append(operatorNames.get(i));
             sb.append('\n');
             sb.append(operatorStatistics.get(i));
