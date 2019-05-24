@@ -1,7 +1,7 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.solver;
 
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFunc;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.crossover.AbstractBoolCrossover;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.crossover.IntervalBlockCrossover;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.crossover.SingleBlockCrossover;
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class BoolSolver implements Resetable {
+public class BooleanSolver implements Resetable {
 
     private static class RunResults {
         private BoolVectorSolution result;
@@ -49,20 +49,20 @@ public class BoolSolver implements Resetable {
 
     private Solution<int[]> bestSolutionWithCurrentNumCLB;
 
-    public BoolSolver() {
+    public BooleanSolver() {
     }
 
     public BoolVectorSolution solve(BoolVecProblem problem) {
         CLBController controller = problem.getClbController();
         int numCLBInputs = controller.getNumCLBInputs();
-        List<BoolFunc> functions = problem.getBoolVector().getBoolFunctions();
+        List<BooleanFunction> functions = problem.getBoolVector().getBoolFunctions();
 //        List<Integer> perFuncEstimates = new ArrayList<>(Arrays.asList(3, 3, 6, 6, 6));
 
         List<RunResults> perFuncResults = new ArrayList<>();
 
         for (int i = 0; i < functions.size(); i++) {
             BoolVecProblem singleFuncProblem = new BoolVecProblem(
-                    new BoolVector(Collections.singletonList(functions.get(i))), numCLBInputs);
+                    new BooleanVector(Collections.singletonList(functions.get(i))), numCLBInputs);
 //            singleFuncProblem.getClbController().setNumCLB(perFuncEstimates.get(i));
             perFuncResults.add(doARun(singleFuncProblem, true, true));
         }

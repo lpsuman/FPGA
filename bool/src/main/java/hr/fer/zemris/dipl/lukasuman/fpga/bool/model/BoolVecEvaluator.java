@@ -1,6 +1,6 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.model;
 
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.evaluator.AbstractLoggingEvaluator;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
@@ -299,7 +299,7 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
         return problem.getClbController();
     }
 
-    private BoolVector getVector() {
+    private BooleanVector getVector() {
         return problem.getBoolVector();
     }
 

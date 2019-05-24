@@ -13,11 +13,11 @@ import java.util.Objects;
  * This class represents the lowest level representation of a boolean function. It is uniquely defined by a truth table.
  * It also stores a name (for easier handling) and a list of input IDs in string form ("a", "b", etc.).
  */
-public class BoolFunc extends AbstractNameHandler implements Serializable {
+public class BooleanFunction extends AbstractNameHandler implements Serializable {
 
     private static final long serialVersionUID = -3337214107238850818L;
 
-    private static final String DEFAULT_NAME = "BoolFunc";
+    private static final String DEFAULT_NAME = "BooleanFunction";
     private static final String INPUT_IDS_MSG = "input IDs for function";
 
     private int numInputs;
@@ -25,7 +25,7 @@ public class BoolFunc extends AbstractNameHandler implements Serializable {
     private int numInputCombinations;
     private BitSet truthTable;
 
-    public BoolFunc(List<String> inputIDs, BitSet truthTable, String name) {
+    public BooleanFunction(List<String> inputIDs, BitSet truthTable, String name) {
         super(name);
         this.inputIDs = Utility.checkIfValidCollection(inputIDs, INPUT_IDS_MSG);
         Utility.checkLimit(Constants.NUM_FUNCTION_INPUTS_LIMIT, inputIDs.size());
@@ -40,15 +40,15 @@ public class BoolFunc extends AbstractNameHandler implements Serializable {
         }
     }
 
-    public BoolFunc(List<String> inputIDs, BitSet truthTable) {
+    public BooleanFunction(List<String> inputIDs, BitSet truthTable) {
         this(inputIDs, truthTable, DEFAULT_NAME);
     }
 
-    public BoolFunc(int numInputs, BitSet truthTable, String name) {
+    public BooleanFunction(int numInputs, BitSet truthTable, String name) {
         this(BoolFuncController.generateDefaultInputIDs(numInputs), truthTable, name);
     }
 
-    public BoolFunc(int numInputs, BitSet truthTable) {
+    public BooleanFunction(int numInputs, BitSet truthTable) {
         this(numInputs, truthTable, DEFAULT_NAME);
     }
 
@@ -83,7 +83,7 @@ public class BoolFunc extends AbstractNameHandler implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BoolFunc boolFunc = (BoolFunc) o;
+        BooleanFunction boolFunc = (BooleanFunction) o;
         return truthTable.equals(boolFunc.truthTable);
     }
 

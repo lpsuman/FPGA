@@ -26,34 +26,34 @@ public class FuncTests {
 
     @Test
     void testBoolFunc() {
-        TestUtil.argThrow(() -> new BoolFunc(null, firstTruthTable));
-        TestUtil.argThrow(() -> new  BoolFunc(firstInputIDs, null));
-        TestUtil.argThrow(() -> new  BoolFunc(new ArrayList<>(Arrays.asList(new String[500])), secondTruthTable));
-        TestUtil.argThrow(() -> new  BoolFunc(firstInputIDs,thirdTruthTable));
-        assertDoesNotThrow(() -> new BoolFunc(thirdInputIDs, firstTruthTable));
+        TestUtil.argThrow(() -> new BooleanFunction(null, firstTruthTable));
+        TestUtil.argThrow(() -> new BooleanFunction(firstInputIDs, null));
+        TestUtil.argThrow(() -> new BooleanFunction(new ArrayList<>(Arrays.asList(new String[500])), secondTruthTable));
+        TestUtil.argThrow(() -> new BooleanFunction(firstInputIDs,thirdTruthTable));
+        assertDoesNotThrow(() -> new BooleanFunction(thirdInputIDs, firstTruthTable));
 
-        BoolFunc func = new BoolFunc(firstInputIDs, firstTruthTable);
+        BooleanFunction func = new BooleanFunction(firstInputIDs, firstTruthTable);
         assertEquals(func.getInputIDs(), firstInputIDs);
         assertEquals(func.getTruthTable(), firstTruthTable);
     }
 
     @Test
     void testBoolVector() {
-        TestUtil.argThrow(() -> new BoolVector(null));
-        TestUtil.argThrow(() -> new BoolVector(new ArrayList<>()));
+        TestUtil.argThrow(() -> new BooleanVector(null));
+        TestUtil.argThrow(() -> new BooleanVector(new ArrayList<>()));
 
-        BoolFunc firstFunc = new BoolFunc(firstInputIDs, firstTruthTable);
-        BoolFunc secondFunc = new BoolFunc(secondInputIDs, secondTruthTable);
-        BoolFunc thirdFunc = new BoolFunc(thirdInputIDs, thirdTruthTable);
-        List<BoolFunc> funcList = new ArrayList<>();
+        BooleanFunction firstFunc = new BooleanFunction(firstInputIDs, firstTruthTable);
+        BooleanFunction secondFunc = new BooleanFunction(secondInputIDs, secondTruthTable);
+        BooleanFunction thirdFunc = new BooleanFunction(thirdInputIDs, thirdTruthTable);
+        List<BooleanFunction> funcList = new ArrayList<>();
         funcList.add(firstFunc);
         funcList.add(secondFunc);
         funcList.add(null);
 
-        TestUtil.argThrow(() -> new BoolVector(funcList));
+        TestUtil.argThrow(() -> new BooleanVector(funcList));
         funcList.remove(funcList.size() - 1);
         funcList.add(thirdFunc);
-        BoolVector boolVector = new BoolVector(funcList);
+        BooleanVector boolVector = new BooleanVector(funcList);
 
         assertEquals(boolVector.getNumFunctions(), 3);
         assertEquals(boolVector.getBoolFunctions(), funcList);

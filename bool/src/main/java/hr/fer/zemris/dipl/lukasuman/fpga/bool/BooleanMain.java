@@ -1,20 +1,20 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool;
 
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFunc;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFuncController;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.BoolExpression;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.lexer.BoolLexer;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.parser.BoolParser;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BoolSolver;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BooleanSolver;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BoolVectorSolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BoolMain {
+public class BooleanMain {
 
     private static final boolean USE_NON_RANDOM_FUNCTIONS = false;
     private static final boolean SHOW_TWO_VARIABLE_FUNC_CONVERSION = false;
@@ -23,7 +23,7 @@ public class BoolMain {
     private static final int NUM_CLB_INPUTS = 3;
 
     public static void main(String[] args) {
-        List<BoolFunc> functions = new ArrayList<>();
+        List<BooleanFunction> functions = new ArrayList<>();
         int numRemainingFunctions = NUM_FUNCTIONS;
         int numFuncInputs = NUM_FUNC_INPUTS;
         int numCLBInputs = NUM_CLB_INPUTS;
@@ -38,7 +38,7 @@ public class BoolMain {
 //                BoolExpression boolExpression = parser.parse(new BoolLexer(Utility.getInputStreamFromString(
 //                        "(not a or c) xor (b and not a) or d")));
 //                functions.add(BoolFuncController.generateFromExpression(boolExpression));
-                functions.add(new BoolFunc(4, Utility.bitSetFromMask(0b1011101000110110, 16)));
+                functions.add(new BooleanFunction(4, Utility.bitSetFromMask(0b1011101000110110, 16)));
             } else {
                 functions.add(BoolFuncController.generateRandomFunction(numFuncInputs));
             }
@@ -54,8 +54,8 @@ public class BoolMain {
             functions.add(BoolFuncController.generateRandomFunction(numFuncInputs));
         }
 
-        BoolVecProblem problem = new BoolVecProblem(new BoolVector(functions), numCLBInputs);
-        BoolSolver solver = new BoolSolver();
+        BoolVecProblem problem = new BoolVecProblem(new BooleanVector(functions), numCLBInputs);
+        BooleanSolver solver = new BooleanSolver();
         BoolVectorSolution solution = solver.solve(problem);
 
         if (solution == null) {

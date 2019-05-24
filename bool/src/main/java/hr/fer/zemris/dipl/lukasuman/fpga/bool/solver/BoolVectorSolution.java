@@ -2,8 +2,8 @@ package hr.fer.zemris.dipl.lukasuman.fpga.bool.solver;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.AbstractNameHandler;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BlockConfiguration;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFunc;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.Serializable;
@@ -17,20 +17,20 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
     private static final String DEFAULT_NAME = "VectorSolution";
     private static final String BLOCK_CONFIG_MSG = "block configuration";
 
-    private BoolVector boolVector;
+    private BooleanVector boolVector;
     private BlockConfiguration blockConfiguration;
 
-    public BoolVectorSolution(BoolVector boolVector, BlockConfiguration blockConfiguration, String name) {
+    public BoolVectorSolution(BooleanVector boolVector, BlockConfiguration blockConfiguration, String name) {
         super(name);
         this.boolVector = Utility.checkNull(boolVector, "boolean vector");
         this.blockConfiguration = Utility.checkNull(blockConfiguration, BLOCK_CONFIG_MSG);
     }
 
-    public BoolVectorSolution(BoolVector boolVector, BlockConfiguration blockConfiguration) {
+    public BoolVectorSolution(BooleanVector boolVector, BlockConfiguration blockConfiguration) {
         this(boolVector, blockConfiguration, DEFAULT_NAME);
     }
 
-    public BoolVector getBoolVector() {
+    public BooleanVector getBoolVector() {
         return boolVector;
     }
 
@@ -99,12 +99,12 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
             throw new IllegalArgumentException("At least two solutions are required for merging.");
         }
 
-        List<BoolFunc> mergedBoolFuncs = solutions.stream()
+        List<BooleanFunction> mergedBoolFuncs = solutions.stream()
                 .map(solution -> solution.boolVector.getBoolFunctions())
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
 
-        BoolVector mergedVector = new BoolVector(mergedBoolFuncs);
+        BooleanVector mergedVector = new BooleanVector(mergedBoolFuncs);
         List<String> mergedInputIDs = mergedVector.getSortedInputIDs();
         int numMergedInputs = mergedInputIDs.size();
 

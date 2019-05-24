@@ -17,18 +17,18 @@ import java.util.*;
  *     are copied as required</li>
  * </ul>
  */
-public class BoolVector extends AbstractNameHandler implements Serializable {
+public class BooleanVector extends AbstractNameHandler implements Serializable {
 
     private static final long serialVersionUID = -7755696151775719987L;
 
-    private static final String DEFAULT_NAME = "BoolVector";
+    private static final String DEFAULT_NAME = "BooleanVector";
 
-    private List<BoolFunc> boolFunctions;
+    private List<BooleanFunction> boolFunctions;
     private int numInputCombinations;
     private BitSet[] truthTable;
     private List<String> sortedInputIDs;
 
-    public BoolVector(List<BoolFunc> boolFunctions, String name) {
+    public BooleanVector(List<BooleanFunction> boolFunctions, String name) {
         super(name);
         this.boolFunctions = Utility.checkIfValidCollection(boolFunctions, "boolean functions for vector");
         Utility.checkLimit(Constants.NUM_FUNCTIONS_LIMIT, boolFunctions.size());
@@ -36,13 +36,13 @@ public class BoolVector extends AbstractNameHandler implements Serializable {
         fillTable(boolFunctions);
     }
 
-    public BoolVector(List<BoolFunc> boolFunctions) {
+    public BooleanVector(List<BooleanFunction> boolFunctions) {
         this(boolFunctions, DEFAULT_NAME);
     }
 
-    private void fillTable(List<BoolFunc> boolFuncs) {
+    private void fillTable(List<BooleanFunction> boolFuncs) {
         Set<String> inputIDSet = new HashSet<>();
-        List<BoolFunc> checkedFunctions = new ArrayList<>(boolFuncs.size());
+        List<BooleanFunction> checkedFunctions = new ArrayList<>(boolFuncs.size());
         boolFuncs.forEach(f -> checkedFunctions.add(BoolFuncController.removeRedundantInputsIfAble(f)));
         checkedFunctions.forEach(f -> inputIDSet.addAll(f.getInputIDs()));
         sortedInputIDs = new ArrayList<>(inputIDSet);
@@ -54,7 +54,7 @@ public class BoolVector extends AbstractNameHandler implements Serializable {
 
         for (int inputCombination = 0; inputCombination < numInputCombinations; inputCombination++) {
             for (int j = 0; j < getNumFunctions(); ++j) {
-                BoolFunc boolFunc = checkedFunctions.get(j);
+                BooleanFunction boolFunc = checkedFunctions.get(j);
                 List<String> inputIDs = boolFunc.getInputIDs();
                 int[] inputIndexes = new int[inputIDs.size()];
 
@@ -69,7 +69,7 @@ public class BoolVector extends AbstractNameHandler implements Serializable {
         }
     }
 
-    public List<BoolFunc> getBoolFunctions() {
+    public List<BooleanFunction> getBoolFunctions() {
         return boolFunctions;
     }
 

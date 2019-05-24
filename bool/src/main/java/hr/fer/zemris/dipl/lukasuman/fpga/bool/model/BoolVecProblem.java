@@ -2,9 +2,9 @@ package hr.fer.zemris.dipl.lukasuman.fpga.bool.model;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.AbstractNameHandler;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BlockConfiguration;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFunc;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFuncController;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.IRNG;
@@ -22,20 +22,20 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
 
     private static final String DEFAULT_NAME = "BoolProblem";
 
-    private BoolVector boolVector;
+    private BooleanVector boolVector;
     private CLBController clbController;
 
     private List<Solution<int[]>> nextToSupplyList;
     Solution<int[]> nextToSupply;
     private int indexCurrToSupply;
 
-    public BoolVecProblem(BoolVector boolVector, int numCLBInputs, String name) {
+    public BoolVecProblem(BooleanVector boolVector, int numCLBInputs, String name) {
         super(name);
         this.boolVector = Utility.checkNull(boolVector, "boolean vector");
         clbController = new CLBController(boolVector, numCLBInputs);
     }
 
-    public BoolVecProblem(BoolVector boolVector, int numCLBInputs) {
+    public BoolVecProblem(BooleanVector boolVector, int numCLBInputs) {
         this(boolVector, numCLBInputs, DEFAULT_NAME);
     }
 
@@ -91,12 +91,12 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
     }
 
     public static BoolVecProblem generateRandomProblem(int numFunctions, int numInputs, int numCLBInputs) {
-        List<BoolFunc> boolFuncs = new ArrayList<>();
+        List<BooleanFunction> boolFuncs = new ArrayList<>();
         for (int i = 0; i < numFunctions; i++) {
             boolFuncs.add(BoolFuncController.generateRandomFunction(numInputs));
         }
 
-        return new BoolVecProblem(new BoolVector(boolFuncs), numCLBInputs);
+        return new BoolVecProblem(new BooleanVector(boolFuncs), numCLBInputs);
     }
 
     public String solutionToString(Solution<int[]> solution, BitSet[] blockUsage) {
@@ -221,7 +221,7 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         return new BlockConfiguration(numCLBInputs, numCLB, newData, outputIndices);
     }
 
-    public BoolVector getBoolVector() {
+    public BooleanVector getBoolVector() {
         return boolVector;
     }
 

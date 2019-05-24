@@ -1,7 +1,7 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.model;
 
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFunc;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
@@ -31,11 +31,11 @@ public class BoolVecProblemTests {
                 7, 4, 2, 25,
                 6, 7, 8, 73,
                 9};
-        BoolFunc func = new BoolFunc(5, Utility.bitSetFromMask(
+        BooleanFunction func = new BooleanFunction(5, Utility.bitSetFromMask(
                 0b00101100001001011000010111010101, 32));
         Solution<int[]> redundantSolution = new IntArraySolution(redundantSolutionData);
 
-        BoolVecProblem problem = new BoolVecProblem(new BoolVector(Collections.singletonList(func)), 3);
+        BoolVecProblem problem = new BoolVecProblem(new BooleanVector(Collections.singletonList(func)), 3);
         problem.getClbController().setNumCLB(6);
         BitSet redundantIndices = Utility.bitSetFromMask(0b00000100000, 11);
         Solution<int[]> trimmedSolution = problem.trimmedBoolSolution(redundantSolution, redundantIndices);

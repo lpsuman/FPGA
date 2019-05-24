@@ -1,7 +1,7 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.model;
 
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFunc;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.IRNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
@@ -29,7 +29,7 @@ public class CLBController {
         setNumCLB(numCLB);
     }
 
-    public CLBController(BoolVector boolVector, int numCLBInputs) {
+    public CLBController(BooleanVector boolVector, int numCLBInputs) {
         this(boolVector.getNumInputs(), numCLBInputs);
         setNumCLB(estimateMaxNumCLBForVector(boolVector));
     }
@@ -89,7 +89,7 @@ public class CLBController {
         return Utility.testBitFromLeft(data[offset], bitOffset % 32);
     }
 
-    private int estimateMaxNumCLBForFunc(BoolFunc boolFunc) {
+    private int estimateMaxNumCLBForFunc(BooleanFunction boolFunc) {
         Utility.checkNull(boolFunc, "boolean function");
         int numFuncInputs = boolFunc.getInputIDs().size();
         if (numCLBInputs >= numFuncInputs) {
@@ -99,7 +99,7 @@ public class CLBController {
         return (int)((Math.pow(2, numFuncInputs - numCLBInputs + 1) - 1) * Constants.NUM_CLB_ESTIMATION_MULTIPLIER);
     }
 
-    private int estimateMaxNumCLBForVector(BoolVector boolVector) {
+    private int estimateMaxNumCLBForVector(BooleanVector boolVector) {
         return boolVector.getBoolFunctions().stream()
                 .mapToInt(this::estimateMaxNumCLBForFunc)
                 .sum();

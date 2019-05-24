@@ -1,8 +1,8 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.solver;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BlockConfiguration;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFunc;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 import org.junit.jupiter.api.Test;
 
@@ -20,8 +20,8 @@ public class MergingTests {
         String firstName = "F0";
         List<String> firstInputIDs = Arrays.asList("a", "b", "c", "d");
         BitSet firstTruthTable = Utility.bitSetFromMask(0b1011101000110110, 16);
-        BoolFunc firstFunc = new BoolFunc(firstInputIDs, firstTruthTable, firstName);
-        BoolVector firstVector = new BoolVector(Collections.singletonList(firstFunc));
+        BooleanFunction firstFunc = new BooleanFunction(firstInputIDs, firstTruthTable, firstName);
+        BooleanVector firstVector = new BooleanVector(Collections.singletonList(firstFunc));
         int[] firstData = new int[]{
                 3, 1, 0b1101,
                 0, 4, 0b1011,
@@ -35,8 +35,8 @@ public class MergingTests {
         String secondName = "F1";
         List<String> secondInputIDs = Arrays.asList("c", "d", "e", "f");
         BitSet secondTruthTable = Utility.bitSetFromMask(0b1111010101110111, 16);
-        BoolFunc secondFunc = new BoolFunc(secondInputIDs, secondTruthTable, secondName);
-        BoolVector secondVector = new BoolVector(Collections.singletonList(secondFunc));
+        BooleanFunction secondFunc = new BooleanFunction(secondInputIDs, secondTruthTable, secondName);
+        BooleanVector secondVector = new BooleanVector(Collections.singletonList(secondFunc));
         int[] secondData = new int[]{
                 0, 2, 0b0001,
                 3, 4, 0b0111,
@@ -63,7 +63,7 @@ public class MergingTests {
         BoolVectorSolution mergedSolution = BoolVectorSolution.mergeSolutions(Arrays.asList(firstSolution, secondSolution));
         assertNotNull(mergedSolution);
 
-        BoolVector mergedVector = mergedSolution.getBoolVector();
+        BooleanVector mergedVector = mergedSolution.getBoolVector();
         assertEquals(mergedVector.getNumInputCombinations(), 64);
         assertEquals(expectedMergedInputIDs, mergedVector.getSortedInputIDs());
         assertEquals(mergedVector.getBoolFunctions().get(0), firstFunc);

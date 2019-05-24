@@ -1,8 +1,6 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.func;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.BoolExpression;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.lexer.BoolLexer;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.parser.BoolParser;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
@@ -13,7 +11,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * This class contains various static method for {@link BoolFunc} manipulation.
+ * This class contains various static method for {@link BooleanFunction} manipulation.
  */
 public class BoolFuncController {
 
@@ -30,29 +28,29 @@ public class BoolFuncController {
         return inputIDs;
     }
 
-    public static BoolFunc generateRandomFunction(int numInputs)  {
+    public static BooleanFunction generateRandomFunction(int numInputs)  {
         return generateRandomFunction(BoolFuncController.generateDefaultInputIDs(numInputs), numInputs);
     }
 
-    public static BoolFunc generateRandomFunction(List<String> inputIDs, int numInputs) {
+    public static BooleanFunction generateRandomFunction(List<String> inputIDs, int numInputs) {
         int numInputCombinations = (int) Math.pow(2, numInputs);
         BitSet bitSet = RNG.getRNG().nextBitSet(numInputCombinations);
-        return new BoolFunc(inputIDs, bitSet, DEFAULT_FUNC_NAME);
+        return new BooleanFunction(inputIDs, bitSet, DEFAULT_FUNC_NAME);
     }
 
-    public static BoolFunc generateFromMask(int mask, int numInputs) {
-        return new BoolFunc(BoolFuncController.generateDefaultInputIDs(numInputs),
+    public static BooleanFunction generateFromMask(int mask, int numInputs) {
+        return new BooleanFunction(BoolFuncController.generateDefaultInputIDs(numInputs),
                 Utility.bitSetFromMask(mask, (int) Math.pow(2, numInputs)), DEFAULT_FUNC_NAME);
     }
 
-    public static int calcNumInputs(List<BoolFunc> boolFunctions) {
+    public static int calcNumInputs(List<BooleanFunction> boolFunctions) {
         return boolFunctions.stream()
                 .mapToInt(func -> func.getInputIDs().size())
                 .max()
                 .orElseThrow(NoSuchElementException::new);
     }
 
-    public static List<Integer> checkIfInputMatters(BoolFunc func) {
+    public static List<Integer> checkIfInputMatters(BooleanFunction func) {
         Utility.checkNull(func, "boolean function");
         int numInputs = func.getNumInputs();
         BitSet truthTable = func.getTruthTable();
@@ -86,7 +84,7 @@ public class BoolFuncController {
         return result;
     }
 
-    public static BoolFunc removeInputs(BoolFunc func, List<Integer> indicesInputsToRemove) {
+    public static BooleanFunction removeInputs(BooleanFunction func, List<Integer> indicesInputsToRemove) {
         Utility.checkNull(func, "boolean function");
         if (indicesInputsToRemove == null || indicesInputsToRemove.isEmpty()) {
             return func;
@@ -126,10 +124,10 @@ public class BoolFuncController {
             newTruthTable.set(inputCombination, truthTable.get(newInputCombination));
         }
 
-        return new BoolFunc(newInputIDs, newTruthTable);
+        return new BooleanFunction(newInputIDs, newTruthTable);
     }
 
-    public static BoolFunc removeRedundantInputsIfAble(BoolFunc func) {
+    public static BooleanFunction removeRedundantInputsIfAble(BooleanFunction func) {
         List<Integer> redundantIndices = checkIfInputMatters(func);
 
         if (redundantIndices == null) {
@@ -139,7 +137,7 @@ public class BoolFuncController {
         }
     }
 
-    public static BoolFunc generateFromExpression(BoolExpression boolExpression) {
-        return new BoolFunc(boolExpression.getInputIDs(), boolExpression.getTruthTable());
+    public static BooleanFunction generateFromExpression(BoolExpression boolExpression) {
+        return new BooleanFunction(boolExpression.getInputIDs(), boolExpression.getTruthTable());
     }
 }
