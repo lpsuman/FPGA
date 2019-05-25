@@ -2,6 +2,8 @@ package hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution;
 
 public class IntArraySolution extends AbstractSolution<int[]> {
 
+    private static final long serialVersionUID = -6954770884747463440L;
+
     public IntArraySolution(int[] data) {
         super(data);
     }

@@ -137,6 +137,16 @@ public class BlockConfiguration implements Serializable {
         }
     }
 
+    public static void appendFormattedOutputData(StringBuilder sb, int[] outputIndices, int startIndex) {
+        for (int i = startIndex, n = outputIndices.length; i < n; i++) {
+            sb.append(String.format("F%d at %4d", i, outputIndices[i]));
+
+            if (i < n - 1) {
+                sb.append('\n');
+            }
+        }
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

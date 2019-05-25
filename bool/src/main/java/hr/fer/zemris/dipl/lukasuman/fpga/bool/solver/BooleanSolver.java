@@ -23,13 +23,16 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Resetable;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Timer;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class BooleanSolver implements Resetable {
+public class BooleanSolver implements Resetable, Serializable {
+
+    private static final long serialVersionUID = 2558057486722850241L;
 
     private static class RunResults {
         private BoolVectorSolution result;

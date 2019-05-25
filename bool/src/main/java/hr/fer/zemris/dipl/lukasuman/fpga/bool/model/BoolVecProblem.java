@@ -11,14 +11,16 @@ import hr.fer.zemris.dipl.lukasuman.fpga.rng.IRNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
-public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solution<int[]>> {
+public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solution<int[]>>, Serializable {
+
+    private static final long serialVersionUID = 8162221722673112143L;
 
     private static final String DEFAULT_NAME = "BoolProblem";
 
@@ -26,7 +28,7 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
     private CLBController clbController;
 
     private List<Solution<int[]>> nextToSupplyList;
-    Solution<int[]> nextToSupply;
+    private Solution<int[]> nextToSupply;
     private int indexCurrToSupply;
 
     public BoolVecProblem(BooleanVector boolVector, int numCLBInputs, String name) {
@@ -99,15 +101,20 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         return new BoolVecProblem(new BooleanVector(boolFuncs), numCLBInputs);
     }
 
+    private void appendSolution(StringBuilder sb, Solution<int[]> solution, BitSet[] blockUsage) {
+        int[] data = solution.getData();
+        List<String> sortedIDs = boolVector.getSortedInputIDs();
+
+        BlockConfiguration.appendFormattedInputData(sb, sortedIDs, blockUsage);
+        BlockConfiguration.appendFormattedCLBData(sb, clbController, data, blockUsage);
+        BlockConfiguration.appendFormattedOutputData(sb, data, data.length - 1 - boolVector.getNumFunctions());
+    }
+
     public String solutionToString(Solution<int[]> solution, BitSet[] blockUsage) {
         Utility.checkNull(solution, "solution");
-        int[] data = solution.getData();
-        int sizeCLB = clbController.getIntsPerCLB();
-        int numCLB = (data.length - boolVector.getNumFunctions()) / sizeCLB;
-        List<String> sortedIDs = boolVector.getSortedInputIDs();
         StringBuilder sb = new StringBuilder();
 
-
+        appendSolution(sb, solution, blockUsage);
 
         return sb.toString();
     }
@@ -121,14 +128,8 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         evaluator.resetLog();
         evaluator.setLogging(false);
         sb.append(solutionToString(solution, evaluator.getBlockUsage())).append('\n');
-        BitSet[] blockUsage = evaluator.getBlockUsage();
 
-        BlockConfiguration.appendFormattedInputData(sb, boolVector.getSortedInputIDs(), blockUsage);
-        BlockConfiguration.appendFormattedCLBData(sb, clbController, solution.getData(), blockUsage);
-        List<Integer> outputIndices = Arrays.stream(solution.getData())
-                .boxed()
-                .collect(Collectors.toList());
-        BlockConfiguration.appendFormattedOutputData(sb, outputIndices);
+        appendSolution(sb, solution, evaluator.getBlockUsage());
 
         int numUnusedBlocks = evaluator.getUnusedBlocks().cardinality();
         sb.append(String.format("There were %d unused blocks.\n", numUnusedBlocks)).append('\n');

@@ -3,9 +3,12 @@ package hr.fer.zemris.dipl.lukasuman.fpga.gui.action.session;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.AbstractAppAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionData;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.nio.file.Path;
 
 public class OpenSessionAction extends AbstractAppAction {
 
@@ -13,7 +16,6 @@ public class OpenSessionAction extends AbstractAppAction {
 
     /**Accelerator key (shortcut).*/
     private static final String ACC_KEY = "control O";
-
     /**Mnemonic key.*/
     private static final int MNEMONIC_KEY = KeyEvent.VK_O;
 
@@ -24,6 +26,33 @@ public class OpenSessionAction extends AbstractAppAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        //TODO open session
+        Path[] filePaths = askForFilesToOpen(LocalizationKeys.OPEN_SESSION_KEY, sessionFileFilter);
+
+        if (filePaths == null) {
+            return;
+        }
+
+        for (int i = 0; i < filePaths.length; i++) {
+            SessionData sessionData;
+            Path filePath = filePaths[i];
+
+            if (filePath == null) {
+                continue;
+            }
+
+            try {
+                sessionData = SessionData.deserializeFromFile(filePath.toString());
+            } catch (IOException exc) {
+                exc.printStackTrace();
+                warnCouldNotOpen(filePath, LocalizationKeys.IO_EXCEPTION_OCCURRED_KEY);
+                return;
+            } catch (ClassNotFoundException exc) {
+                exc.printStackTrace();
+                warnCouldNotOpen(filePath, LocalizationKeys.INVALID_DATA_FORMAT);
+                return;
+            }
+
+            jfpga.createNewSession(sessionData, jfpga.getBlueDiskette());
+        }
     }
 }

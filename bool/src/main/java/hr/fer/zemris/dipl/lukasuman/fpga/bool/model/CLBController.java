@@ -7,10 +7,12 @@ import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
+import java.io.Serializable;
 import java.util.HashSet;
-import java.util.Set;
 
-public class CLBController {
+public class CLBController implements Serializable {
+
+    private static final long serialVersionUID = 3101076231108916226L;
 
     private int sizeLUT;
     private int intsPerLUT;
@@ -22,7 +24,7 @@ public class CLBController {
     private int numCLBInputs;
     private int numCLB;
 
-    private Set<CLBChangeListener> clbChangeListeners;
+    private HashSet<CLBChangeListener> clbChangeListeners;
 
     public CLBController(int numInputs, int numCLBInputs, int numCLB) {
         this(numInputs, numCLBInputs);

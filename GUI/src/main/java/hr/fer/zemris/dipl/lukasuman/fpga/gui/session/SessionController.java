@@ -1,6 +1,5 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.session;
 
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIController;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.func.BooleanFunctionController;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
@@ -8,7 +7,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 import javax.swing.*;
 import java.awt.*;
 
-public class SessionController implements GUIController {
+public class SessionController {
 
     private JFPGA jfpga;
     private SessionData sessionData;
@@ -35,7 +34,6 @@ public class SessionController implements GUIController {
         mainPanel.add(booleanFunctionController.getMainPanel(), BorderLayout.WEST);
     }
 
-    @Override
     public JPanel getMainPanel() {
         return mainPanel;
     }

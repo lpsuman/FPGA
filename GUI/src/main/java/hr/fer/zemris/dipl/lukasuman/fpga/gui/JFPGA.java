@@ -124,7 +124,7 @@ public class JFPGA extends JFrame {
 //        editMenu.add(new JMenuItem(cutAction));
 //        editMenu.add(new JMenuItem(pasteAction));
 
-        JMenu languageMenu = new JMenu("Languages/Jezici/Sprache");
+        JMenu languageMenu = new JMenu("Languages/Jezici");
         menuBar.add(languageMenu);
 
         for (String language : GUIConstants.SUPPORTED_LANGUAGES) {

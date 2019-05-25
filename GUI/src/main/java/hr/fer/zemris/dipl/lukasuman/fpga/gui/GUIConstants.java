@@ -16,6 +16,7 @@ public class GUIConstants {
     public static final String DEFAULT_LANGUAGE = "en";
     public static final String[] SUPPORTED_LANGUAGES = {"English", "Hrvatski"};
     public static final String TRANSLATION_BUNDLE_PATH = "translations";
+    public static final String DATA_ABSOLUTE_PATH = "C:/FER/Diplomski/FPGA/GUI/data/sessions";
 
     public static final Dimension DEFAULT_CLOSE_BUTTON_SIZE = new Dimension(22, 22);
     public static final Dimension DEFAULT_ICON_SIZE = new Dimension(18, 18);

@@ -8,6 +8,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BoolVectorSolution;
 
 import java.io.*;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class SessionData implements Serializable {
 
     private static final long serialVersionUID = -4214144882641247429L;
 
-    private Path filePath;
+    private String filePath;
 
     private List<BooleanFunction> boolFunctions;
     private List<BooleanVector> boolVectors;
@@ -32,11 +33,20 @@ public class SessionData implements Serializable {
     }
 
     public Path getFilePath() {
-        return filePath;
+        if (filePath == null) {
+            return null;
+        }
+
+        return Paths.get(filePath);
     }
 
     public void setFilePath(Path filePath) {
-        this.filePath = filePath;
+        if (filePath == null) {
+            this.filePath = null;
+            return;
+        }
+
+        this.filePath = filePath.toString();
     }
 
     public List<BooleanFunction> getBoolFunctions() {
@@ -59,27 +69,20 @@ public class SessionData implements Serializable {
         return boolSolutions;
     }
 
-    public static SessionData deserializeFromFile(String filePath) {
+    public static SessionData deserializeFromFile(String filePath) throws IOException, ClassNotFoundException {
         SessionData result = null;
 
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filePath))) {
             result = (SessionData) in.readObject();
-        } catch (IOException i) {
-            i.printStackTrace();
-        } catch (ClassNotFoundException c) {
-            System.out.println("SessionData class not found!");
-            c.printStackTrace();
         }
 
         return result;
     }
 
-    public static void serializeToFile(SessionData sessionData, String filePath) {
+    public static void serializeToFile(SessionData sessionData, String filePath) throws IOException {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath))) {
             out.writeObject(sessionData);
             System.out.println("Session data is saved in: " + filePath);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

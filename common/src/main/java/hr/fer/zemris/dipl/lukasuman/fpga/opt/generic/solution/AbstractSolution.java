@@ -4,6 +4,8 @@ import java.util.Comparator;
 
 public abstract class AbstractSolution<T> implements Solution<T> {
 
+    private static final long serialVersionUID = 8486883243280695470L;
+
     public static final Comparator<Solution> COMPARATOR_BY_FITNESS =
             Comparator.comparingDouble(Solution::getFitness);
 

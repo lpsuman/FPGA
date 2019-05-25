@@ -1,6 +1,8 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution;
 
-public interface Solution<T> extends Comparable<Solution<T>> {
+import java.io.Serializable;
+
+public interface Solution<T> extends Comparable<Solution<T>>, Serializable {
 
     T getData();
     double getFitness();

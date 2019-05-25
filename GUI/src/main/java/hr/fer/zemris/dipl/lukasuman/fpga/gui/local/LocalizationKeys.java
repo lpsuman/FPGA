@@ -8,7 +8,7 @@ public class LocalizationKeys {
     public static final String NEW_KEY = "new";
     public static final String NEW_SESSION_KEY = "new_session";
     public static final String OPEN_KEY = "open";
-    public static final String OPEN_SESSION_KEY = "open_sesssion";
+    public static final String OPEN_SESSION_KEY = "open_session";
     public static final String SAVE_KEY = "save";
     public static final String SAVE_SESSION_KEY = "save_session";
     public static final String SAVE_AS_KEY = "save_as";
@@ -26,10 +26,14 @@ public class LocalizationKeys {
     public static final String NOTHING_WAS_SAVED_KEY = "nothing_was_saved";
     public static final String FILE_ALREADY_EXISTS_KEY = "file_already_exists";
     public static final String OVERWRITE_KEY = "overwrite";
-    public static final String FILE_COULD_NOT_BE_SAVED_KEY = "file_could_not_be_saved";
+    public static final String FILE_S_COULD_NOT_BE_SAVED_KEY = "file_s_could_not_be_saved";
     public static final String ERROR_KEY = "error";
-    public static final String FILE_SAVED_KEY = "file_saved";
+    public static final String FILE_S_SAVED_KEY = "file_s_saved";
     public static final String NOTIFICATION_KEY = "notification";
+    public static final String FILE_S_DOES_NOT_EXIST = "file_does_not_exist";
+    public static final String FILE_S_COULD_NOT_BE_OPENED_KEY = "file_s_could_not_be_opened";
+    public static final String IO_EXCEPTION_OCCURRED_KEY = "io_exception_occurred";
+    public static final String INVALID_DATA_FORMAT = "invalid_data_format";
 
     public static final String BOOLEAN_FUNCTIONS_KEY = "boolean_functions";
     public static final String INSERT_EXPRESSION_KEY = "insert_expression";
