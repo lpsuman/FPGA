@@ -10,47 +10,29 @@ import java.util.MissingResourceException;
  */
 public abstract class LocalizableAction extends AbstractAction {
 
-	/**Serial ID.*/
 	private static final long serialVersionUID = 6383078233483329169L;
 
 	/**Key suffix for fetching action's description.*/
 	private static final String KEY_SHORT_DESC_SUFFIX = "_desc";
 
-	/**The localization key.*/
-	private String key;
+	private LocalizationHandler localizationHandler;
 
-	/**The localization provider.*/
-	private LocalizationProvider lp;
-
-	/**
-	 * Creates a new {@link LocalizableAction} with the specified parameters.
-	 * @param key See {@linkplain #key}.
-	 * @param lp See {@linkplain #lp}.
-	 */
 	public LocalizableAction(String key, LocalizationProvider lp) {
 		super();
-		if (key == null || lp ==  null) {
-			throw new IllegalArgumentException("Both key and provider must not be null!");
-		}
-		this.key = key;
-		this.lp = lp;
-
+		localizationHandler = new LocalizationHandler(key, lp, this::updateValues);
 		updateValues();
-
-		lp.addLocalizationListener(() -> {
-			updateValues();
-		});
 	}
 
 	/**
 	 * Updates the values which depend on the localization.
 	 */
 	private void updateValues() {
-		putValue(Action.NAME, lp.getString(key));
+		putValue(Action.NAME, localizationHandler.getString());
 		try {
-			putValue(Action.SHORT_DESCRIPTION, lp.getString(key + KEY_SHORT_DESC_SUFFIX));
+			putValue(Action.SHORT_DESCRIPTION, localizationHandler.getLp()
+					.getString(localizationHandler.getKey() + KEY_SHORT_DESC_SUFFIX));
 		} catch (MissingResourceException exc) {
-			putValue(Action.SHORT_DESCRIPTION, lp.getString(key));
+			putValue(Action.SHORT_DESCRIPTION, localizationHandler.getString());
 		}
 	}
 }

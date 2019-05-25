@@ -9,39 +9,17 @@ import javax.swing.*;
  */
 public class LJMenu extends JMenu {
 
-	/**Serial key.*/
 	private static final long serialVersionUID = 3006027052461167368L;
 
-	/**The localization key.*/
-	private String key;
+	private LocalizationHandler localizationHandler;
 
-	/**The localization provider.*/
-	private LocalizationProvider lp;
-
-	/**
-	 * Creates a new {@link LJMenu} with the specified parameters.
-	 * @param key See {@linkplain #key}.
-	 * @param lp See {@linkplain #lp}.
-	 */
 	public LJMenu(String key, LocalizationProvider lp) {
 		super();
-		if (key == null || lp ==  null) {
-			throw new IllegalArgumentException("Both key and provider must not be null!");
-		}
-		this.key = key;
-		this.lp = lp;
-
+		localizationHandler = new LocalizationHandler(key, lp, this::updateText);
 		updateText();
-
-		lp.addLocalizationListener(() -> {
-			updateText();
-		});
 	}
 
-	/**
-	 * Updates the menus text according to the localization.
-	 */
 	private void updateText() {
-		setText(lp.getString(key));
+		setText(localizationHandler.getString());
 	}
 }

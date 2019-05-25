@@ -1,5 +1,7 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui;
 
+import java.awt.*;
+
 public class GUIConstants {
 
     private GUIConstants() {
@@ -15,5 +17,8 @@ public class GUIConstants {
     public static final String[] SUPPORTED_LANGUAGES = {"English", "Hrvatski"};
     public static final String TRANSLATION_BUNDLE_PATH = "translations";
 
-    public static final String DEFAULT_NEW_SESSION_NAME = "New SessionData";
+    public static final Dimension DEFAULT_CLOSE_BUTTON_SIZE = new Dimension(22, 22);
+    public static final Dimension DEFAULT_ICON_SIZE = new Dimension(18, 18);
+
+
 }

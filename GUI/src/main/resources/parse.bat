@@ -1,3 +1,2 @@
 native2ascii -encoding utf8 translations_en.utf8.properties translations_en.properties
 native2ascii -encoding utf8 translations_hr.utf8.properties translations_hr.properties
-native2ascii -encoding utf8 translations_de.utf8.properties translations_de.properties

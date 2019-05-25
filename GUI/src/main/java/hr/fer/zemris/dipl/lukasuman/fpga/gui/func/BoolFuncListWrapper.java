@@ -3,7 +3,9 @@ package hr.fer.zemris.dipl.lukasuman.fpga.gui.func;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
-public class BoolFuncListWrapper extends BooleanFunctionAdapter {
+import java.io.Serializable;
+
+public class BoolFuncListWrapper extends BooleanFunctionAdapter implements Serializable {
 
     private BooleanFunction boolFunc;
     private int indexInList;
@@ -34,6 +36,6 @@ public class BoolFuncListWrapper extends BooleanFunctionAdapter {
 
     @Override
     public String toString() {
-        return String.format("%2d  %2d  %s", indexInList, boolFunc.getNumInputs(), boolFunc.getName());
+        return String.format("%2d  %s  (%d)", indexInList, boolFunc.getName(), boolFunc.getNumInputs());
     }
 }

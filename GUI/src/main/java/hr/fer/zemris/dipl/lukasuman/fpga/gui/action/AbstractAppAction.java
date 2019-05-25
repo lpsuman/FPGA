@@ -11,7 +11,7 @@ import javax.swing.*;
  * @author Luka Suman
  * @version 1.0
  */
-public abstract class AbstractSessionAction extends LocalizableAction {
+public abstract class AbstractAppAction extends LocalizableAction {
 
 	/**Serial ID.*/
 	private static final long serialVersionUID = -4311960612363301231L;
@@ -19,8 +19,7 @@ public abstract class AbstractSessionAction extends LocalizableAction {
 	/**The parent application.*/
 	protected JFPGA jfpga;
 
-
-	public AbstractSessionAction(JFPGA jfpga, String key) {
+	public AbstractAppAction(JFPGA jfpga, String key) {
 		super(key, Utility.checkNull(jfpga, "JFPGA").getFlp());
 		this.jfpga = jfpga;
 	}
