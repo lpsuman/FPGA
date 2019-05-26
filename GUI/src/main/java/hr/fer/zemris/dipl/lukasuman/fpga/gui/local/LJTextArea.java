@@ -4,13 +4,13 @@ import javax.swing.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
-public class LJTextField extends JTextField {
+public class LJTextArea extends JTextArea {
 
     private LocalizationHandler localizationHandler;
     private boolean isTempTextDisplayed;
 
-    public LJTextField(String key, LocalizationProvider lp) {
-        super();
+    public LJTextArea(String key, LocalizationProvider lp, int rows, int columns) {
+        super(rows, columns);
         localizationHandler = new LocalizationHandler(key, lp, this::updateText);
         isTempTextDisplayed = true;
         updateText();

@@ -1,7 +1,6 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -246,5 +245,50 @@ public class Utility {
 
     public static Set<Integer> generateRangeSet(int fromIndex, int toIndex) {
         return IntStream.range(fromIndex, toIndex).boxed().collect(Collectors.toSet());
+    }
+
+    public static List<String> readTextFile(String filePath) {
+        checkIfValidString(filePath, "file path");
+        List<String> result = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+
+                if (!line.isEmpty()) {
+                    result.add(line);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return result;
+    }
+
+    public static boolean saveTextFile(String filePath, List<String> lines) {
+        checkIfValidString(filePath, "file path");
+        checkIfValidCollection(lines, "list of lines");
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            for (String line : lines) {
+                line = line.trim();
+
+                if (!line.isEmpty()) {
+                    writer.write(line);
+                    writer.newLine();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 }

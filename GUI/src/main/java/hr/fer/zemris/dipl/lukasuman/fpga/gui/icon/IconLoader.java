@@ -67,7 +67,7 @@ public class IconLoader {
 
 		ImageIcon loadedIcon = new ImageIcon(bytes);
 		Image scaledImage = getScaledImage(loadedIcon.getImage(),
-				GUIConstants.DEFAULT_ICON_SIZE.width, GUIConstants.DEFAULT_ICON_SIZE.height);
+				GUIConstants.ICON_SIZE.width, GUIConstants.ICON_SIZE.height);
 		return new ImageIcon(scaledImage);
 	}
 

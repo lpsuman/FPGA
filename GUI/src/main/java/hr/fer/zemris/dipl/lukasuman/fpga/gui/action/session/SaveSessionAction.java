@@ -45,6 +45,8 @@ public class SaveSessionAction extends AbstractAppAction {
             if (destinationFilePath == null) {
                 return;
             }
+
+            sessionData.setFilePath(destinationFilePath);
         }
 
         try {

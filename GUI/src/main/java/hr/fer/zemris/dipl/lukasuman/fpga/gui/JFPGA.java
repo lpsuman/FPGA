@@ -9,6 +9,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationProviderImpl;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionData;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -17,10 +18,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 
 public class JFPGA extends JFrame {
@@ -68,11 +68,13 @@ public class JFPGA extends JFrame {
 //                if (exitDecision != JOptionPane.YES_OPTION) {
 //                    return;
 //                }
-//
-//                if (checkForChanges()) {
-//                    dispose();
-//                }
-                dispose();
+
+                if (checkForChanges()) {
+                    if (!sessions.isEmpty()) {
+                        saveSessionPaths();
+                    }
+                    dispose();
+                }
             }
         });
 
@@ -84,6 +86,8 @@ public class JFPGA extends JFrame {
         initActions();
         createMenus();
         initGUI();
+
+        loadPreviousSessions();
     }
 
     public static void main(String[] args) {
@@ -216,8 +220,8 @@ public class JFPGA extends JFrame {
         JPanel sessionPanel = sessionController.getMainPanel();
 
         JPanel closeButtonPanel = new JPanel();
-        int verticalBorder = (GUIConstants.DEFAULT_CLOSE_BUTTON_SIZE.height - GUIConstants.DEFAULT_ICON_SIZE.height) / 2;
-        int horizontalBorder = (GUIConstants.DEFAULT_CLOSE_BUTTON_SIZE.width - GUIConstants.DEFAULT_ICON_SIZE.width) / 2;
+        int verticalBorder = (GUIConstants.CLOSE_BUTTON_SIZE.height - GUIConstants.ICON_SIZE.height) / 2;
+        int horizontalBorder = (GUIConstants.CLOSE_BUTTON_SIZE.width - GUIConstants.ICON_SIZE.width) / 2;
         closeButtonPanel.setBorder(new EmptyBorder(verticalBorder, horizontalBorder, verticalBorder, horizontalBorder));
         closeButtonPanel.setOpaque(false);
         tabPanel.add(closeButtonPanel, BorderLayout.EAST);
@@ -302,6 +306,42 @@ public class JFPGA extends JFrame {
             }
         }
         return true;
+    }
+
+    private void saveSessionPaths() {
+        List<String> sessionPaths = sessions.stream()
+                .map(s -> s.getSessionData().getFilePath())
+                .filter(Objects::nonNull)
+                .map(Path::toString)
+                .collect(Collectors.toList());
+        Utility.saveTextFile(GUIConstants.PREVIOUS_SESSIONS_FILE_PATH, sessionPaths);
+    }
+
+    private void loadPreviousSessions() {
+        List<String> sessionPaths = Utility.readTextFile(GUIConstants.PREVIOUS_SESSIONS_FILE_PATH);
+
+        if (sessionPaths == null) {
+            System.err.println("No file of previous sessions found.");
+            return;
+        }
+
+        for (String sessionPath : sessionPaths) {
+            SessionData sessionData;
+
+            try {
+                sessionData = SessionData.deserializeFromFile(sessionPath);
+            } catch (IOException e) {
+                System.err.println("Couldn't load a previous session. IO error.");
+                e.printStackTrace();
+                return;
+            } catch (ClassNotFoundException e) {
+                System.err.println("Couldn't load a previous session. Invalid class.");
+                e.printStackTrace();
+                return;
+            }
+
+            createNewSession(sessionData, blueDiskette);
+        }
     }
 
     public FormLocalizationProvider getFlp() {
