@@ -20,13 +20,12 @@ import java.nio.file.Path;
  */
 public abstract class AbstractAppAction extends LocalizableAction {
 
-	/**Serial ID.*/
 	private static final long serialVersionUID = -4311960612363301231L;
+
+	protected static FileFilter sessionFileFilter = new FileNameExtensionFilter(".ser (Java Serializable)", "ser");
 
 	/**The parent application.*/
 	protected JFPGA jfpga;
-
-	protected static FileFilter sessionFileFilter = new FileNameExtensionFilter(".ser (Java Serializable)", "ser");
 
 	public AbstractAppAction(JFPGA jfpga, String key) {
 		super(key, Utility.checkNull(jfpga, "JFPGA").getFlp());

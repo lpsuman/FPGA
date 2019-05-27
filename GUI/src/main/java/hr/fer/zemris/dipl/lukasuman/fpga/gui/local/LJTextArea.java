@@ -9,8 +9,8 @@ public class LJTextArea extends JTextArea {
     private LocalizationHandler localizationHandler;
     private boolean isTempTextDisplayed;
 
-    public LJTextArea(String key, LocalizationProvider lp, int rows, int columns) {
-        super(rows, columns);
+    public LJTextArea(String key, LocalizationProvider lp) {
+        super();
         localizationHandler = new LocalizationHandler(key, lp, this::updateText);
         isTempTextDisplayed = true;
         updateText();

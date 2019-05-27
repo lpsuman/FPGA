@@ -22,11 +22,8 @@ public class GUIConstants {
     public static final Dimension CLOSE_BUTTON_SIZE = new Dimension(22, 22);
     public static final Dimension ICON_SIZE = new Dimension(18, 18);
 
-    public static final double UPPER_WEIGHT = 0.2;
-    public static final double LOWER_WEIGHT = 1.0 - UPPER_WEIGHT;
-    public static final double INPUTS_COLUMN_WEIGHT = 0.1;
-    public static final double FUNC_COLUMN_WEIGHT = 2 * INPUTS_COLUMN_WEIGHT;
-    public static final double TABLE_COLUMN_WEIGHT = 2 * FUNC_COLUMN_WEIGHT;
+    public static final int DEFAULT_BORDER_SIZE = 3;
+    public static final int DEFAULT_LABEL_BORDER_SIZE = 3;
 
     public static final int EXPRESSION_TEXT_AREA_ROWS = 4;
     public static final int EXPRESSION_TEXT_AREA_COLUMN = 25;

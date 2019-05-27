@@ -31,7 +31,7 @@ public class SessionController {
     private void initGUI() {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
-        mainPanel.add(booleanFunctionController.getMainPanel(), BorderLayout.WEST);
+        mainPanel.add(booleanFunctionController.getMainPanel(), BorderLayout.CENTER);
     }
 
     public JPanel getMainPanel() {

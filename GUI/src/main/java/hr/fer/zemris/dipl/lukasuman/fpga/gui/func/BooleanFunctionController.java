@@ -3,6 +3,8 @@ package hr.fer.zemris.dipl.lukasuman.fpga.gui.func;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIConstants;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.JPanelPair;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.func.BooleanExpressionProvider;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.func.EditFuncInputListAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.func.EditFuncNameListAction;
@@ -14,10 +16,8 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 public class BooleanFunctionController implements BooleanExpressionProvider {
 
@@ -26,15 +26,21 @@ public class BooleanFunctionController implements BooleanExpressionProvider {
     private List<BooleanFunction> booleanFunctions;
     private JPanel mainPanel;
 
-    private DefaultListModel<BooleanFunction> boolFuncListModel;
-    private JList<BooleanFunction> boolFuncJlist;
-    private JTextArea expressionTextArea;
-    private JButton expressionButton;
-
     private DefaultListModel<String> funcInputsListModel;
     private JList<String> funcInputsJList;
 
+    private TruthTableModel truthTableModel;
+    private JTable truthTable;
+
+    private JTextArea expressionTextArea;
+    private JButton expressionButton;
+    private JButton loadExpressionButton;
+
+    private DefaultListModel<BooleanFunction> boolFuncListModel;
+    private JList<BooleanFunction> boolFuncJlist;
+
     private Action generateFromExpressionAction;
+    private Action loadExpressionAction;
 
     private Set<BooleanFunctionListener> booleanFunctionListeners;
 
@@ -63,8 +69,13 @@ public class BooleanFunctionController implements BooleanExpressionProvider {
                 funcInputsListModel.clear();
                 BooleanFunction selectedFunction = booleanFunctions.get(getIndexSelectedFunction());
                 funcInputsListModel.addAll(selectedFunction.getInputIDs());
+
+                truthTableModel.setData(selectedFunction.getInputIDs(), selectedFunction.getName(), selectedFunction.getTruthTable());
             }
         });
+
+        truthTableModel = new TruthTableModel();
+        truthTable = new JTable(truthTableModel);
     }
 
     private void initActions() {
@@ -72,69 +83,79 @@ public class BooleanFunctionController implements BooleanExpressionProvider {
     }
 
     private void initGUI() {
-        mainPanel = new JPanel(new GridBagLayout());
+        mainPanel = GUIUtility.getPanel();
+//        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
+        JPanel maxSizeMainPanel = GUIUtility.getPanel(new GridBagLayout());
+        mainPanel.add(maxSizeMainPanel, BorderLayout.CENTER);
+        JPanel temp = mainPanel;
+        mainPanel = maxSizeMainPanel;
+
         initInputList();
         initTable();
         initFuncList();
+
+        mainPanel = temp;
+    }
+
+    private JPanelPair generatePanelPair(int indexX, double weightX) {
+        JPanel parentPanel = GUIUtility.getPanel();
+        GridBagConstraints gbc = GUIUtility.getGBC(indexX, 0, weightX, 1.0, 1, 1);
+        mainPanel.add(parentPanel, gbc);
+
+        JPanel upperPanel = GUIUtility.getPanelWithBorder();
+        upperPanel.setLayout(new BoxLayout(upperPanel, BoxLayout.Y_AXIS));
+        parentPanel.add(upperPanel, BorderLayout.NORTH);
+        JPanel lowerPanel = GUIUtility.getPanelWithBorder();
+        parentPanel.add(lowerPanel, BorderLayout.CENTER);
+
+        return new JPanelPair(upperPanel, lowerPanel);
     }
 
     private void initInputList() {
-        JPanel upperPanel = new JPanel();
-        mainPanel.add(upperPanel, getGBC(0, 0, GUIConstants.INPUTS_COLUMN_WEIGHT, GUIConstants.UPPER_WEIGHT, 1, 1));
+        JPanelPair panelPair = generatePanelPair(0, 0.1);
+        JPanel upperPanel = panelPair.getUpperPanel();
+        JPanel lowerPanel = panelPair.getLowerPanel();
 
-        JPanel listPanel = new JPanel(new BorderLayout());
-        mainPanel.add(listPanel, getGBC(0, 1, GUIConstants.INPUTS_COLUMN_WEIGHT, GUIConstants.LOWER_WEIGHT, 1, GridBagConstraints.REMAINDER));
-        listPanel.add(new LJLabel(LocalizationKeys.INPUTS_KEY, jfpga.getFlp()), BorderLayout.NORTH);
-        listPanel.add(new JScrollPane(funcInputsJList), BorderLayout.CENTER);
+        lowerPanel.add(new LJLabel(LocalizationKeys.INPUTS_KEY, jfpga.getFlp(), SwingConstants.CENTER), BorderLayout.NORTH);
+        lowerPanel.add(new JScrollPane(funcInputsJList), BorderLayout.CENTER);
     }
 
     private void initTable() {
+        JPanelPair panelPair = generatePanelPair(1, 0.4);
+        JPanel upperPanel = panelPair.getUpperPanel();
+        JPanel lowerPanel = panelPair.getLowerPanel();
 
+        lowerPanel.add(new LJLabel(LocalizationKeys.TRUTH_TABLE_KEY, jfpga.getFlp(), SwingConstants.CENTER), BorderLayout.NORTH);
+        lowerPanel.add(new JScrollPane(truthTable), BorderLayout.CENTER);
     }
 
     private void initFuncList() {
-        JPanel upperPanel = new JPanel(new BorderLayout());
-        mainPanel.add(upperPanel, getGBC(2, 0, GUIConstants.FUNC_COLUMN_WEIGHT, GUIConstants.UPPER_WEIGHT, 1, 1));
+        JPanelPair panelPair = generatePanelPair(2, 0.2);
+        JPanel upperPanel = panelPair.getUpperPanel();
+        JPanel lowerPanel = panelPair.getLowerPanel();
 
-        expressionTextArea = new LJTextArea(LocalizationKeys.INSERT_EXPRESSION_KEY, jfpga.getFlp(),
-                GUIConstants.EXPRESSION_TEXT_AREA_ROWS, GUIConstants.EXPRESSION_TEXT_AREA_COLUMN);
+        expressionTextArea = new LJTextArea(LocalizationKeys.INSERT_EXPRESSION_KEY, jfpga.getFlp());
+        expressionTextArea.setRows(GUIConstants.EXPRESSION_TEXT_AREA_ROWS);
         expressionTextArea.setLineWrap(true);
-        upperPanel.add(expressionTextArea, BorderLayout.CENTER);
+        upperPanel.add(GUIUtility.putIntoPanelWithBorder(expressionTextArea));
 
         expressionButton = new LJButton(LocalizationKeys.GENERATE_FROM_EXPRESSION_KEY, jfpga.getFlp());
         expressionButton.addActionListener(generateFromExpressionAction);
-        upperPanel.add(expressionButton, BorderLayout.SOUTH);
+        upperPanel.add(GUIUtility.putIntoPanelWithBorder(expressionButton));
 
-        JPanel listPanel = new JPanel(new BorderLayout());
-        mainPanel.add(listPanel, getGBC(2, 1, GUIConstants.FUNC_COLUMN_WEIGHT, GUIConstants.LOWER_WEIGHT, 1, GridBagConstraints.REMAINDER));
+        loadExpressionButton = new LJButton(LocalizationKeys.LOAD_EXPRESSION_KEY, jfpga.getFlp());
 
-        JPanel descPanel = new JPanel(new GridBagLayout());
-        listPanel.add(descPanel, BorderLayout.NORTH);
+        JPanel listDescPanel = GUIUtility.getPanel(new GridLayout(0, 1));
+        lowerPanel.add(listDescPanel, BorderLayout.NORTH);
+        listDescPanel.add(new LJLabel(LocalizationKeys.BOOLEAN_FUNCTIONS_KEY, jfpga.getFlp(), SwingConstants.CENTER));
 
-        descPanel.add(new LJLabel(LocalizationKeys.BOOLEAN_FUNCTIONS_KEY, jfpga.getFlp()), getGBC(0, 0, 3, 1));
-        descPanel.add(new LJLabel(LocalizationKeys.INDEX_KEY, jfpga.getFlp()), getGBC(0, 1, 1, 1));
-        descPanel.add(new LJLabel(LocalizationKeys.NAME_KEY, jfpga.getFlp()), getGBC(1, 1, 1, 1));
-        descPanel.add(new LJLabel(LocalizationKeys.INPUTS_KEY, jfpga.getFlp()), getGBC(2, 1, 1, 1));
+        JPanel descPanel = GUIUtility.getPanel(new GridLayout(1, 0));
+        listDescPanel.add(descPanel);
+        descPanel.add(new LJLabel(LocalizationKeys.INDEX_KEY, jfpga.getFlp(), SwingConstants.LEFT));
+        descPanel.add(new LJLabel(LocalizationKeys.NAME_KEY, jfpga.getFlp(), SwingConstants.CENTER));
+        descPanel.add(new LJLabel(LocalizationKeys.INPUTS_KEY, jfpga.getFlp(), SwingConstants.RIGHT));
 
-        listPanel.add(new JScrollPane(boolFuncJlist), BorderLayout.CENTER);
-    }
-
-    private GridBagConstraints getGBC(int x, int y, double weightX, double weightY, int cellWidth, int cellHeight) {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = x;
-        gbc.gridy = y;
-        gbc.weightx = weightX;
-        gbc.weighty = weightY;
-        gbc.gridwidth = cellWidth;
-        gbc.gridheight = cellHeight;
-        gbc.anchor = GridBagConstraints.PAGE_START;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(10, 10, 10, 10);
-        return gbc;
-    }
-
-    private GridBagConstraints getGBC(int x, int y, int cellWidth, int cellHeight) {
-        return getGBC(x, y, 0.0, 0.0, cellWidth, cellHeight);
+        lowerPanel.add(new JScrollPane(boolFuncJlist), BorderLayout.CENTER);
     }
 
     public int getNumBooleanFunctions() {

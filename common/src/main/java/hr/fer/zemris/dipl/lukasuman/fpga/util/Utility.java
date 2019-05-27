@@ -69,6 +69,14 @@ public class Utility {
         return col;
     }
 
+    public static <T> T[] checkIfValidArray(T[] array, String name) {
+        checkNull(array, name);
+        for (T item : array) {
+            checkNull(item, "item in array");
+        }
+        return array;
+    }
+
     public static String checkIfValidString(String str, String name) {
         checkNull(str, name);
         String result = str.trim();
