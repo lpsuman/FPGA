@@ -11,6 +11,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.AbstractAppAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 public class GenerateFromExpressionAction extends AbstractAppAction {
@@ -38,6 +39,11 @@ public class GenerateFromExpressionAction extends AbstractAppAction {
         try {
             boolExpression = parser.parse(new BoolLexer(Utility.getInputStreamFromString(expression)));
         } catch (BoolParserException exc) {
+            JOptionPane.showMessageDialog(
+                    jfpga,
+                    exc.getMessage(),
+                    jfpga.getFlp().getString(LocalizationKeys.ERROR_KEY),
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
 

@@ -1,5 +1,10 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.func;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.AbstractNameHandler;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationProvider;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import javax.swing.table.AbstractTableModel;
@@ -7,6 +12,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TruthTableModel extends AbstractTableModel {
 
@@ -25,8 +31,13 @@ public class TruthTableModel extends AbstractTableModel {
     private List<String> outputIDs;
     private BitSet[] truthTables;
 
-    public TruthTableModel() {
+    private LocalizationProvider lp;
+    private boolean displayIndices;
+
+    public TruthTableModel(LocalizationProvider lp) {
+        this.lp = Utility.checkNull(lp, "localization provider");
         loadDefaultData();
+        displayIndices = true;
     }
 
     public void setData(List<String> inputIDs, List<String> outputIDs, BitSet[] truthTables) {
@@ -55,14 +66,31 @@ public class TruthTableModel extends AbstractTableModel {
         fireTableStructureChanged();
     }
 
+    public void setData(BooleanVector booleanVector) {
+        List<String> outputIDs = booleanVector.getBoolFunctions().stream()
+                .map(AbstractNameHandler::getName)
+                .collect(Collectors.toList());
+        setData(booleanVector.getSortedInputIDs(), outputIDs, booleanVector.getTruthTable());
+    }
+
     public void setData(List<String> inputIDs, String outputName, BitSet truthTable) {
         BitSet[] truthTableArray = new BitSet[1];
         truthTableArray[0] = truthTable;
         setData(inputIDs, Collections.singletonList(outputName), truthTableArray);
     }
 
+    public void setData(BooleanFunction booleanFunction) {
+        setData(booleanFunction.getInputIDs(), booleanFunction.getName(), booleanFunction.getTruthTable());
+    }
+
     private void loadDefaultData() {
         setData(DEFAULT_INPUT_IDS, DEFAULT_OUTPUT_IDS, DEFAULT_TRUTH_TABLES);
+    }
+
+    public void setDisplayIndices(boolean displayIndices) {
+        this.displayIndices = displayIndices;
+
+        fireTableStructureChanged();
     }
 
     private int getNumInputs() {
@@ -80,11 +108,24 @@ public class TruthTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return getNumInputs() + getNumOutputs();
+        int columnCount = getNumInputs() + getNumOutputs();
+
+        if (displayIndices) {
+            columnCount += 1;
+        }
+
+        return columnCount;
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
+        if (displayIndices) {
+            if (columnIndex == 0) {
+                return rowIndex;
+            }
+            columnIndex -= 1;
+        }
+
         if (columnIndex < getNumInputs()) {
             if (Utility.testBitFromRight(rowIndex, getNumInputs() - 1 - columnIndex)) {
                 return 1;
@@ -107,6 +148,10 @@ public class TruthTableModel extends AbstractTableModel {
             throw new IllegalArgumentException("Truth table can only modify its output columns.");
         }
 
+        if (displayIndices) {
+            columnIndex -= 1;
+        }
+
         boolean value = ((Integer) aValue) != 0;
         int indexTruthTable = columnIndex - getNumInputs();
         boolean oldValue = truthTables[indexTruthTable].get(rowIndex);
@@ -119,6 +164,13 @@ public class TruthTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int column) {
+        if (displayIndices) {
+            if (column == 0) {
+                return lp.getString(LocalizationKeys.INDEX_KEY);
+            }
+            column -= 1;
+        }
+
         if (column < getNumInputs()) {
             return inputIDs.get(column);
         } else {
@@ -133,6 +185,9 @@ public class TruthTableModel extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
+        if (displayIndices) {
+            columnIndex -= 1;
+        }
         return columnIndex >= getNumInputs();
     }
 }

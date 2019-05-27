@@ -12,6 +12,10 @@ public class BoolOperatorFactory {
         BoolOperatorFactory.getGenericFactory().register(OrOperator.class, OrOperator.NAMES);
         BoolOperatorFactory.getGenericFactory().register(XorOperator.class, XorOperator.NAMES);
 
+        BoolOperatorFactory.getGenericFactory().register(NotAndOperator.class, NotAndOperator.NAMES);
+        BoolOperatorFactory.getGenericFactory().register(NotOrOperator.class, NotOrOperator.NAMES);
+        BoolOperatorFactory.getGenericFactory().register(NotXorOperator.class, NotXorOperator.NAMES);
+
         BoolOperatorFactory.getGenericFactory().registerDefault(SimpleInputOperator.class);
     }
 

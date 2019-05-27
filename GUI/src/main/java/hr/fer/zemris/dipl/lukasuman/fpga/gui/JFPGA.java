@@ -124,10 +124,6 @@ public class JFPGA extends JFrame {
         JMenu editMenu = new LJMenu("edit", flp);
         menuBar.add(editMenu);
 
-//        editMenu.add(new JMenuItem(copyAction));
-//        editMenu.add(new JMenuItem(cutAction));
-//        editMenu.add(new JMenuItem(pasteAction));
-
         JMenu languageMenu = new JMenu("Languages/Jezici");
         menuBar.add(languageMenu);
 
@@ -139,26 +135,6 @@ public class JFPGA extends JFrame {
             });
             languageMenu.add(menuItem);
         }
-
-//        JMenu toolsMenu = new LJMenu("tools", flp);
-//        menuBar.add(toolsMenu);
-//
-//        changeCaseMenu = new LJMenu("case_menu", flp);
-//        toolsMenu.add(changeCaseMenu);
-//        changeCaseMenu.setEnabled(false);
-//        changeCaseMenu.add(new JMenuItem(new UpperCaseAction(this)));
-//        changeCaseMenu.add(new JMenuItem(new LowerCaseAction(this)));
-//        changeCaseMenu.add(new JMenuItem(new InvertCaseAction(this)));
-//
-//        sortMenu = new LJMenu("sort", flp);
-//        toolsMenu.add(sortMenu);
-//        sortMenu.setEnabled(false);
-//        sortMenu.add(new JMenuItem(new SortAscendingAction(this)));
-//        sortMenu.add(new JMenuItem(new SortDescendingAction(this)));
-//
-//        uniqueMenuItem = new JMenuItem(new UniqueAction(this));
-//        toolsMenu.add(uniqueMenuItem);
-//        uniqueMenuItem.setEnabled(false);
 
         this.setJMenuBar(menuBar);
     }

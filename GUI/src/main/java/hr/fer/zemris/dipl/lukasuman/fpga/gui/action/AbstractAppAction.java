@@ -12,6 +12,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * This class is used to store functionalities common to all actions.
@@ -22,7 +23,8 @@ public abstract class AbstractAppAction extends LocalizableAction {
 
 	private static final long serialVersionUID = -4311960612363301231L;
 
-	protected static FileFilter sessionFileFilter = new FileNameExtensionFilter(".ser (Java Serializable)", "ser");
+	protected static FileNameExtensionFilter sessionFileFilter = new FileNameExtensionFilter(".ser (Java Serializable)", "ser");
+	protected static FileNameExtensionFilter textFileFilter = new FileNameExtensionFilter(".txt (Text File)", "txt");
 
 	/**The parent application.*/
 	protected JFPGA jfpga;
@@ -104,7 +106,7 @@ public abstract class AbstractAppAction extends LocalizableAction {
 				JOptionPane.WARNING_MESSAGE);
 	}
 
-	public Path askForSaveDestination(String saveDialogTitleKey, FileFilter fileFilter) {
+	public Path askForSaveDestination(String saveDialogTitleKey, FileNameExtensionFilter fileFilter) {
 		JFileChooser jfc = getFileChooser(saveDialogTitleKey, fileFilter, false);
 
 		if (jfc.showSaveDialog(jfpga) != JFileChooser.APPROVE_OPTION) {
@@ -126,6 +128,14 @@ public abstract class AbstractAppAction extends LocalizableAction {
 					JOptionPane.YES_NO_OPTION);
 			if (decision == JOptionPane.NO_OPTION) {
 				return null;
+			}
+		} else {
+			String pathStr = destinationFilePath.toString();
+			int dotIndex = pathStr.lastIndexOf('.');
+
+			if (dotIndex == -1) {
+				pathStr += "." + fileFilter.getExtensions()[0];
+				destinationFilePath = Paths.get(pathStr);
 			}
 		}
 

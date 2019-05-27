@@ -5,6 +5,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.lexer.BoolToken;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.lexer.BoolTokenType;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.lexer.Lexer;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.operators.BoolOperator;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.operators.NotOperator;
 
 import java.util.*;
 
@@ -109,7 +110,7 @@ public class BoolParser implements Parser<BoolToken, BoolExpression> {
         }
 
         if (newOperator == null) {
-            throw new BoolParserException("Unknown word encountered.");
+            throw new BoolParserException("Unknown word encountered: " + value);
         }
 
         pushOperator(newOperator);
@@ -122,7 +123,8 @@ public class BoolParser implements Parser<BoolToken, BoolExpression> {
 
         if (roots.peek() == null) {
             if (newOperator.isUsingLeft()) {
-                throw new BoolParserException("Operator at the start of an expression (after parenthesis) has no left operand.");
+                throw new BoolParserException(String.format("Operator %s at the start of an expression (or after " +
+                        "parenthesis) has no left operand.", newOperator));
             }
 
             roots.pop();
@@ -137,12 +139,16 @@ public class BoolParser implements Parser<BoolToken, BoolExpression> {
         }
 
         if (!operator.isUsingRight() && !newOperator.isUsingLeft() && !isParenthesesJustClosed) {
-                throw new BoolParserException("Literal before NOT.");
+            if (newOperator instanceof NotOperator) {
+                throw new BoolParserException(String.format("Literal %s before NOT.", operator));
+            } else {
+                throw new BoolParserException(String.format("Two consecutive literals: %s and %s", operator, newOperator));
+            }
         }
 
         if (!newOperator.isUsingLeft()) {
             if (isParenthesesJustClosed) {
-                throw new BoolParserException("Parentheses before NOT.");
+                throw new BoolParserException("NOT after closed parentheses.");
             }
 
             operator.setRight(newOperator);

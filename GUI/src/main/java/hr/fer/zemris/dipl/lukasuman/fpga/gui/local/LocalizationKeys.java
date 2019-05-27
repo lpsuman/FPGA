@@ -38,6 +38,8 @@ public class LocalizationKeys {
     public static final String INSERT_EXPRESSION_KEY = "insert_expression";
     public static final String GENERATE_FROM_EXPRESSION_KEY = "generate_from_expression";
     public static final String LOAD_EXPRESSION_KEY = "load_expression";
+    public static final String DUPLICATE_FUNCTION_KEY = "duplicate_function";
+    public static final String GENERATE_RANDOM_KEY = "generate_random";
     public static final String BOOLEAN_FUNCTIONS_KEY = "boolean_functions";
     public static final String INDEX_KEY = "index";
     public static final String NAME_KEY = "name";

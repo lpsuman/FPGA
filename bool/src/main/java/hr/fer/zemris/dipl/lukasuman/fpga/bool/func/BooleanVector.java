@@ -40,6 +40,19 @@ public class BooleanVector extends AbstractNameHandler implements Serializable {
         this(boolFunctions, DEFAULT_NAME);
     }
 
+    public BooleanVector(BooleanVector other) {
+        super(other.getName());
+        boolFunctions = new ArrayList<>(other.boolFunctions);
+        numInputCombinations = other.numInputCombinations;
+
+        truthTable = new BitSet[other.truthTable.length];
+        for (int i = 0; i < truthTable.length; i++) {
+            truthTable[i] = (BitSet) other.truthTable[i].clone();
+        }
+
+        sortedInputIDs = new ArrayList<>(other.sortedInputIDs);
+    }
+
     private void fillTable(List<BooleanFunction> boolFuncs) {
         Set<String> inputIDSet = new HashSet<>();
         List<BooleanFunction> checkedFunctions = new ArrayList<>(boolFuncs.size());

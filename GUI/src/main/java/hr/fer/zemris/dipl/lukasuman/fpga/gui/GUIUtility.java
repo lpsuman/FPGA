@@ -42,17 +42,17 @@ public class GUIUtility {
         return result;
     }
 
-    public static GridBagConstraints getGBC(int x, int y, double weightX, double weightY, int cellWidth, int cellHeight) {
+    public static GridBagConstraints getGBC(int x, int y, double weightX, double weightY, int gridWidth, int gridHeight) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = x;
         gbc.gridy = y;
         gbc.weightx = weightX;
         gbc.weighty = weightY;
-        gbc.gridwidth = cellWidth;
-        gbc.gridheight = cellHeight;
+        gbc.gridwidth = gridWidth;
+        gbc.gridheight = gridHeight;
         gbc.anchor = GridBagConstraints.PAGE_START;
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.insets = new Insets(5, 5, 5, 5);
         return gbc;
     }
 

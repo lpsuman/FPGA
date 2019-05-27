@@ -255,6 +255,10 @@ public class Utility {
         return IntStream.range(fromIndex, toIndex).boxed().collect(Collectors.toSet());
     }
 
+    public static Integer[] generateRangeArray(int fromIndex, int toIndex) {
+        return IntStream.range(fromIndex, toIndex).boxed().toArray(Integer[]::new);
+    }
+
     public static List<String> readTextFile(String filePath) {
         checkIfValidString(filePath, "file path");
         List<String> result = new ArrayList<>();

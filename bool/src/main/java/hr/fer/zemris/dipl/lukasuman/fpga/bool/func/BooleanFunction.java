@@ -5,6 +5,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Objects;
@@ -50,6 +51,10 @@ public class BooleanFunction extends AbstractNameHandler implements Serializable
 
     public BooleanFunction(int numInputs, BitSet truthTable) {
         this(numInputs, truthTable, DEFAULT_NAME);
+    }
+
+    public BooleanFunction(BooleanFunction other) {
+        this(new ArrayList<>(other.getInputIDs()), (BitSet) other.getTruthTable().clone(), other.getName());
     }
 
     public List<String> getInputIDs() {
