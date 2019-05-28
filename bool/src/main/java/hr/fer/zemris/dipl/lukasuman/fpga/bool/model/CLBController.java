@@ -73,7 +73,7 @@ public class CLBController implements Serializable {
             if (testInputBit(inputCombination, numInputs, inputIDs[startIndex + i])) {
                 extendedIndex++;
             }
-            if (i < numInputs - 1) {
+            if (i < n - 1) {
                 extendedIndex <<= 1;
             }
         }

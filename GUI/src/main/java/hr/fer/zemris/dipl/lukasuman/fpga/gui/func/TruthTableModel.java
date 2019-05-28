@@ -32,10 +32,13 @@ public class TruthTableModel extends AbstractTableModel {
     private BitSet[] truthTables;
 
     private LocalizationProvider lp;
+    private String indexColumnName;
     private boolean displayIndices;
 
     public TruthTableModel(LocalizationProvider lp) {
         this.lp = Utility.checkNull(lp, "localization provider");
+        updateColumnNames();
+        lp.addLocalizationListener(this::updateColumnNames);
         loadDefaultData();
         displayIndices = true;
     }
@@ -87,10 +90,20 @@ public class TruthTableModel extends AbstractTableModel {
         setData(DEFAULT_INPUT_IDS, DEFAULT_OUTPUT_IDS, DEFAULT_TRUTH_TABLES);
     }
 
-    public void setDisplayIndices(boolean displayIndices) {
-        this.displayIndices = displayIndices;
-
+    private void updateColumnNames() {
+        indexColumnName = lp.getString(LocalizationKeys.INDEX_KEY);
         fireTableStructureChanged();
+    }
+
+    public void setDisplayIndices(boolean displayIndices) {
+        if (displayIndices != this.displayIndices) {
+            this.displayIndices = displayIndices;
+            fireTableStructureChanged();
+        }
+    }
+
+    public List<String> getInputIDs() {
+        return inputIDs;
     }
 
     private int getNumInputs() {
@@ -166,7 +179,7 @@ public class TruthTableModel extends AbstractTableModel {
     public String getColumnName(int column) {
         if (displayIndices) {
             if (column == 0) {
-                return lp.getString(LocalizationKeys.INDEX_KEY);
+                return indexColumnName;
             }
             column -= 1;
         }
@@ -185,9 +198,14 @@ public class TruthTableModel extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
+        if (truthTables.length > 1) {
+            return false;
+        }
+
         if (displayIndices) {
             columnIndex -= 1;
         }
+
         return columnIndex >= getNumInputs();
     }
 }

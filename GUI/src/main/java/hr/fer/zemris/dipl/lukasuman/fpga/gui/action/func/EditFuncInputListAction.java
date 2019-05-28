@@ -21,7 +21,7 @@ public class EditFuncInputListAction extends EditListAction<String> {
             return;
         }
 
-        booleanFunctionController.changeFunctionInput(funcIndex, value, row);
+        booleanFunctionController.changeFunctionInput(row, value);
         model.set(row, value);
     }
 

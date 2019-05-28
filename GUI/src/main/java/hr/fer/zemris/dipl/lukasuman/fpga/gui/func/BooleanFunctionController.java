@@ -7,7 +7,6 @@ import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JPanelPair;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.func.*;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.ListAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
@@ -17,6 +16,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.*;
 import java.util.List;
 
@@ -27,17 +28,17 @@ public class BooleanFunctionController implements BooleanExpressionProvider {
     private List<BooleanFunction> booleanFunctions;
     private JPanel mainPanel;
 
-    private DefaultListModel<String> funcInputsListModel;
-    private JList<String> funcInputsJList;
+    private InputTableModel inputTableModel;
+    private JTable inputTable;
 
     private TruthTableModel truthTableModel;
     private JTable truthTable;
 
+    private FuncTableModel funcTableModel;
+    private JTable funcTable;
+
     private JTextArea expressionTextArea;
     private JComboBox<Integer> numInputsComboBox;
-
-    private DefaultListModel<BooleanFunction> boolFuncListModel;
-    private JList<BooleanFunction> boolFuncJlist;
 
     private Action generateFromExpressionAction;
     private LoadTextAction loadExpressionAction;
@@ -57,51 +58,52 @@ public class BooleanFunctionController implements BooleanExpressionProvider {
     }
 
     private void loadData(List<BooleanFunction> booleanFunctions) {
-        boolFuncListModel = new DefaultListModel<>();
-        booleanFunctions.forEach(f -> boolFuncListModel.addElement(f));
-        boolFuncJlist = new JList<>(boolFuncListModel);
-        boolFuncJlist.setCellRenderer(new FuncListCellRenderer());
-        boolFuncJlist.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        new ListAction(boolFuncJlist, new EditFuncNameListAction(this));
-
-        funcInputsListModel = new DefaultListModel<>();
-        funcInputsJList = new JList<>(funcInputsListModel);
-        new ListAction(funcInputsJList, new EditFuncInputListAction(this));
-
-        boolFuncJlist.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                funcInputsListModel.clear();
-                BooleanFunction selectedFunction = booleanFunctions.get(getIndexSelectedFunction());
-                funcInputsListModel.addAll(selectedFunction.getInputIDs());
-            }
-        });
-
-        truthTableModel = new TruthTableModel(jfpga.getFlp());
-        truthTable = new JTable(truthTableModel);
+//        DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
+//        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        funcTableModel = new FuncTableModel(booleanFunctions, this, jfpga.getFlp());
+        funcTable = new AutoSelectJTable(funcTableModel);
+        funcTable.setDefaultRenderer(Integer.class, centerRenderer);
+        funcTable.setRowSelectionAllowed(true);
+        funcTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+        inputTableModel = new InputTableModel(this, jfpga.getFlp());
+        inputTable = new AutoSelectJTable(inputTableModel);
+        inputTable.setDefaultRenderer(Integer.class, centerRenderer);
+
+        truthTableModel = new TruthTableModel(jfpga.getFlp());
+        truthTable = new AutoSelectJTable(truthTableModel);
         truthTable.setDefaultRenderer(Integer.class, centerRenderer);
 
-        boolFuncJlist.addListSelectionListener(e -> {
+        funcTable.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                List<BooleanFunction> selectedFunctions = boolFuncJlist.getSelectedValuesList();
+                int[] selectedIndices = funcTable.getSelectedRows();
+                List<BooleanFunction> selectedFunctions = new ArrayList<>(selectedIndices.length);
+
+                for (int selectedIndex : selectedIndices) {
+                    selectedFunctions.add(funcTableModel.getBooleanFunctions().get(selectedIndex));
+                }
+
                 if (selectedFunctions.size() == 1) {
-                    truthTableModel.setData(selectedFunctions.get(0));
+                    BooleanFunction selectedFunction = selectedFunctions.get(0);
+                    truthTableModel.setData(selectedFunction);
+                    inputTableModel.setInputIDs(selectedFunction.getInputIDs());
                 } else if (selectedFunctions.size() > 1) {
-                    truthTableModel.setData(new BooleanVector(selectedFunctions));
+                    BooleanVector selectionVector = new BooleanVector(selectedFunctions);
+                    truthTableModel.setData(selectionVector);
+                    inputTableModel.setInputIDs(selectionVector.getSortedInputIDs());
                 }
             }
         });
 
-        addBooleanFunctionListener(new BooleanFunctionAdapter() {
+        jfpga.addComponentListener(new ComponentAdapter() {
             @Override
-            public void booleanFunctionNameEdited(BooleanFunction booleanFunction, int indexInList, String oldName) {
-                truthTableModel.fireTableStructureChanged();
-            }
+            public void componentResized(ComponentEvent e) {
 
-            @Override
-            public void booleanFunctionInputsEdited(BooleanFunction booleanFunction, int indexInList, List<String> oldInputs) {
-                truthTableModel.fireTableStructureChanged();
             }
         });
     }
@@ -116,7 +118,6 @@ public class BooleanFunctionController implements BooleanExpressionProvider {
 
     private void initGUI() {
         mainPanel = GUIUtility.getPanel();
-//        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
         JPanel maxSizeMainPanel = GUIUtility.getPanel(new GridBagLayout());
         mainPanel.add(maxSizeMainPanel, BorderLayout.CENTER);
         JPanel temp = mainPanel;
@@ -150,7 +151,7 @@ public class BooleanFunctionController implements BooleanExpressionProvider {
         JPanel lowerPanel = panelPair.getLowerPanel();
 
         lowerPanel.add(new LJLabel(LocalizationKeys.INPUTS_KEY, jfpga.getFlp(), SwingConstants.CENTER), BorderLayout.NORTH);
-        lowerPanel.add(new JScrollPane(funcInputsJList), BorderLayout.CENTER);
+        lowerPanel.add(new JScrollPane(inputTable), BorderLayout.CENTER);
     }
 
     private void initTable() {
@@ -200,33 +201,49 @@ public class BooleanFunctionController implements BooleanExpressionProvider {
         lowerPanel.add(listDescPanel, BorderLayout.NORTH);
         listDescPanel.add(new LJLabel(LocalizationKeys.BOOLEAN_FUNCTIONS_KEY, jfpga.getFlp(), SwingConstants.CENTER));
 
-        JPanel descPanel = GUIUtility.getPanel(new GridLayout(1, 0));
-        listDescPanel.add(descPanel);
-        descPanel.add(new LJLabel(LocalizationKeys.INDEX_KEY, jfpga.getFlp(), SwingConstants.LEFT));
-        descPanel.add(new LJLabel(LocalizationKeys.NAME_KEY, jfpga.getFlp(), SwingConstants.CENTER));
-        descPanel.add(new LJLabel(LocalizationKeys.INPUTS_KEY, jfpga.getFlp(), SwingConstants.RIGHT));
+        lowerPanel.add(new JScrollPane(funcTable), BorderLayout.CENTER);
+    }
 
-        lowerPanel.add(new JScrollPane(boolFuncJlist), BorderLayout.CENTER);
+    public List<BooleanFunction> getBooleanFunctions() {
+        return funcTableModel.getBooleanFunctions();
     }
 
     public int getNumBooleanFunctions() {
-        return booleanFunctions.size();
+        return getBooleanFunctions().size();
     }
 
     public int getIndexSelectedFunction() {
-        return boolFuncJlist.getSelectedIndex();
+        return funcTable.getSelectedRow();
+    }
+
+    public int[] getIndicesSelectedFunctions() {
+        return funcTable.getSelectedRows();
+    }
+
+    public BooleanFunction getSelectedFunction() {
+        return getBooleanFunction(getIndexSelectedFunction());
+    }
+
+    public List<BooleanFunction> getSelectedFunctions() {
+        List<BooleanFunction> selectedFunctions = new ArrayList<>();
+
+        for (int selectedIndex : getIndicesSelectedFunctions()) {
+            selectedFunctions.add(getBooleanFunction(selectedIndex));
+        }
+
+        return selectedFunctions;
     }
 
     public BooleanFunction getBooleanFunction(int index) {
-        Utility.checkRange(index, 0, booleanFunctions.size());
-        return booleanFunctions.get(index);
+        Utility.checkRange(index, 0, getNumBooleanFunctions());
+        return getBooleanFunctions().get(index);
     }
 
     public void addBooleanFunction(BooleanFunction newBooleanFunction, int index) {
         Utility.checkNull(newBooleanFunction, "new boolean function");
         Utility.checkRange(index, 0, booleanFunctions.size());
         booleanFunctions.add(index, newBooleanFunction);
-        boolFuncListModel.add(index, newBooleanFunction);
+        funcTableModel.fireTableRowsInserted(index, index);
 
         if (booleanFunctionListeners != null) {
             booleanFunctionListeners.forEach(l -> l.booleanFunctionAdded(newBooleanFunction, index));
@@ -239,8 +256,10 @@ public class BooleanFunctionController implements BooleanExpressionProvider {
     }
 
     public void removeBooleanFunction(int index) {
-        Utility.checkRange(index, 0, booleanFunctions.size() - 1);
-        BooleanFunction removed = booleanFunctions.remove(index);
+        Utility.checkRange(index, 0, getNumBooleanFunctions() - 1);
+        BooleanFunction removed = getBooleanFunctions().remove(index);
+        funcTableModel.fireTableRowsDeleted(index, index);
+
         if (booleanFunctionListeners != null) {
             booleanFunctionListeners.forEach(l -> l.booleanFunctionRemoved(removed, index));
         }
@@ -248,28 +267,55 @@ public class BooleanFunctionController implements BooleanExpressionProvider {
     }
 
     public void changeFunctionName(int index, String newName) {
-        Utility.checkRange(index, 0, booleanFunctions.size() - 1);
+        Utility.checkRange(index, 0, getNumBooleanFunctions() - 1);
         Utility.checkIfValidString(newName, "new boolean function's name");
-        BooleanFunction booleanFunction = booleanFunctions.get(index);
+        BooleanFunction booleanFunction = getBooleanFunction(index);
         String oldName = booleanFunction.getName();
         booleanFunction.setName(newName);
+        funcTableModel.fireTableRowsUpdated(index, index);
+        truthTableModel.setData(booleanFunction);
+        truthTableModel.fireTableStructureChanged();
+
         if (booleanFunctionListeners != null) {
             booleanFunctionListeners.forEach(l -> l.booleanFunctionNameEdited(booleanFunction, index, oldName));
         }
+
         parentSession.setEdited(true);
     }
 
-    public void changeFunctionInput(int funcIndex, String newInputID, int inputIndex) {
-        Utility.checkRange(funcIndex, 0, booleanFunctions.size() - 1);
+    public void changeFunctionInput(int inputIndex, String newInputID) {
         Utility.checkIfValidString(newInputID, "new boolean function's input");
-        BooleanFunction func = booleanFunctions.get(funcIndex);
-        Utility.checkRange(inputIndex, 0, func.getNumInputs() - 1);
-        List<String> oldInputs = new ArrayList<>(func.getInputIDs());
-        func.getInputIDs().set(inputIndex, newInputID);
 
-        if (booleanFunctionListeners != null) {
-            booleanFunctionListeners.forEach(l -> l.booleanFunctionInputsEdited(func, funcIndex, oldInputs));
+        List<BooleanFunction> selectedFunctions = getSelectedFunctions();
+
+        if (selectedFunctions.size() == 1) {
+            BooleanFunction func = selectedFunctions.get(0);
+            Utility.checkRange(inputIndex, 0, func.getNumInputs() - 1);
+            List<String> oldInputs = new ArrayList<>(func.getInputIDs());
+            func.getInputIDs().set(inputIndex, newInputID);
+
+            if (booleanFunctionListeners != null) {
+                booleanFunctionListeners.forEach(l -> l.booleanFunctionInputsEdited(func, getIndexSelectedFunction(), oldInputs));
+            }
+        } else {
+            String oldInputID = truthTableModel.getInputIDs().get(inputIndex);
+
+            for (BooleanFunction selectedFunction : selectedFunctions) {
+                List<String> inputIDs = selectedFunction.getInputIDs();
+                int index = inputIDs.indexOf(oldInputID);
+
+                if (index != -1) {
+                    inputIDs.set(index, newInputID);
+                }
+            }
+
+            BooleanVector selectionVector = new BooleanVector(selectedFunctions);
+            truthTableModel.setData(selectionVector);
+            inputTableModel.setInputIDs(selectionVector.getSortedInputIDs());
         }
+
+        inputTableModel.fireTableDataChanged();
+        truthTableModel.fireTableStructureChanged();
         parentSession.setEdited(true);
     }
 
@@ -280,6 +326,10 @@ public class BooleanFunctionController implements BooleanExpressionProvider {
 
     public JPanel getMainPanel() {
         return mainPanel;
+    }
+
+    public JFPGA getJfpga() {
+        return jfpga;
     }
 
     public void addBooleanFunctionListener(BooleanFunctionListener listener) {

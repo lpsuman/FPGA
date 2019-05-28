@@ -27,7 +27,7 @@ public class Constants {
     public static final boolean STOP_AFTER_MERGING = true;
 
     public static final ArgumentLimit<Integer> NUM_FUNCTION_INPUTS_LIMIT =
-            new ArgumentIntervalLimit<>("number of inputs for boolean function", 1, 16);
+            new ArgumentIntervalLimit<>("number of inputs for boolean function", 2, 10);
 
     public static final ArgumentLimit<Integer> NUM_FUNCTIONS_LIMIT =
             new ArgumentIntervalLimit<>("number of functions", 1, 100);

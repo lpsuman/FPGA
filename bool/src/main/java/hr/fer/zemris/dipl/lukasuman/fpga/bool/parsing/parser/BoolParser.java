@@ -6,6 +6,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.lexer.BoolTokenType;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.lexer.Lexer;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.operators.BoolOperator;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.operators.NotOperator;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 
 import java.util.*;
 
@@ -53,8 +54,16 @@ public class BoolParser implements Parser<BoolToken, BoolExpression> {
             }
         }
 
-        if (sortedInputIDs.isEmpty()) {
+        int numInputs = sortedInputIDs.size();
+
+        if (numInputs == 0) {
             throw new BoolParserException("No inputs in expression.");
+        } else if (numInputs < Constants.NUM_FUNCTION_INPUTS_LIMIT.getLowerLimit()) {
+            throw new BoolParserException(String.format("Number of inputs in expression is too small (%d while %d is minimum).",
+                    numInputs, Constants.NUM_FUNCTION_INPUTS_LIMIT.getLowerLimit()));
+        } else if (numInputs > Constants.NUM_FUNCTION_INPUTS_LIMIT.getUpperLimit()) {
+            throw new BoolParserException((String.format("Too many inputs in expression (%d while %d is maximum.",
+                    numInputs, Constants.NUM_FUNCTION_INPUTS_LIMIT.getUpperLimit())));
         }
 
         boolExpression = new BoolExpression(new ArrayList<>(sortedInputIDs));

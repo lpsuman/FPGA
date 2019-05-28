@@ -41,7 +41,7 @@ public class BooleanVector extends AbstractNameHandler implements Serializable {
     }
 
     public BooleanVector(BooleanVector other) {
-        super(other.getName());
+        super(Utility.checkNull(other, "boolean vector").getName());
         boolFunctions = new ArrayList<>(other.boolFunctions);
         numInputCombinations = other.numInputCombinations;
 

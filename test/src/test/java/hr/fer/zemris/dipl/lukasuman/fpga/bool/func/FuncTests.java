@@ -24,6 +24,15 @@ public class FuncTests {
 
     private static final List<String> expectedInputIDs = new ArrayList<>(Arrays.asList("a", "b", "c", "d", "e"));
 
+    private static final BitSet expectedFirstTruthTable = Utility.bitSetFromMask(
+            0b11110000111100001111111100000000, 32);
+
+    private static final BitSet expectedSecondTruthTable = Utility.bitSetFromMask(
+            0b00001100111100110000110011110011, 32);
+
+    private static final BitSet expectedThirdTruthTable = Utility.bitSetFromMask(
+            0b11101100011010001110110001101000, 32);
+
     @Test
     void testBoolFunc() {
         TestUtil.argThrow(() -> new BooleanFunction(null, firstTruthTable));
@@ -39,7 +48,7 @@ public class FuncTests {
 
     @Test
     void testBoolVector() {
-        TestUtil.argThrow(() -> new BooleanVector(null));
+        TestUtil.argThrow(() -> new BooleanVector((List<BooleanFunction>) null));
         TestUtil.argThrow(() -> new BooleanVector(new ArrayList<>()));
 
         BooleanFunction firstFunc = new BooleanFunction(firstInputIDs, firstTruthTable);
@@ -61,5 +70,9 @@ public class FuncTests {
         assertEquals(boolVector.getNumInputCombinations(), (int) Math.pow(2, expectedInputIDs.size()));
         assertEquals(boolVector.getTruthTable().length, 3);
         assertEquals(boolVector.getSortedInputIDs(), expectedInputIDs);
+
+        assertEquals(boolVector.getTruthTable()[0], expectedFirstTruthTable);
+        assertEquals(boolVector.getTruthTable()[1], expectedSecondTruthTable);
+        assertEquals(boolVector.getTruthTable()[2], expectedThirdTruthTable);
     }
 }
