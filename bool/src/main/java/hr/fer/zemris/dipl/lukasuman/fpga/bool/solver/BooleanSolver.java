@@ -262,6 +262,7 @@ public class BooleanSolver implements Resetable, Serializable {
 
             controller.setNumCLB(controller.getNumCLB() - numUnusedBlocks - 1);
             numFailed = 0;
+            numConsecutiveBestFitnessBelowThreshold = 0;
         }
 
         return handleResults(bestSolution, numCLBOfBest, problem,

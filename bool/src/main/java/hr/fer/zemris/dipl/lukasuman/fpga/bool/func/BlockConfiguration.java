@@ -138,8 +138,10 @@ public class BlockConfiguration implements Serializable {
     }
 
     public static void appendFormattedOutputData(StringBuilder sb, int[] outputIndices, int startIndex) {
+        int funcIndex = 0;
         for (int i = startIndex, n = outputIndices.length; i < n; i++) {
-            sb.append(String.format("F%d at %4d", i, outputIndices[i]));
+            sb.append(String.format("F%d at %4d", funcIndex, outputIndices[i]));
+            funcIndex++;
 
             if (i < n - 1) {
                 sb.append('\n');

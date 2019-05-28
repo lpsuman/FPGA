@@ -107,7 +107,7 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
 
         BlockConfiguration.appendFormattedInputData(sb, sortedIDs, blockUsage);
         BlockConfiguration.appendFormattedCLBData(sb, clbController, data, blockUsage);
-        BlockConfiguration.appendFormattedOutputData(sb, data, data.length - 1 - boolVector.getNumFunctions());
+        BlockConfiguration.appendFormattedOutputData(sb, data, data.length - boolVector.getNumFunctions());
     }
 
     public String solutionToString(Solution<int[]> solution, BitSet[] blockUsage) {
@@ -132,7 +132,7 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         appendSolution(sb, solution, evaluator.getBlockUsage());
 
         int numUnusedBlocks = evaluator.getUnusedBlocks().cardinality();
-        sb.append(String.format("There were %d unused blocks.\n", numUnusedBlocks)).append('\n');
+        sb.append(String.format("\nThere were %d unused blocks.\n", numUnusedBlocks)).append('\n');
 
         return sb.toString();
     }
@@ -228,5 +228,10 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
 
     public CLBController getClbController() {
         return clbController;
+    }
+
+    public static Solution<int[]> bruteSolve(BooleanFunction func, int numCLBInputs) {
+        //TODO brute solve by constructing multiplexers with CLBs, algorithm is on paper
+        return null;
     }
 }

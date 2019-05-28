@@ -9,6 +9,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.lexer.BoolLexer;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.parser.BoolParser;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BooleanSolver;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BoolVectorSolution;
+import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.util.ArrayList;
@@ -18,8 +19,8 @@ public class BooleanMain {
 
     private static final boolean USE_NON_RANDOM_FUNCTIONS = false;
     private static final boolean SHOW_TWO_VARIABLE_FUNC_CONVERSION = false;
-    private static final int NUM_FUNCTIONS = 10;
-    private static final int NUM_FUNC_INPUTS = 5;
+    private static final int NUM_FUNCTIONS = 1;
+    private static final int NUM_FUNC_INPUTS = 6;
     private static final int NUM_CLB_INPUTS = 3;
 
     public static void main(String[] args) {
