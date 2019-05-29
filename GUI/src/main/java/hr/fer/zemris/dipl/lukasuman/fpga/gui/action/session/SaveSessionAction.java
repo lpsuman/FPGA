@@ -13,8 +13,6 @@ import java.nio.file.Path;
 
 public class SaveSessionAction extends AbstractAppAction {
 
-    private static final long serialVersionUID = 5998729400009704486L;
-
     /**Accelerator key (shortcut).*/
     private static final String ACC_KEY = "control S";
 

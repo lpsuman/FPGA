@@ -15,8 +15,6 @@ import java.awt.event.WindowEvent;
  */
 public class ExitAction extends AbstractAppAction {
 
-	private static final long serialVersionUID = -5050548213592449042L;
-
 	/**Accelerator key (shortcut).*/
 	private static final String ACC_KEY = "alt F4";
 

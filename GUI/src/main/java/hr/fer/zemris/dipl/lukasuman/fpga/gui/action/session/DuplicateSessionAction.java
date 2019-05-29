@@ -11,8 +11,6 @@ import java.awt.event.KeyEvent;
 
 public class DuplicateSessionAction extends AbstractAppAction {
 
-    private static final long serialVersionUID = 8822976189958305928L;
-
     /**Accelerator key (shortcut).*/
     private static final String ACC_KEY = "ctrl D";
 

@@ -19,7 +19,6 @@ public class LJTextArea extends JTextArea {
             @Override
             public void focusGained(FocusEvent e) {
                 if (isTempTextDisplayed) {
-                    isTempTextDisplayed = false;
                     setText("");
                 }
             }
@@ -36,7 +35,13 @@ public class LJTextArea extends JTextArea {
 
     private void updateText() {
         if (isTempTextDisplayed) {
-            setText(localizationHandler.getString());
+            super.setText(localizationHandler.getString());
         }
+    }
+
+    @Override
+    public void setText(String t) {
+        isTempTextDisplayed = false;
+        super.setText(t);
     }
 }

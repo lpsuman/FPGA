@@ -67,12 +67,15 @@ public class BoolLexer implements Lexer<BoolToken> {
                             break loop;
                         }
                     }
+
                     for (char rightParenthesisChar : RIGHT_PARENTHESIS_CHARS) {
                         if (token == rightParenthesisChar) {
                             type = BoolTokenType.PARENTHESIS_RIGHT;
                             break loop;
                         }
                     }
+
+                    throw new BoolLexerException("Invalid character in expression: " + (char)token);
             }
         } catch (IOException e) {
             throw new BoolLexerException(e.getMessage());

@@ -1,5 +1,6 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.Serializable;
@@ -14,7 +15,7 @@ public abstract class AbstractNameHandler implements Serializable {
     private String name;
 
     public AbstractNameHandler(String name) {
-        this.name = Utility.checkIfValidString(name, getNameMessage());
+        setName(name);
     }
 
     private String getNameMessage() {
@@ -27,5 +28,9 @@ public abstract class AbstractNameHandler implements Serializable {
 
     public void setName(String name) {
         this.name = Utility.checkIfValidString(name, getNameMessage());
+        if (name.length() > Constants.MAXIMUM_NAME_LENGTH) {
+            throw new IllegalArgumentException(String.format("Name %s is too long (length %d while %d is maximum).",
+                    name, name.length(), Constants.MAXIMUM_NAME_LENGTH));
+        }
     }
 }

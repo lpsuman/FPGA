@@ -10,7 +10,8 @@ public abstract class MyAbstractTableModel extends AbstractTableModel {
     protected BooleanFunctionController booleanFunctionController;
     protected LocalizationProvider lp;
     private String[] columnNameKeys;
-    private String[] columnNames;
+    protected String[] columnNames;
+    private Double[] columnWidthPercentages;
     protected boolean displayIndices;
 
     public MyAbstractTableModel(BooleanFunctionController booleanFunctionController, LocalizationProvider lp,
@@ -33,6 +34,7 @@ public abstract class MyAbstractTableModel extends AbstractTableModel {
         for (int i = 0; i < columnNames.length; i++) {
             columnNames[i] = lp.getString(columnNameKeys[i]);
         }
+        fireTableStructureChanged();
     }
 
     public void setDisplayIndices(boolean displayIndices) {
@@ -40,6 +42,31 @@ public abstract class MyAbstractTableModel extends AbstractTableModel {
             this.displayIndices = displayIndices;
             fireTableStructureChanged();
         }
+    }
+
+    protected void setColumnWidthPercentages(Double[] columnWidthPercentages) {
+        this.columnWidthPercentages = Utility.checkIfValidArray(columnWidthPercentages, "width percentages");
+    }
+
+    public double getColumnWidthPercentage(int column) {
+        if (columnWidthPercentages == null) {
+            return 1.0 / getColumnCount();
+        }
+
+        double widthSum = 0.0;
+        for (int i = 0; i < columnWidthPercentages.length; i++) {
+            if (i == 0 && !displayIndices) {
+                continue;
+            }
+
+            widthSum += columnWidthPercentages[i];
+        }
+
+        if (!displayIndices) {
+            column += 1;
+        }
+
+        return columnWidthPercentages[column] / widthSum;
     }
 
     @Override
@@ -71,5 +98,14 @@ public abstract class MyAbstractTableModel extends AbstractTableModel {
         } else {
             return Integer.class;
         }
+    }
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        if (!displayIndices) {
+            columnIndex += 1;
+        }
+
+        return columnIndex == 1;
     }
 }

@@ -1,4 +1,4 @@
-package hr.fer.zemris.dipl.lukasuman.fpga.gui.action.func;
+package hr.fer.zemris.dipl.lukasuman.fpga.gui.action;
 
 import java.util.List;
 

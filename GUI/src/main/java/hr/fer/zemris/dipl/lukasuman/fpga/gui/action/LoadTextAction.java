@@ -1,7 +1,6 @@
-package hr.fer.zemris.dipl.lukasuman.fpga.gui.action.func;
+package hr.fer.zemris.dipl.lukasuman.fpga.gui.action;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.AbstractAppAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.listener.SetListener;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;

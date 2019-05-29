@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface BooleanFunctionListener {
 
-    void booleanFunctionAdded(BooleanFunction booleanFunction, int indexInList);
-    void booleanFunctionRemoved(BooleanFunction booleanFunction, int indexInList);
-    void booleanFunctionNameEdited(BooleanFunction booleanFunction, int indexInList, String oldName);
-    void booleanFunctionInputsEdited(BooleanFunction booleanFunction, int indexInList, List<String> oldInputs);
-    void booleanFunctionTableEdited(BooleanFunction booleanFunction, int indexInList, BitSet oldTable);
+    void booleanFunctionAdded(BooleanFunction booleanFunction, int index);
+    void booleanFunctionRemoved(BooleanFunction booleanFunction, int index);
+    void booleanFunctionRenamed(BooleanFunction booleanFunction, int index, String oldName);
+    void booleanFunctionInputsEdited(BooleanFunction booleanFunction, int index, List<String> oldInputs);
+    void booleanFunctionTableEdited(BooleanFunction booleanFunction, int index, BitSet oldTable);
 }

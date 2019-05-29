@@ -234,4 +234,45 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         //TODO brute solve by constructing multiplexers with CLBs, algorithm is on paper
         return null;
     }
+
+    private static int[] generateMultiplexerData(int numCLBInputs) {
+        int numExcessInputs = 0;
+        int numExtraInputs = 1;
+        int numBranchingCLBs = 2;
+
+        while (true) {
+            if (numExtraInputs + numBranchingCLBs == numCLBInputs) {
+                break;
+            } else if (numExtraInputs + numBranchingCLBs > numCLBInputs) {
+                numExtraInputs--;
+                numBranchingCLBs /= 2;
+                break;
+            }
+
+            numExtraInputs++;
+            numBranchingCLBs *= 2;
+        }
+
+        numExcessInputs = numCLBInputs - (numExtraInputs + numBranchingCLBs);
+        int numInputCombinations = (int) Math.pow(2, numCLBInputs);
+        int[] data = new int[numInputCombinations];
+        int sectorSize = (int) Math.pow(2, numExtraInputs + numBranchingCLBs);
+        int numConsecutive = (int) Math.pow(2, numBranchingCLBs - 1);
+
+        for (int i = 0; i < numBranchingCLBs; i++) {
+
+            for (int j = 0; j < sectorSize / (2 * numConsecutive); j++) {
+
+                for (int k = 0; k < 0; k++) {
+
+                }
+            }
+        }
+
+        return data;
+    }
+
+    private static Solution<int[]> bruteSolveForTwoInputs(BooleanFunction func) {
+        return null;
+    }
 }

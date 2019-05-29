@@ -16,9 +16,6 @@ import java.awt.event.KeyEvent;
  */
 public class CloseSessionAction extends AbstractAppAction {
 
-	/**Serial ID.*/
-	private static final long serialVersionUID = -3526670863895113909L;
-
 	/**Accelerator key (shortcut).*/
 	private static final String ACC_KEY = "control Q";
 

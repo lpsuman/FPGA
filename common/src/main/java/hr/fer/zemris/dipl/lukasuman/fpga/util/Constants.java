@@ -54,6 +54,9 @@ public class Constants {
     public static final ArgumentLimit<Double> ANNEALING_THRESHOLD_LIMIT =
             new ArgumentIntervalLimit<>("annealing threshold", 0.0, 1.0);
 
+    public static final int MAXIMUM_INPUT_ID_LENGTH = 10;
+    public static final int MAXIMUM_NAME_LENGTH = 30;
+
     public static final String SOLUTION_PRINT_FORMAT = "%4d   ";
 
     public static final String PER_GENERATION_OUTPUT_MSG =

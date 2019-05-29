@@ -1,6 +1,7 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.parser;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.BoolExpression;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.lexer.BoolLexerException;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.lexer.BoolToken;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.lexer.BoolTokenType;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.lexer.Lexer;
@@ -38,7 +39,14 @@ public class BoolParser implements Parser<BoolToken, BoolExpression> {
         Set<String> sortedInputIDs = new TreeSet<>();
 
         while (true) {
-            BoolToken token = lexer.nextToken();
+            BoolToken token;
+            
+            try {
+                token = lexer.nextToken();
+            } catch (BoolLexerException exc) {
+                throw new BoolParserException(exc.getMessage());
+            }
+
             tokens.add(token);
 
             if (token.getType() == BoolTokenType.WORD) {

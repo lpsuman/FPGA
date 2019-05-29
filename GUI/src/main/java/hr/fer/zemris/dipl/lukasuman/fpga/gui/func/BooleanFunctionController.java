@@ -6,6 +6,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIConstants;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JPanelPair;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.LoadTextAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.func.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
@@ -21,43 +22,40 @@ import java.awt.event.ComponentEvent;
 import java.util.*;
 import java.util.List;
 
-public class BooleanFunctionController implements BooleanExpressionProvider {
+public class BooleanFunctionController extends AbstractGUIController implements TextProvider {
 
-    private JFPGA jfpga;
-    private SessionController parentSession;
     private List<BooleanFunction> booleanFunctions;
-    private JPanel mainPanel;
+    private Set<BooleanFunctionListener> booleanFunctionListeners;
 
     private InputTableModel inputTableModel;
-    private JTable inputTable;
+    private MyJTable inputTable;
 
     private TruthTableModel truthTableModel;
-    private JTable truthTable;
+    private MyJTable truthTable;
 
     private FuncTableModel funcTableModel;
-    private JTable funcTable;
+    private MyJTable funcTable;
 
     private JTextArea expressionTextArea;
     private JComboBox<Integer> numInputsComboBox;
 
     private Action generateFromExpressionAction;
+    private Action generateFromTextAction;
+    private LoadTextAction loadTextAction;
     private LoadTextAction loadExpressionAction;
     private Action generateRandomFunctionAction;
     private Action duplicateSelectedFunctionAction;
 
-    private Set<BooleanFunctionListener> booleanFunctionListeners;
-
     public BooleanFunctionController(List<BooleanFunction> booleanFunctions, JFPGA jfpga, SessionController parentSession) {
+        super(jfpga, parentSession);
         this.booleanFunctions = Utility.checkNull(booleanFunctions, "list of boolean functions");
-        this.jfpga = Utility.checkNull(jfpga, "JFPGA");
-        this.parentSession = Utility.checkNull(parentSession, "parent session");
 
-        loadData(booleanFunctions);
+        loadData();
         initActions();
         initGUI();
     }
 
-    private void loadData(List<BooleanFunction> booleanFunctions) {
+    private void loadData() {
 //        DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
 //        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -66,17 +64,17 @@ public class BooleanFunctionController implements BooleanExpressionProvider {
         rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
 
         funcTableModel = new FuncTableModel(booleanFunctions, this, jfpga.getFlp());
-        funcTable = new AutoSelectJTable(funcTableModel);
+        funcTable = new MyJTable(funcTableModel);
         funcTable.setDefaultRenderer(Integer.class, centerRenderer);
         funcTable.setRowSelectionAllowed(true);
         funcTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         inputTableModel = new InputTableModel(this, jfpga.getFlp());
-        inputTable = new AutoSelectJTable(inputTableModel);
+        inputTable = new MyJTable(inputTableModel);
         inputTable.setDefaultRenderer(Integer.class, centerRenderer);
 
-        truthTableModel = new TruthTableModel(jfpga.getFlp());
-        truthTable = new AutoSelectJTable(truthTableModel);
+        truthTableModel = new TruthTableModel(this, jfpga.getFlp());
+        truthTable = new MyJTable(truthTableModel);
         truthTable.setDefaultRenderer(Integer.class, centerRenderer);
 
         funcTable.getSelectionModel().addListSelectionListener(e -> {
@@ -103,16 +101,20 @@ public class BooleanFunctionController implements BooleanExpressionProvider {
         jfpga.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-
+                GUIUtility.resizeColumns(inputTable, inputTableModel);
+                GUIUtility.resizeColumns(funcTable, funcTableModel);
             }
         });
     }
 
     private void initActions() {
         generateFromExpressionAction = new GenerateFromExpressionAction(jfpga, this);
+        generateFromTextAction = new GenerateFromTextAction(jfpga, this,
+                () -> expressionTextArea.getText());
+        loadTextAction = new LoadTextAction(jfpga, LocalizationKeys.LOAD_TEXT_KEY);
         loadExpressionAction = new LoadTextAction(jfpga, LocalizationKeys.LOAD_EXPRESSION_KEY);
-        generateRandomFunctionAction = new GenerateRandomFunctionAction(jfpga, this, () ->
-                numInputsComboBox.getItemAt(numInputsComboBox.getSelectedIndex()));
+        generateRandomFunctionAction = new GenerateRandomFunctionAction(jfpga, this,
+                () -> numInputsComboBox.getItemAt(numInputsComboBox.getSelectedIndex()));
         duplicateSelectedFunctionAction = new DuplicateFunctionAction(jfpga, this);
     }
 
@@ -123,58 +125,55 @@ public class BooleanFunctionController implements BooleanExpressionProvider {
         JPanel temp = mainPanel;
         mainPanel = maxSizeMainPanel;
 
-        initInputList();
         initTable();
         initFuncList();
 
         mainPanel = temp;
     }
 
-    private JPanelPair generatePanelPair(int indexX, double weightX) {
-        JPanel parentPanel = GUIUtility.getPanel();
-        parentPanel.setPreferredSize(new Dimension(0, 0));
-        GridBagConstraints gbc = GUIUtility.getGBC(indexX, 0, weightX, 0.5, 1, 1);
-        mainPanel.add(parentPanel, gbc);
-
-        JPanel upperPanel = GUIUtility.getPanelWithBorder();
-        upperPanel.setLayout(new BoxLayout(upperPanel, BoxLayout.Y_AXIS));
-        parentPanel.add(upperPanel, BorderLayout.NORTH);
-        JPanel lowerPanel = GUIUtility.getPanelWithBorder();
-        parentPanel.add(lowerPanel, BorderLayout.CENTER);
-
-        return new JPanelPair(upperPanel, lowerPanel);
-    }
-
-    private void initInputList() {
-        JPanelPair panelPair = generatePanelPair(0, 0.1);
-        JPanel upperPanel = panelPair.getUpperPanel();
-        JPanel lowerPanel = panelPair.getLowerPanel();
-
-        lowerPanel.add(new LJLabel(LocalizationKeys.INPUTS_KEY, jfpga.getFlp(), SwingConstants.CENTER), BorderLayout.NORTH);
-        lowerPanel.add(new JScrollPane(inputTable), BorderLayout.CENTER);
-    }
-
     private void initTable() {
-        JPanelPair panelPair = generatePanelPair(1, 0.4);
-        JPanel upperPanel = panelPair.getUpperPanel();
-        JPanel lowerPanel = panelPair.getLowerPanel();
-
-        lowerPanel.add(new LJLabel(LocalizationKeys.TRUTH_TABLE_KEY, jfpga.getFlp(), SwingConstants.CENTER), BorderLayout.NORTH);
-        lowerPanel.add(new JScrollPane(truthTable), BorderLayout.CENTER);
-    }
-
-    private void initFuncList() {
-        JPanelPair panelPair = generatePanelPair(2, 0.2);
+        JPanelPair panelPair = GUIUtility.generatePanelPair(mainPanel, 1, 0.4);
         JPanel upperPanel = panelPair.getUpperPanel();
         JPanel lowerPanel = panelPair.getLowerPanel();
 
         expressionTextArea = new LJTextArea(LocalizationKeys.INSERT_EXPRESSION_KEY, jfpga.getFlp());
         expressionTextArea.setRows(GUIConstants.EXPRESSION_TEXT_AREA_ROWS);
+        loadTextAction.addTextLoadListener(lines -> expressionTextArea.setText(String.join("\n", lines)));
         loadExpressionAction.addTextLoadListener(lines -> expressionTextArea.setText(String.join("\n", lines)));
         upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JScrollPane(expressionTextArea)));
 
-        upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(generateFromExpressionAction)));
-        upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(loadExpressionAction)));
+        JPanel inputsAndButtonsPanel = GUIUtility.getPanel(new GridBagLayout());
+        upperPanel.add(inputsAndButtonsPanel);
+
+        JPanel inputsPanel = GUIUtility.getPanel();
+//        inputsPanel.setPreferredSize(new Dimension(0, 0));
+        GridBagConstraints gbc = GUIUtility.getGBC(0, 0, 0.3, 1.0, 1, 1);
+        inputsAndButtonsPanel.add(inputsPanel, gbc);
+        inputsPanel.add(new LJLabel(LocalizationKeys.INPUTS_KEY, jfpga.getFlp(), SwingConstants.CENTER), BorderLayout.NORTH);
+        inputTable.setPreferredScrollableViewportSize(new Dimension(inputTable.getPreferredSize().width, inputTable.getRowHeight() * 6));
+        inputsPanel.add(new JScrollPane(inputTable), BorderLayout.CENTER);
+        inputTable.applyMinSizeInScrollPane();
+
+        JPanel buttonsPanel = GUIUtility.getPanel(new GridLayout(0, 1));
+//        buttonsPanel.setPreferredSize(new Dimension(0, 0));
+        gbc = GUIUtility.getGBC(1, 0, 0.7, 1.0, 1, 1);
+        inputsAndButtonsPanel.add(buttonsPanel, gbc);
+        buttonsPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(generateFromExpressionAction)));
+        buttonsPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(generateFromTextAction)));
+        buttonsPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(loadTextAction)));
+
+        lowerPanel.add(new LJLabel(LocalizationKeys.TRUTH_TABLE_KEY, jfpga.getFlp(), SwingConstants.CENTER), BorderLayout.NORTH);
+//        JScrollPane scrollPane = new JScrollPane(truthTable);
+//        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+//        lowerPanel.add(scrollPane, BorderLayout.CENTER);
+        lowerPanel.add(new JScrollPane(truthTable), BorderLayout.CENTER);
+        truthTable.applyMinSizeInScrollPane();
+    }
+
+    private void initFuncList() {
+        JPanelPair panelPair = GUIUtility.generatePanelPair(mainPanel, 2, 0.2);
+        JPanel upperPanel = panelPair.getUpperPanel();
+        JPanel lowerPanel = panelPair.getLowerPanel();
 
         JPanel generateRandomPanel = GUIUtility.getPanel(new GridBagLayout());
         upperPanel.add(generateRandomPanel);
@@ -202,6 +201,7 @@ public class BooleanFunctionController implements BooleanExpressionProvider {
         listDescPanel.add(new LJLabel(LocalizationKeys.BOOLEAN_FUNCTIONS_KEY, jfpga.getFlp(), SwingConstants.CENTER));
 
         lowerPanel.add(new JScrollPane(funcTable), BorderLayout.CENTER);
+        funcTable.applyMinSizeInScrollPane();
     }
 
     public List<BooleanFunction> getBooleanFunctions() {
@@ -277,7 +277,7 @@ public class BooleanFunctionController implements BooleanExpressionProvider {
         truthTableModel.fireTableStructureChanged();
 
         if (booleanFunctionListeners != null) {
-            booleanFunctionListeners.forEach(l -> l.booleanFunctionNameEdited(booleanFunction, index, oldName));
+            booleanFunctionListeners.forEach(l -> l.booleanFunctionRenamed(booleanFunction, index, oldName));
         }
 
         parentSession.setEdited(true);
@@ -320,16 +320,8 @@ public class BooleanFunctionController implements BooleanExpressionProvider {
     }
 
     @Override
-    public String getExpressionString() {
+    public String getText() {
         return expressionTextArea.getText();
-    }
-
-    public JPanel getMainPanel() {
-        return mainPanel;
-    }
-
-    public JFPGA getJfpga() {
-        return jfpga;
     }
 
     public void addBooleanFunctionListener(BooleanFunctionListener listener) {

@@ -3,8 +3,7 @@ package hr.fer.zemris.dipl.lukasuman.fpga.util;
 import hr.fer.zemris.dipl.lukasuman.fpga.TestUtil;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.BitSet;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -152,5 +151,34 @@ public class UtilTests {
 
         int index = Utility.findIndexOfSubArray(haystack, needle, prefixArray);
         assertEquals(index, expectedIndex);
+    }
+
+    @Test
+    void testBreakIntoWords() {
+        TestUtil.argThrow(() -> Utility.breakIntoWords(null));
+        TestUtil.argThrow(() -> Utility.breakIntoWords(new ArrayList<>()));
+        assertNull(Utility.breakIntoWords(Collections.singletonList("")));
+
+        List<String> text = Arrays.asList("abra", "kad abra", "bra");
+        List<String> expected = Arrays.asList("abra", "kad", "abra", "bra");
+
+        assertEquals(expected, Utility.breakIntoWords(text));
+    }
+
+    @Test
+    void testBitSetFromString() {
+        TestUtil.argThrow(() -> Utility.bitSetFromString(null));
+        TestUtil.argThrow(() -> Utility.bitSetFromString(""));
+        TestUtil.argThrow(() -> Utility.bitSetFromString("a"));
+        TestUtil.argThrow(() -> Utility.bitSetFromString("a0"));
+        TestUtil.argThrow(() -> Utility.bitSetFromString("0a"));
+        TestUtil.argThrow(() -> Utility.bitSetFromString("a0a"));
+        TestUtil.argThrow(() -> Utility.bitSetFromString("0a0"));
+        TestUtil.argThrow(() -> Utility.bitSetFromString("010111031010"));
+
+        BitSet result = Utility.bitSetFromString("1011001");
+        BitSet expected = Utility.bitSetFromMask(0b1011001, 7);
+
+        assertEquals(expected, result);
     }
 }

@@ -1,10 +1,13 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.func.MyAbstractTableModel;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 
 public class GUIUtility {
@@ -58,5 +61,31 @@ public class GUIUtility {
 
     public static GridBagConstraints getGBC(int x, int y, int cellWidth, int cellHeight) {
         return getGBC(x, y, 0.0, 0.0, cellWidth, cellHeight);
+    }
+
+    public static JPanelPair generatePanelPair(JPanel mainPanel, int indexX, double weightX) {
+        JPanel parentPanel = GUIUtility.getPanel();
+        parentPanel.setPreferredSize(new Dimension(0, 0));
+        GridBagConstraints gbc = GUIUtility.getGBC(indexX, 0, weightX, 0.5, 1, 1);
+        mainPanel.add(parentPanel, gbc);
+
+        JPanel upperPanel = GUIUtility.getPanelWithBorder();
+        upperPanel.setLayout(new BoxLayout(upperPanel, BoxLayout.Y_AXIS));
+        parentPanel.add(upperPanel, BorderLayout.NORTH);
+        JPanel lowerPanel = GUIUtility.getPanelWithBorder();
+        parentPanel.add(lowerPanel, BorderLayout.CENTER);
+
+        return new JPanelPair(upperPanel, lowerPanel);
+    }
+
+    public static void resizeColumns(JTable table, MyAbstractTableModel tableModel) {
+        TableColumnModel jTableColumnModel = table.getColumnModel();
+        int totalColumnWidth = jTableColumnModel.getTotalColumnWidth();
+
+        for (int i = 0; i < jTableColumnModel.getColumnCount(); i++) {
+            TableColumn column = jTableColumnModel.getColumn(i);
+            int pWidth = (int) Math.round(tableModel.getColumnWidthPercentage(i) * totalColumnWidth);
+            column.setPreferredWidth(pWidth);
+        }
     }
 }

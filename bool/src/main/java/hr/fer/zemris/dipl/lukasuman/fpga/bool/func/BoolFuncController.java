@@ -133,11 +133,120 @@ public class BoolFuncController {
         if (redundantIndices == null) {
             return func;
         } else {
+            if (func.getNumInputs() - redundantIndices.size() < Constants.NUM_FUNCTION_INPUTS_LIMIT.getLowerLimit()) {
+                return func;
+            }
             return removeInputs(func, redundantIndices);
         }
     }
 
     public static BooleanFunction generateFromExpression(BoolExpression boolExpression) {
         return new BooleanFunction(boolExpression.getInputIDs(), boolExpression.getTruthTable());
+    }
+
+    public static BooleanFunction generateFromText(List<String> text) {
+        Utility.checkIfValidCollection(text, "text");
+        List<String> words = Utility.breakIntoWords(text);
+        if (words == null) {
+            throw new IllegalArgumentException("Input text is empty.");
+        }
+
+        int numInputs = -1;
+
+        try {
+            String firstWord = words.get(0);
+            if (firstWord.length() <= 2) {
+                numInputs = Integer.parseInt(firstWord);
+
+                if (numInputs == 0 || numInputs == 1) {
+                    numInputs = -1;
+                } else {
+                    if (numInputs > Constants.NUM_FUNCTION_INPUTS_LIMIT.getUpperLimit()) {
+                        throw new IllegalArgumentException(String.format(
+                                "Too many inputs specified (%d while %d is maximum).",
+                                numInputs, Constants.NUM_FUNCTION_INPUTS_LIMIT.getUpperLimit()));
+                    }
+                    words.remove(0);
+                    if (words.isEmpty()) {
+                        throw new IllegalArgumentException(String.format(
+                                "%d inputs specified but there is nothing else in the input text.", numInputs));
+                    }
+                }
+            }
+        } catch (NumberFormatException ignored) {
+        }
+
+        List<String> inputIDs = new ArrayList<>();
+
+        if (numInputs != -1) {
+            for (int i = 0; i < numInputs; i++) {
+                String word = words.remove(0);
+
+                if (!Utility.isValidInputID(word)) {
+                    throw new IllegalArgumentException(String.format(
+                            "%d inputs specified but %d inputs detected (%s is not a valid input ID).",
+                            numInputs, i, word));
+                }
+
+                if (words.isEmpty()) {
+                    throw new IllegalArgumentException(String.format(
+                            "Expected to read %d input IDs, but only %d were recognized.", numInputs, i + 1));
+                }
+
+                inputIDs.add(word);
+            }
+
+            if (Utility.isValidInputID(words.get(0))) {
+                throw new IllegalArgumentException(String.format(
+                        "Expected to read %d inputs, but %s is also a valid input ID.", numInputs, words.get(0)));
+            }
+        } else {
+            while (true) {
+                if (Utility.isValidInputID(words.get(0))) {
+                    inputIDs.add(words.remove(0));
+
+                    if (numInputs == -1) {
+                        numInputs = 0;
+                    }
+
+                    numInputs++;
+
+                    if (words.isEmpty()) {
+                        throw new IllegalArgumentException(String.format(
+                                "There are only input IDs (%d of them) in the input text. Last recognized input ID: %s",
+                                inputIDs.size(), inputIDs.get(inputIDs.size() - 1)));
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+
+        String joinedTruthTableString = String.join("", words);
+        if (!Utility.isPowerOfTwo(joinedTruthTableString.length())) {
+            throw new IllegalArgumentException("Truth table must have a power of two binary characters.");
+        }
+        int numExpectedInputs = Utility.lowestPowerOfTwo(joinedTruthTableString.length());
+
+        if (numInputs == -1) {
+            inputIDs = generateDefaultInputIDs(numExpectedInputs);
+        } else if (numInputs != numExpectedInputs) {
+            throw new IllegalArgumentException(String.format(
+                    "%d inputs detected, but %d required for the given truth table %s.",
+                    numInputs, numExpectedInputs, joinedTruthTableString));
+        }
+
+        if (inputIDs.size() < Constants.NUM_FUNCTION_INPUTS_LIMIT.getLowerLimit()) {
+            throw new IllegalArgumentException(String.format("Not enough inputs (%d detected while %d is minimum).",
+                    inputIDs.size(), Constants.NUM_FUNCTION_INPUTS_LIMIT.getLowerLimit()));
+        }
+
+        BitSet bitSet = Utility.bitSetFromString(joinedTruthTableString);
+
+        if (bitSet == null) {
+            throw new IllegalArgumentException("Invalid truth table format.");
+        }
+
+        return new BooleanFunction(inputIDs, bitSet);
     }
 }

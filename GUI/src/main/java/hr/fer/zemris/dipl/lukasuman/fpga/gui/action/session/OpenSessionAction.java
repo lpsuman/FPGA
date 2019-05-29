@@ -12,8 +12,6 @@ import java.nio.file.Path;
 
 public class OpenSessionAction extends AbstractAppAction {
 
-    private static final long serialVersionUID = -6117170662203616218L;
-
     /**Accelerator key (shortcut).*/
     private static final String ACC_KEY = "control O";
     /**Mnemonic key.*/

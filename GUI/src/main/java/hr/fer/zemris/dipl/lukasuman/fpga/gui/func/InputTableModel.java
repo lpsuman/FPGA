@@ -11,11 +11,13 @@ import java.util.List;
 public class InputTableModel extends MyAbstractTableModel {
 
     private static List<String> DEFAULT_INPUT_IDS = Arrays.asList("a", "b", "c");
+    private static Double[] COLUMN_WIDTH_PERCENTAGES = new Double[]{1.0, 4.0};
 
     private List<String> inputIDs;
 
     public InputTableModel(BooleanFunctionController booleanFunctionController, LocalizationProvider lp) {
         super(booleanFunctionController, lp, LocalizationKeys.INDEX_KEY, LocalizationKeys.INPUTS_KEY);
+        setColumnWidthPercentages(COLUMN_WIDTH_PERCENTAGES);
         this.inputIDs = DEFAULT_INPUT_IDS;
     }
 
@@ -73,14 +75,5 @@ public class InputTableModel extends MyAbstractTableModel {
         if (!newInputID.equals(oldInputID)) {
             booleanFunctionController.changeFunctionInput(rowIndex, newInputID);
         }
-    }
-
-    @Override
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
-        if (!displayIndices) {
-            columnIndex += 1;
-        }
-
-        return columnIndex == 1;
     }
 }

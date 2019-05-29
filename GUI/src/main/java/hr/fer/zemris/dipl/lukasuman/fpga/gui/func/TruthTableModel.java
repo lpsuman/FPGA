@@ -7,14 +7,13 @@ import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationProvider;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
-import javax.swing.table.AbstractTableModel;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class TruthTableModel extends AbstractTableModel {
+public class TruthTableModel extends MyAbstractTableModel {
 
     private static final List<String> DEFAULT_INPUT_IDS = Arrays.asList("a", "b", "c", "d");
     private static final List<String> DEFAULT_OUTPUT_IDS = Arrays.asList("f1", "f2", "f3");
@@ -31,16 +30,9 @@ public class TruthTableModel extends AbstractTableModel {
     private List<String> outputIDs;
     private BitSet[] truthTables;
 
-    private LocalizationProvider lp;
-    private String indexColumnName;
-    private boolean displayIndices;
-
-    public TruthTableModel(LocalizationProvider lp) {
-        this.lp = Utility.checkNull(lp, "localization provider");
-        updateColumnNames();
-        lp.addLocalizationListener(this::updateColumnNames);
+    public TruthTableModel(BooleanFunctionController booleanFunctionController, LocalizationProvider lp) {
+        super(booleanFunctionController, lp, LocalizationKeys.INDEX_KEY);
         loadDefaultData();
-        displayIndices = true;
     }
 
     public void setData(List<String> inputIDs, List<String> outputIDs, BitSet[] truthTables) {
@@ -88,18 +80,6 @@ public class TruthTableModel extends AbstractTableModel {
 
     private void loadDefaultData() {
         setData(DEFAULT_INPUT_IDS, DEFAULT_OUTPUT_IDS, DEFAULT_TRUTH_TABLES);
-    }
-
-    private void updateColumnNames() {
-        indexColumnName = lp.getString(LocalizationKeys.INDEX_KEY);
-        fireTableStructureChanged();
-    }
-
-    public void setDisplayIndices(boolean displayIndices) {
-        if (displayIndices != this.displayIndices) {
-            this.displayIndices = displayIndices;
-            fireTableStructureChanged();
-        }
     }
 
     public List<String> getInputIDs() {
@@ -179,7 +159,7 @@ public class TruthTableModel extends AbstractTableModel {
     public String getColumnName(int column) {
         if (displayIndices) {
             if (column == 0) {
-                return indexColumnName;
+                return columnNames[0];
             }
             column -= 1;
         }

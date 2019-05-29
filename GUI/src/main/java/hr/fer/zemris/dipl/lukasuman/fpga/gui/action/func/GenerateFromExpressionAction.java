@@ -16,18 +16,16 @@ import java.awt.event.ActionEvent;
 
 public class GenerateFromExpressionAction extends AbstractAppAction {
 
-    private static final long serialVersionUID = -3105847486580084996L;
+    private TextProvider textProvider;
 
-    private BooleanExpressionProvider booleanExpressionProvider;
-
-    public GenerateFromExpressionAction(JFPGA jfpga, BooleanExpressionProvider booleanExpressionProvider) {
+    public GenerateFromExpressionAction(JFPGA jfpga, TextProvider textProvider) {
         super(jfpga, LocalizationKeys.GENERATE_FROM_EXPRESSION_KEY);
-        this.booleanExpressionProvider = Utility.checkNull(booleanExpressionProvider, "expression provider");
+        this.textProvider = Utility.checkNull(textProvider, "expression provider");
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        String expression = booleanExpressionProvider.getExpressionString();
+        String expression = textProvider.getText();
 
         if (expression == null) {
             return;
@@ -39,11 +37,7 @@ public class GenerateFromExpressionAction extends AbstractAppAction {
         try {
             boolExpression = parser.parse(new BoolLexer(Utility.getInputStreamFromString(expression)));
         } catch (BoolParserException exc) {
-            JOptionPane.showMessageDialog(
-                    jfpga,
-                    exc.getMessage(),
-                    jfpga.getFlp().getString(LocalizationKeys.ERROR_KEY),
-                    JOptionPane.ERROR_MESSAGE);
+            showErrorMsg(exc.getMessage());
             return;
         }
 

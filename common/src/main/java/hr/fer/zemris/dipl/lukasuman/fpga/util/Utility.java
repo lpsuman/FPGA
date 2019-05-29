@@ -171,8 +171,24 @@ public class Utility {
         return String.format("%" + length + "c", c);
     }
 
-    private static boolean isPowerOfTwo(int number) {
+    public static boolean isPowerOfTwo(int number) {
         return number > 0 && ((number & (number - 1)) == 0);
+    }
+
+    public static int lowestPowerOfTwo(int number) {
+        if (number < 1) {
+            return -1;
+        }
+
+        for (int i = 0; i < 32; i++) {
+            if ((number & 1) == 1) {
+                return i;
+            }
+
+            number >>= 1;
+        }
+
+        return -1;
     }
 
     public static boolean testBitFromLeft(int target, int index) {
@@ -302,5 +318,73 @@ public class Utility {
         }
 
         return true;
+    }
+
+    public static List<String> breakIntoWords(List<String> lines) {
+        checkIfValidCollection(lines, "list of lines");
+        List<String> words = new ArrayList<>();
+
+        for (String line : lines) {
+            line = line.trim();
+            if (line.isEmpty()) {
+                continue;
+            }
+
+            String[] lineParts = line.split("\\s+");
+            words.addAll(Arrays.asList(lineParts));
+        }
+
+        if (words.isEmpty()) {
+            return null;
+        }
+
+        return words;
+    }
+
+    public static boolean isValidInputID(String str) {
+        if (isBinaryChar(str.charAt(0))) {
+            if (str.length() == 1) {
+                return false;
+            }
+
+            boolean containsNonBinary = false;
+            for (int i = 0; i < str.length(); i++) {
+                if (!isBinaryChar(str.charAt(i))) {
+                    containsNonBinary = true;
+                    break;
+                }
+            }
+
+            if (!containsNonBinary) {
+                return false;
+            }
+        }
+
+        if (str.length() > Constants.MAXIMUM_INPUT_ID_LENGTH) {
+            throw new IllegalArgumentException(String.format(
+                    "Input %s has a too long name (length %d while %d is maximum.",
+                    str, str.length(), Constants.MAXIMUM_INPUT_ID_LENGTH));
+        }
+
+        return true;
+    }
+
+    public static boolean isBinaryChar(char c) {
+        return c == '0' || c == '1';
+    }
+
+    public static BitSet bitSetFromString(String str) {
+        Utility.checkIfValidString(str, "string for the truth table");
+        BitSet bitSet = new BitSet(str.length());
+
+        for (int i = 0; i < str.length(); i++) {
+            if (!isBinaryChar(str.charAt(i))) {
+                throw new IllegalArgumentException(String.format("Can't convert string %s into a truth table (0 or 1).", str));
+            }
+
+            bitSet.set(i, str.charAt(i) == '1');
+        }
+
+        return bitSet;
     }
 }

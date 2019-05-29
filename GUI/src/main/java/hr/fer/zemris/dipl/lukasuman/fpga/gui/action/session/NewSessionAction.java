@@ -10,8 +10,6 @@ import java.awt.event.KeyEvent;
 
 public class NewSessionAction extends AbstractAppAction {
 
-    private static final long serialVersionUID = -6395442765500358048L;
-
     /**Accelerator key (shortcut).*/
     private static final String ACC_KEY = "control N";
 

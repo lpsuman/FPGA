@@ -9,8 +9,6 @@ import java.awt.event.KeyEvent;
 
 public class SaveSessionAsAction extends AbstractAppAction {
 
-    private static final long serialVersionUID = -1266950305728221928L;
-
     /**Accelerator key (shortcut).*/
     private static final String ACC_KEY = "control shift S";
 
