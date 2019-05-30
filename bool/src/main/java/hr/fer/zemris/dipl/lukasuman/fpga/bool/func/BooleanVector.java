@@ -28,16 +28,24 @@ public class BooleanVector extends AbstractNameHandler implements Serializable {
     private BitSet[] truthTable;
     private List<String> sortedInputIDs;
 
-    public BooleanVector(List<BooleanFunction> boolFunctions, String name) {
+    public BooleanVector(List<BooleanFunction> boolFunctions, boolean removeRedundantInputs, String name) {
         super(name);
         this.boolFunctions = Utility.checkIfValidCollection(boolFunctions, "boolean functions for vector");
         Utility.checkLimit(Constants.NUM_FUNCTIONS_LIMIT, boolFunctions.size());
 
-        fillTable(boolFunctions);
+        fillTable(boolFunctions, removeRedundantInputs);
+    }
+
+    public BooleanVector(List<BooleanFunction> boolFunctions, boolean removeRedundantInputs) {
+        this(boolFunctions, removeRedundantInputs, DEFAULT_NAME);
+    }
+
+    public BooleanVector(List<BooleanFunction> boolFunctions, String name) {
+        this(boolFunctions, true, name);
     }
 
     public BooleanVector(List<BooleanFunction> boolFunctions) {
-        this(boolFunctions, DEFAULT_NAME);
+        this(boolFunctions, true);
     }
 
     public BooleanVector(BooleanVector other) {
@@ -53,7 +61,7 @@ public class BooleanVector extends AbstractNameHandler implements Serializable {
         sortedInputIDs = new ArrayList<>(other.sortedInputIDs);
     }
 
-    private void fillTable(List<BooleanFunction> boolFuncs) {
+    private void fillTable(List<BooleanFunction> boolFuncs, boolean removeRedundantInputs) {
         Set<String> inputIDSet = new HashSet<>();
         List<BooleanFunction> checkedFunctions = new ArrayList<>(boolFuncs.size());
         boolFuncs.forEach(f -> checkedFunctions.add(BoolFuncController.removeRedundantInputsIfAble(f)));

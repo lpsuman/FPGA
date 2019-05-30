@@ -1,9 +1,11 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.model;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFuncController;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 import org.junit.jupiter.api.Test;
 
@@ -13,6 +15,8 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BoolVecProblemTests {
+
+    private static final int NUM_FUNC_TO_TEST = 3;
 
     @Test
     void testTrim() {
@@ -42,5 +46,67 @@ public class BoolVecProblemTests {
 
         assertNotNull(trimmedSolution);
         assertArrayEquals(expectedTrimmedSolutionData, trimmedSolution.getData());
+    }
+
+    private static void testBrute(int numFuncInputs, int numCLBInputs) {
+//        BooleanFunction func = BoolFuncController.generateFromMask(0b01011011, 3);
+//        BooleanFunction func = BoolFuncController.generateFromMask(0b1011001000111010, 4);
+//        BooleanFunction func = BoolFuncController.generateFromMask(0b00010010111011011011111101101100, 5);
+        BooleanFunction func = BoolFuncController.generateRandomFunction(numFuncInputs);
+        Solution<int[]> solution = BoolVecProblem.bruteSolve(func, numCLBInputs);
+
+        assertNotNull(solution);
+
+        BoolVecProblem problem = new BoolVecProblem(new BooleanVector(Collections.singletonList(func), false), numCLBInputs);
+        CLBController clbController =problem.getClbController();
+        clbController.setNumCLB((solution.getData().length - 1) / clbController.getIntsPerCLB());
+        BoolVecEvaluator evaluator = new BoolVecEvaluator(problem);
+        evaluator.setLogging(true);
+        evaluator.evaluateSolution(solution, false);
+
+//        System.out.println(evaluator.getLog());
+//        System.out.println(problem.solutionToString(solution, evaluator.getBlockUsage()));
+
+        assertEquals(Constants.FITNESS_SCALE, solution.getFitness());
+    }
+
+    private static void doSequenceTest(int numCLBInputs) {
+        for (int i = 0; i < NUM_FUNC_TO_TEST; i++) {
+            testBrute(numCLBInputs + 1 + i, numCLBInputs);
+        }
+    }
+
+    @Test
+    void testBruteSolve() {
+//        testBrute(4, 3);
+//        testBrute(5, 3);
+//        testBrute(6, 3);
+//        testBrute(5, 4);
+//        testBrute(6, 4);
+//        testBrute(7, 4);
+//        testBrute(6, 5);
+//        testBrute(7, 5);
+//        testBrute(8, 5);
+//        testBrute(7, 6);
+//        testBrute(8, 6);
+//        testBrute(9, 6);
+//        testBrute(8, 7);
+//        testBrute(9, 7);
+//        testBrute(10, 7);
+        doSequenceTest(3);
+        doSequenceTest(4);
+        doSequenceTest(5);
+        doSequenceTest(6);
+        doSequenceTest(7);
+//        doSequenceTest(8);
+    }
+
+    @Test
+    void testBruteSolveTwoInputs() {
+        testBrute(3, 2);
+        testBrute(4, 2);
+        testBrute(5, 2);
+        testBrute(6, 2);
+        testBrute(7, 2);
     }
 }

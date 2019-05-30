@@ -80,4 +80,13 @@ public class BoolFuncControllerTests {
             assertEquals(expected.get(i), BoolFuncController.generateFromText(validTexts.get(i)));
         }
     }
+
+    @Test
+    void testTruthTableToArray() {
+        BooleanFunction func = BoolFuncController.generateFromMask(0b00010010111011011011111101101100, 5);
+        int[] result = BoolFuncController.bitSetToArray(func);
+
+        assertEquals(1, result.length);
+        assertEquals(317570924, result[0]);
+    }
 }

@@ -249,4 +249,28 @@ public class BoolFuncController {
 
         return new BooleanFunction(inputIDs, bitSet);
     }
+
+    public static int[] bitSetToArray(BitSet bitSet, int startIndex, int endIndex, int repeat) {
+        int sizeOfTruthTable = (endIndex - startIndex) * repeat;
+        int[] truthTable = new int[(int) Math.ceil(sizeOfTruthTable / 32.0)];
+        int offset = Math.max(0, 32 - sizeOfTruthTable);
+
+        for (int i = 0; i < repeat; i++) {
+            for (int j = startIndex; j < endIndex; j++) {
+                if (bitSet.get(j)) {
+                    int offsetInt = offset / 32;
+                    int offsetBit = offset % 32;
+                    truthTable[offsetInt] |= 1 << (31 - offsetBit);
+                }
+
+                offset++;
+            }
+        }
+
+        return truthTable;
+    }
+
+    public static int[] bitSetToArray(BooleanFunction func) {
+        return bitSetToArray(func.getTruthTable(), 0, func.getNumInputCombinations(), 1);
+    }
 }

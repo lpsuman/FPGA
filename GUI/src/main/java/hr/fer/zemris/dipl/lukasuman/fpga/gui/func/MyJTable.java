@@ -5,6 +5,8 @@ import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIConstants;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
@@ -17,7 +19,6 @@ public class MyJTable extends JTable {
         super(dm);
         setMinimumColumnWidth(GUIConstants.MINIMUM_COLUMN_WIDTH);
         getModel().addTableModelListener(e -> setPreferredSize(getMinimumSize()));
-//        setPreferredSize(getMinimumSize());
     }
 
     @Override
@@ -52,6 +53,15 @@ public class MyJTable extends JTable {
         if (e instanceof MouseEvent) {
             SwingUtilities.invokeLater(((JTextComponent) editor)::selectAll);
         }
+    }
+
+    @Override
+    public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+        Component component = super.prepareRenderer(renderer, row, column);
+        int rendererWidth = component.getMinimumSize().width;
+        TableColumn tableColumn = getColumnModel().getColumn(column);
+        tableColumn.setMinWidth(Math.max(rendererWidth + getIntercellSpacing().width, tableColumn.getMinWidth()));
+        return component;
     }
 
     public void setMinimumColumnWidth(int minColumnWidth) {

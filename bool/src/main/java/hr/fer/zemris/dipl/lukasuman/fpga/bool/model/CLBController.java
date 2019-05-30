@@ -53,7 +53,7 @@ public class CLBController implements Serializable {
         int prevNumCLBInputs = this.numCLBInputs;
         this.numCLBInputs = numCLBInputs;
         sizeLUT = (int) Math.pow(2, numCLBInputs);
-        intsPerLUT = sizeLUT / 32 + 1;
+        intsPerLUT = (int) Math.ceil(sizeLUT / 32.0);
         intsPerCLB = numCLBInputs + intsPerLUT;
         usedBitsInFirstInt = sizeLUT - 32 * (intsPerLUT - 1);
         emptyBitsInFirstInt = 32 - usedBitsInFirstInt;

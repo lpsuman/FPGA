@@ -9,6 +9,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.IRNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.Serializable;
@@ -21,6 +22,74 @@ import java.util.function.Supplier;
 public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solution<int[]>>, Serializable {
 
     private static final long serialVersionUID = 8162221722673112143L;
+
+    private static class MultiplexerData {
+        private int numExcessInputs;
+        private int numExtraInputs;
+        private int numBranchingCLBs;
+        private int numBitsInTable;
+        private int sectorSize;
+        private int[] data;
+
+        public MultiplexerData(int numCLBInputs) {
+            numExcessInputs = 0;
+            numExtraInputs = 1;
+            numBranchingCLBs = 2;
+
+            while (true) {
+                if (numExtraInputs + numBranchingCLBs == numCLBInputs) {
+                    break;
+                } else if (numExtraInputs + numBranchingCLBs > numCLBInputs) {
+                    numExtraInputs--;
+                    numBranchingCLBs /= 2;
+                    break;
+                }
+
+                numExtraInputs++;
+                numBranchingCLBs *= 2;
+            }
+
+            numExcessInputs = numCLBInputs - (numExtraInputs + numBranchingCLBs);
+            numBitsInTable = (int) Math.pow(2, numCLBInputs);
+            data = new int[(int) Math.ceil(numBitsInTable / 32.0)];
+            sectorSize = (int) Math.pow(2, numExtraInputs + numBranchingCLBs);
+            int perBranchingSectorSize = sectorSize / numBranchingCLBs;
+            int numConsecutive = (int) Math.pow(2, numBranchingCLBs - 1);
+
+            if (sectorSize < 32) {
+                switch (numExcessInputs) {
+                    case 0:
+                        data[0] = 0b00110101;
+                        break;
+                    case 1:
+                        data[0] = 0b0011010100110101;
+                        break;
+                    case 2:
+                        data[0] = 0b00110101001101010011010100110101;
+                        break;
+                    default:
+                        throw new IllegalStateException("Invalid number of excess inputs.");
+                }
+            } else {
+                for (int i = 0; i < numBranchingCLBs; i++) {
+                    for (int j = 0; j < perBranchingSectorSize / (2 * numConsecutive); j++) {
+                        for (int k = 0; k < numConsecutive; k++) {
+                            int bitIndex = i * perBranchingSectorSize + (2 * j + 1) * numConsecutive + k;
+                            int indexIntegerInData = bitIndex / 32;
+                            bitIndex %= 32;
+                            data[indexIntegerInData] |= 1 << (31 - bitIndex);
+                        }
+                    }
+
+                    numConsecutive /= 2;
+                }
+
+                for (int i = 0, n = (int) Math.pow(2, numExcessInputs) - 1; i < n; i++) {
+                    System.arraycopy(data, 0, data, ((i + 1) * sectorSize / 32), sectorSize / 32);
+                }
+            }
+        }
+    }
 
     private static final String DEFAULT_NAME = "BoolProblem";
 
@@ -231,48 +300,182 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
     }
 
     public static Solution<int[]> bruteSolve(BooleanFunction func, int numCLBInputs) {
-        //TODO brute solve by constructing multiplexers with CLBs, algorithm is on paper
-        return null;
-    }
+        Utility.checkNull(func, "boolean function");
+        Utility.checkLimit(Constants.NUM_CLB_INPUTS_LIMIT, numCLBInputs);
 
-    private static int[] generateMultiplexerData(int numCLBInputs) {
-        int numExcessInputs = 0;
-        int numExtraInputs = 1;
-        int numBranchingCLBs = 2;
+        if (numCLBInputs == 2) {
+            return bruteSolveForTwoInputs(func);
+        }
+
+        MultiplexerData multiplexerData = new MultiplexerData(numCLBInputs);
+        int truthTableSize = func.getNumInputCombinations();
+        int numCLBRatio;
+        int depth = 0;
+        int numCLBInDepth = 1;
+        int numCLB = 1;
 
         while (true) {
-            if (numExtraInputs + numBranchingCLBs == numCLBInputs) {
-                break;
-            } else if (numExtraInputs + numBranchingCLBs > numCLBInputs) {
-                numExtraInputs--;
-                numBranchingCLBs /= 2;
+            numCLBRatio = numCLBInDepth * multiplexerData.sectorSize / truthTableSize;
+
+            if (numCLBRatio >= 1) {
+                if (numCLBRatio != 1) {
+                    numCLB -= (numCLB - 1) / numCLBRatio;
+                }
                 break;
             }
 
-            numExtraInputs++;
-            numBranchingCLBs *= 2;
+            depth++;
+            numCLBInDepth *= multiplexerData.numBranchingCLBs;
+            numCLB += numCLBInDepth;
         }
 
-        numExcessInputs = numCLBInputs - (numExtraInputs + numBranchingCLBs);
-        int numInputCombinations = (int) Math.pow(2, numCLBInputs);
-        int[] data = new int[numInputCombinations];
-        int sectorSize = (int) Math.pow(2, numExtraInputs + numBranchingCLBs);
-        int numConsecutive = (int) Math.pow(2, numBranchingCLBs - 1);
+        CLBController clbController = new CLBController(func.getNumInputs(), numCLBInputs, numCLB);
+        int[] data = new int[numCLB * clbController.getIntsPerCLB() + 1];
 
-        for (int i = 0; i < numBranchingCLBs; i++) {
+        recursiveFill(clbController, multiplexerData, RNG.getRNG(), func.getTruthTable(), data, 0, depth, 1, numCLBRatio);
 
-            for (int j = 0; j < sectorSize / (2 * numConsecutive); j++) {
+        data[data.length - 1] = numCLB - 1;
+        return new IntArraySolution(data);
+    }
 
-                for (int k = 0; k < 0; k++) {
+    private static void recursiveFill(CLBController clbController, MultiplexerData multiplexerData, IRNG random,
+                                      BitSet truthTable, int[] data, int depth, int maxDepth, int treeIndex, int numCLBRatio) {
 
+        int indexCLB = clbController.getNumCLB() - treeIndex;
+        int offsetInData = clbController.calcCLBOffset(indexCLB);
+        int numInputsToIgnore = multiplexerData.numExcessInputs;
+        int numNonBranchingInputs = multiplexerData.numExtraInputs;
+        int numBranchingCLB = multiplexerData.numBranchingCLBs;
+        int numExtraInputsToIgnore = 0;
+
+        if (depth == 0 && numCLBRatio != 1) {
+            numExtraInputsToIgnore = (int)(Math.log(numCLBRatio) / Math.log(2));
+            numInputsToIgnore += numExtraInputsToIgnore;
+            numNonBranchingInputs -= numExtraInputsToIgnore;
+            numBranchingCLB /= numCLBRatio;
+        }
+
+        for (int i = 0; i < numInputsToIgnore; i++) {
+            data[offsetInData] = random.nextInt(0, clbController.getNumInputs());
+            offsetInData++;
+        }
+
+        for (int i = 0; i < numNonBranchingInputs; i++) {
+            if (depth == 0) {
+                data[offsetInData] = i;
+            } else {
+                data[offsetInData] = depth * numNonBranchingInputs + i - numCLBRatio;
+            }
+            offsetInData++;
+        }
+
+        if (depth != maxDepth) {
+            for (int i = 0; i < Math.max(1, numCLBRatio); i++) {
+                int indexBranchingCLB = (treeIndex) * numBranchingCLB + 1;
+
+                if (depth != 0 && numCLBRatio != 0) {
+                    indexBranchingCLB -= 1 << numCLBRatio;
+                }
+
+                for (int j = 0; j < numBranchingCLB; j++) {
+                    data[offsetInData] = clbController.getNumCLB() - indexBranchingCLB + clbController.getNumInputs();
+
+                    if (i == 0) {
+                        if (depth == 0) {
+                            recursiveFill(clbController, multiplexerData, random, truthTable, data, depth + 1,
+                                    maxDepth, indexBranchingCLB, numExtraInputsToIgnore);
+                        } else {
+                            recursiveFill(clbController, multiplexerData, random, truthTable, data, depth + 1,
+                                    maxDepth, indexBranchingCLB, numCLBRatio);
+                        }
+                    }
+
+                    offsetInData++;
+                    indexBranchingCLB--;
                 }
             }
-        }
 
-        return data;
+            System.arraycopy(multiplexerData.data, 0, data, offsetInData, clbController.getIntsPerLUT());
+        } else {
+            int input = (depth + 1) * multiplexerData.numExtraInputs - numCLBRatio;
+
+            for (int i = 0; i < multiplexerData.numBranchingCLBs; i++) {
+                data[offsetInData] = input;
+                offsetInData++;
+                input++;
+            }
+
+            int startIndex = (clbController.getNumCLB() - treeIndex) * multiplexerData.sectorSize;
+            int[] tableData = BoolFuncController.bitSetToArray(truthTable, startIndex,
+                    startIndex + multiplexerData.sectorSize,
+                    multiplexerData.numBitsInTable / multiplexerData.sectorSize);
+
+            System.arraycopy(tableData, 0, data, offsetInData, tableData.length);
+        }
     }
 
     private static Solution<int[]> bruteSolveForTwoInputs(BooleanFunction func) {
-        return null;
+        BitSet truthTable = func.getTruthTable();
+        int numFuncInputs = func.getNumInputs();
+        int maxDepth = numFuncInputs - 2;
+        int numCLBForNegations = numFuncInputs - 2;
+        int numCLBForTableStorage = func.getNumInputCombinations() / 4;
+        int numCLB = numCLBForNegations + numCLBForTableStorage + 3 * (int)(Math.pow(2, maxDepth) - 1);
+        int[] data = new int[numCLB * 3 + 1];
+
+        for (int i = 0; i < numFuncInputs - 2; i++) {
+            int offsetCLB = i * 3;
+            data[offsetCLB] = i;
+            data[offsetCLB + 1] = i;
+            data[offsetCLB + 2] = 0b1100;
+        }
+
+        int offset = numCLBForNegations * 3;
+        for (int i = 0; i < numCLBForTableStorage; i++) {
+            data[offset++] = numFuncInputs - 2;
+            data[offset++] = numFuncInputs - 1;
+            data[offset++] = BoolFuncController.bitSetToArray(truthTable, i * 4, (i + 1) * 4, 1)[0];
+
+            data[offset - 1 + (numCLBForTableStorage + i / 2) * 3 - 1] = numFuncInputs + numCLBForNegations + i;
+        }
+
+        CLBController clbController = new CLBController(numFuncInputs, 2, numCLB);
+        recursiveTwoInputFill(clbController, data, 0, maxDepth, 1, numCLB - 1);
+
+        data[data.length - 1] = numCLB - 1;
+        return new IntArraySolution(data);
+    }
+
+    private static void recursiveTwoInputFill(CLBController clbController, int[] data,
+                                              int depth, int maxDepth, int indexTree, int indexCLB) {
+
+        int offsetData = indexCLB * 3 + 2;
+
+        data[offsetData--] = 0b0111;
+        data[offsetData--] = indexCLB - 1 + clbController.getNumInputs();
+        data[offsetData--] = indexCLB - 2 + clbController.getNumInputs();
+
+        int indexChildInTree;
+        int indexChildCLB;
+
+        data[offsetData--] = 0b0001;
+        indexChildInTree = indexTree * 2;
+        indexChildCLB = clbController.getNumCLB() - (indexChildInTree * 3) + 2;
+        if (depth + 1 < maxDepth) {
+            data[offsetData] = indexChildCLB + clbController.getNumInputs();
+            recursiveTwoInputFill(clbController, data, depth + 1, maxDepth, indexChildInTree, indexChildCLB);
+        }
+        offsetData--;
+        data[offsetData--] = depth;
+
+        data[offsetData--] = 0b0001;
+        indexChildInTree = indexTree * 2 + 1;
+        indexChildCLB = clbController.getNumCLB() - (indexChildInTree * 3) + 2;
+        if (depth + 1 < maxDepth) {
+            data[offsetData] = indexChildCLB + clbController.getNumInputs();
+            recursiveTwoInputFill(clbController, data, depth + 1, maxDepth, indexChildInTree, indexChildCLB);
+        }
+        offsetData--;
+        data[offsetData] = depth + clbController.getNumInputs();
     }
 }

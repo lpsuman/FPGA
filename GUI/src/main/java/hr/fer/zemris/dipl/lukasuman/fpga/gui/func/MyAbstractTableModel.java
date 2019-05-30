@@ -37,6 +37,10 @@ public abstract class MyAbstractTableModel extends AbstractTableModel {
         fireTableStructureChanged();
     }
 
+    public boolean isDisplayIndices() {
+        return displayIndices;
+    }
+
     public void setDisplayIndices(boolean displayIndices) {
         if (displayIndices != this.displayIndices) {
             this.displayIndices = displayIndices;
