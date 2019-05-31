@@ -75,4 +75,20 @@ public class FuncTests {
         assertEquals(boolVector.getTruthTable()[1], expectedSecondTruthTable);
         assertEquals(boolVector.getTruthTable()[2], expectedThirdTruthTable);
     }
+
+    @Test
+    void testFuncDuplicate() {
+        BooleanFunction original = BoolFuncController.generateRandomFunction(3);
+        BooleanFunction clone = original.getDuplicate();
+
+        TestUtil.testClone(original, clone);
+    }
+
+    @Test
+    void testVectorDuplicate() {
+        BooleanVector original = BoolFuncController.generateRandomVector(5, 3);
+        BooleanVector clone = original.getDuplicate();
+
+        TestUtil.testClone(original, clone);
+    }
 }

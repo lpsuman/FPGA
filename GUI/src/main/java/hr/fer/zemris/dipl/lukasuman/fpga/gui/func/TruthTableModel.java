@@ -1,10 +1,10 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.func;
 
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.AbstractNameHandler;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.AbstractNameHandler;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationProvider;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.util.Arrays;
@@ -30,8 +30,8 @@ public class TruthTableModel extends MyAbstractTableModel {
     private List<String> outputIDs;
     private BitSet[] truthTables;
 
-    public TruthTableModel(BooleanFunctionController booleanFunctionController, LocalizationProvider lp) {
-        super(booleanFunctionController, lp, LocalizationKeys.INDEX_KEY);
+    public TruthTableModel(SessionController parentSession) {
+        super(parentSession, null, LocalizationKeys.INDEX_KEY);
         loadDefaultData();
     }
 

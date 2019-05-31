@@ -48,6 +48,7 @@ public class LocalizationKeys {
     public static final String LOAD_TEXT_KEY = "load_text";
     public static final String LOAD_EXPRESSION_KEY = "load_expression";
     public static final String DUPLICATE_FUNCTION_KEY = "duplicate_function";
+    public static final String REMOVE_FUNCTION_KEY = "remove_function";
     public static final String GENERATE_RANDOM_KEY = "generate_br_random";
     public static final String BOOLEAN_FUNCTIONS_KEY = "boolean_functions";
     public static final String NAME_KEY = "name";

@@ -1,6 +1,9 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.parser.BoolParser;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.LoadTextAction;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.func.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.session.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.icon.IconLoader;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.FormLocalizationProvider;
@@ -47,6 +50,14 @@ public class JFPGA extends JFrame {
     private Action saveSessionAsAction;
     private Action closeSessionAction;
     private Action exitAction;
+
+    private Action generateFromExpressionAction;
+    private Action generateFromTextAction;
+    private LoadTextAction loadTextAction;
+    private LoadTextAction loadExpressionAction;
+    private Action generateRandomFunctionAction;
+    private Action duplicateSelectedFunctionAction;
+    private Action removeSelectedFunctionAction;
 
     /**Map used to link tab closing buttons to their respective tabs.*/
     private Map<JButton, Component> mapCloseButtonToComp;
@@ -104,6 +115,27 @@ public class JFPGA extends JFrame {
         saveSessionAsAction = new SaveSessionAsAction(this);
         closeSessionAction = new CloseSessionAction(this);
         exitAction = new ExitAction(this);
+
+        TextProvider textProvider = () -> getCurrentSession().getBooleanFunctionController().getExpressionTextArea().getText();
+        generateFromExpressionAction = new GenerateFromExpressionAction(this, textProvider);
+        generateFromTextAction = new GenerateFromTextAction(this, textProvider);
+
+        loadTextAction = new LoadTextAction(this, LocalizationKeys.LOAD_TEXT_KEY);
+        loadTextAction.addTextLoadListener(lines -> getCurrentSession().getBooleanFunctionController().getExpressionTextArea().setText(String.join("\n", lines)));
+
+        loadExpressionAction = new LoadTextAction(this, LocalizationKeys.LOAD_EXPRESSION_KEY);
+        loadExpressionAction.addTextLoadListener(lines -> getCurrentSession().getBooleanFunctionController().getExpressionTextArea().setText(String.join("\n", lines)));
+
+        generateRandomFunctionAction = new GenerateRandomFunctionAction(this, () -> {
+            JComboBox<Integer> numInputsComboBox = getCurrentSession().getBooleanFunctionController().getNumInputsComboBox();
+            return numInputsComboBox.getItemAt(numInputsComboBox.getSelectedIndex());
+        });
+        duplicateSelectedFunctionAction = new DuplicateTableItemAction<>(this,
+                () -> getCurrentSession().getBooleanFunctionController(),
+                LocalizationKeys.DUPLICATE_FUNCTION_KEY);
+        removeSelectedFunctionAction = new RemoveTableItemAction<>(this,
+                () -> getCurrentSession().getBooleanFunctionController(),
+                LocalizationKeys.REMOVE_FUNCTION_KEY);
     }
 
     private void createMenus() {
@@ -364,5 +396,33 @@ public class JFPGA extends JFrame {
 
     public Action getSaveSessionAction() {
         return saveSessionAction;
+    }
+
+    public Action getGenerateFromExpressionAction() {
+        return generateFromExpressionAction;
+    }
+
+    public Action getGenerateFromTextAction() {
+        return generateFromTextAction;
+    }
+
+    public LoadTextAction getLoadTextAction() {
+        return loadTextAction;
+    }
+
+    public LoadTextAction getLoadExpressionAction() {
+        return loadExpressionAction;
+    }
+
+    public Action getGenerateRandomFunctionAction() {
+        return generateRandomFunctionAction;
+    }
+
+    public Action getDuplicateSelectedFunctionAction() {
+        return duplicateSelectedFunctionAction;
+    }
+
+    public Action getRemoveSelectedFunctionAction() {
+        return removeSelectedFunctionAction;
     }
 }

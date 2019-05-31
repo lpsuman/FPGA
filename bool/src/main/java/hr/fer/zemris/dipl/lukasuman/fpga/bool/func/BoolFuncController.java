@@ -38,6 +38,14 @@ public class BoolFuncController {
         return new BooleanFunction(inputIDs, bitSet, DEFAULT_FUNC_NAME);
     }
 
+    public static BooleanVector generateRandomVector(int numFunctions, int numFunctionInputs) {
+        List<BooleanFunction> functions = new ArrayList<>();
+        for (int i = 0; i < numFunctions; i++) {
+            functions.add(generateRandomFunction(numFunctionInputs));
+        }
+        return new BooleanVector(functions);
+    }
+
     public static BooleanFunction generateFromMask(int mask, int numInputs) {
         return new BooleanFunction(BoolFuncController.generateDefaultInputIDs(numInputs),
                 Utility.bitSetFromMask(mask, (int) Math.pow(2, numInputs)), DEFAULT_FUNC_NAME);

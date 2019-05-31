@@ -1,8 +1,9 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.func;
 
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.AbstractNameHandler;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.AbstractNameHandler;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.CLBController;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Duplicateable;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.Serializable;
@@ -17,7 +18,7 @@ import java.util.*;
  *     are copied as required</li>
  * </ul>
  */
-public class BooleanVector extends AbstractNameHandler implements Serializable {
+public class BooleanVector extends AbstractNameHandler implements Serializable, Duplicateable<BooleanVector> {
 
     private static final long serialVersionUID = -7755696151775719987L;
 
@@ -41,11 +42,11 @@ public class BooleanVector extends AbstractNameHandler implements Serializable {
     }
 
     public BooleanVector(List<BooleanFunction> boolFunctions, String name) {
-        this(boolFunctions, true, name);
+        this(boolFunctions, false, name);
     }
 
     public BooleanVector(List<BooleanFunction> boolFunctions) {
-        this(boolFunctions, true);
+        this(boolFunctions, false);
     }
 
     public BooleanVector(BooleanVector other) {
@@ -64,7 +65,13 @@ public class BooleanVector extends AbstractNameHandler implements Serializable {
     private void fillTable(List<BooleanFunction> boolFuncs, boolean removeRedundantInputs) {
         Set<String> inputIDSet = new HashSet<>();
         List<BooleanFunction> checkedFunctions = new ArrayList<>(boolFuncs.size());
-        boolFuncs.forEach(f -> checkedFunctions.add(BoolFuncController.removeRedundantInputsIfAble(f)));
+
+        if (removeRedundantInputs) {
+            boolFuncs.forEach(f -> checkedFunctions.add(BoolFuncController.removeRedundantInputsIfAble(f)));
+        } else {
+            checkedFunctions.addAll(boolFuncs);
+        }
+
         checkedFunctions.forEach(f -> inputIDSet.addAll(f.getInputIDs()));
         sortedInputIDs = new ArrayList<>(inputIDSet);
         Collections.sort(sortedInputIDs);
@@ -115,6 +122,24 @@ public class BooleanVector extends AbstractNameHandler implements Serializable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BooleanVector that = (BooleanVector) o;
+        return numInputCombinations == that.numInputCombinations &&
+                boolFunctions.equals(that.boolFunctions) &&
+                Arrays.equals(truthTable, that.truthTable) &&
+                sortedInputIDs.equals(that.sortedInputIDs);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(boolFunctions, numInputCombinations, sortedInputIDs);
+        result = 31 * result + Arrays.hashCode(truthTable);
+        return result;
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
@@ -130,5 +155,10 @@ public class BooleanVector extends AbstractNameHandler implements Serializable {
         sb.setLength(sb.length() - 1);
 
         return sb.toString();
+    }
+
+    @Override
+    public BooleanVector getDuplicate() {
+        return new BooleanVector(this);
     }
 }

@@ -1,25 +1,22 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.func;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class BooleanVectorController extends AbstractGUIController{
+public class BooleanVectorController extends AbstractGUIController<BooleanVector> {
 
-    private List<BooleanVector> booleanVectors;
     private Set<BooleanVectorListener> booleanVectorListeners;
 
-    public BooleanVectorController(List<BooleanVector> booleanVectors, JFPGA jfpga, SessionController parentSession) {
-        super(jfpga, parentSession);
-        this.booleanVectors = Utility.checkNull(booleanVectors, "list of boolean vectors");
+    public BooleanVectorController(SessionController parentSession) {
+        super(parentSession, parentSession.getSessionData().getBoolVectors());
 
         loadData();
-        initActions();
         initGUI();
     }
 
@@ -27,12 +24,13 @@ public class BooleanVectorController extends AbstractGUIController{
 
     }
 
-    private void initActions() {
+    private void initGUI() {
 
     }
 
-    private void initGUI() {
-
+    @Override
+    protected Collection<? extends TableItemListener<BooleanVector>> getTableItemListeners() {
+        return booleanVectorListeners;
     }
 
     public void addBooleanVectorListener(BooleanVectorListener listener) {

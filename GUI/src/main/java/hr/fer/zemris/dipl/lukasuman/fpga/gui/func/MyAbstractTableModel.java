@@ -1,38 +1,46 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.func;
 
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationProvider;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import javax.swing.table.AbstractTableModel;
+import java.util.List;
 
-public abstract class MyAbstractTableModel extends AbstractTableModel {
+public abstract class MyAbstractTableModel<T> extends AbstractTableModel {
 
-    protected BooleanFunctionController booleanFunctionController;
-    protected LocalizationProvider lp;
+    protected SessionController parentSession;
+    protected List<T> items;
     private String[] columnNameKeys;
     protected String[] columnNames;
     private Double[] columnWidthPercentages;
     protected boolean displayIndices;
 
-    public MyAbstractTableModel(BooleanFunctionController booleanFunctionController, LocalizationProvider lp,
-                                String... columnNameKeys) {
-
-        this.booleanFunctionController = Utility.checkNull(booleanFunctionController, "boolfunc controller");
-        this.lp = Utility.checkNull(lp, "localization provider");
+    public MyAbstractTableModel(SessionController parentSession, List<T> items, String... columnNameKeys) {
+        this.parentSession = Utility.checkNull(parentSession, "parent session");
+        this.items = items;
 
         if (columnNameKeys != null) {
             this.columnNameKeys = columnNameKeys;
             columnNames = new String[columnNameKeys.length];
             updateColumnNames();
-            lp.addLocalizationListener(this::updateColumnNames);
+            parentSession.getLocProv().addLocalizationListener(this::updateColumnNames);
         }
 
         displayIndices = true;
     }
 
+    public List<T> getItems() {
+        return items;
+    }
+
+    public void setItems(List<T> items) {
+        this.items = Utility.checkIfValidCollection(items, "items");
+        fireTableDataChanged();
+    }
+
     private void updateColumnNames() {
         for (int i = 0; i < columnNames.length; i++) {
-            columnNames[i] = lp.getString(columnNameKeys[i]);
+            columnNames[i] = parentSession.getLocProv().getString(columnNameKeys[i]);
         }
         fireTableStructureChanged();
     }
@@ -71,6 +79,14 @@ public abstract class MyAbstractTableModel extends AbstractTableModel {
         }
 
         return columnWidthPercentages[column] / widthSum;
+    }
+
+    @Override
+    public int getRowCount() {
+        if (items == null) {
+            throw new UnsupportedOperationException("List of items is null, getRowCount needs to be overridden.");
+        }
+        return items.size();
     }
 
     @Override

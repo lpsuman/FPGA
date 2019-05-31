@@ -1,7 +1,8 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.func;
 
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.AbstractNameHandler;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.AbstractNameHandler;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Duplicateable;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.Serializable;
@@ -14,7 +15,7 @@ import java.util.Objects;
  * This class represents the lowest level representation of a boolean function. It is uniquely defined by a truth table.
  * It also stores a name (for easier handling) and a list of input IDs in string form ("a", "b", etc.).
  */
-public class BooleanFunction extends AbstractNameHandler implements Serializable {
+public class BooleanFunction extends AbstractNameHandler implements Serializable, Duplicateable<BooleanFunction> {
 
     private static final long serialVersionUID = -3337214107238850818L;
 
@@ -107,5 +108,10 @@ public class BooleanFunction extends AbstractNameHandler implements Serializable
         Utility.appendBitSet(sb, truthTable, numInputCombinations);
 
         return sb.toString();
+    }
+
+    @Override
+    public BooleanFunction getDuplicate() {
+        return new BooleanFunction(this);
     }
 }

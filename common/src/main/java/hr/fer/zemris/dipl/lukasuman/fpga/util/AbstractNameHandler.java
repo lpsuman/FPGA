@@ -1,14 +1,11 @@
-package hr.fer.zemris.dipl.lukasuman.fpga.bool;
-
-import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
-import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
+package hr.fer.zemris.dipl.lukasuman.fpga.util;
 
 import java.io.Serializable;
 
 /**
  * This class can be extended in order to provide storage of a name string.
  */
-public abstract class AbstractNameHandler implements Serializable {
+public abstract class AbstractNameHandler implements Nameable, Serializable {
 
     private static final long serialVersionUID = 7073824127051413762L;
 
@@ -22,10 +19,12 @@ public abstract class AbstractNameHandler implements Serializable {
         return getClass().getSimpleName() + "'s name";
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = Utility.checkIfValidString(name, getNameMessage());
         if (name.length() > Constants.MAXIMUM_NAME_LENGTH) {

@@ -4,7 +4,6 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFuncController;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.AbstractAppAction;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.func.BooleanFunctionController;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
@@ -13,14 +12,11 @@ import java.util.Collections;
 
 public class GenerateFromTextAction extends AbstractAppAction {
 
-    private BooleanFunctionController booleanFunctionController;
     private TextProvider textProvider;
 
-    public GenerateFromTextAction(JFPGA jfpga, BooleanFunctionController booleanFunctionController,
-                                  TextProvider textProvider) {
+    public GenerateFromTextAction(JFPGA jfpga, TextProvider textProvider) {
 
         super(jfpga, LocalizationKeys.GENERATE_FROM_TEXT_KEY);
-        this.booleanFunctionController = Utility.checkNull(booleanFunctionController, "boolfunc controller");
         this.textProvider = Utility.checkNull(textProvider, "text provider");
     }
 
@@ -36,6 +32,6 @@ public class GenerateFromTextAction extends AbstractAppAction {
             return;
         }
 
-        booleanFunctionController.addBooleanFunction(newFunc);
+        jfpga.getCurrentSession().getBooleanFunctionController().addItem(newFunc);
     }
 }

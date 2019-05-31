@@ -1,6 +1,6 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.model;
 
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.AbstractNameHandler;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.AbstractNameHandler;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BlockConfiguration;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFuncController;

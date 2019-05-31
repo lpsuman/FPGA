@@ -42,6 +42,6 @@ public class GenerateFromExpressionAction extends AbstractAppAction {
         }
 
         BooleanFunction newFunc = BoolFuncController.generateFromExpression(boolExpression);
-        jfpga.getCurrentSession().getBooleanFunctionController().addBooleanFunction(newFunc);
+        jfpga.getCurrentSession().getBooleanFunctionController().addItem(newFunc);
     }
 }

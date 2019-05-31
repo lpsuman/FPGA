@@ -8,15 +8,15 @@ import java.util.List;
 public abstract class BooleanFunctionAdapter implements BooleanFunctionListener {
 
     @Override
-    public void booleanFunctionAdded(BooleanFunction booleanFunction, int index) {
+    public void itemAdded(BooleanFunction item, int indexInTable) {
     }
 
     @Override
-    public void booleanFunctionRemoved(BooleanFunction booleanFunction, int index) {
+    public void itemRemoved(BooleanFunction item, int indexInTable) {
     }
 
     @Override
-    public void booleanFunctionRenamed(BooleanFunction booleanFunction, int index, String oldName) {
+    public void itemRenamed(BooleanFunction item, int indexInTable, String oldName) {
     }
 
     @Override

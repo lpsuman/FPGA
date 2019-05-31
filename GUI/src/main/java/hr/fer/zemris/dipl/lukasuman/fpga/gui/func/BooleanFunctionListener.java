@@ -5,11 +5,8 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import java.util.BitSet;
 import java.util.List;
 
-public interface BooleanFunctionListener {
+public interface BooleanFunctionListener extends TableItemListener<BooleanFunction> {
 
-    void booleanFunctionAdded(BooleanFunction booleanFunction, int index);
-    void booleanFunctionRemoved(BooleanFunction booleanFunction, int index);
-    void booleanFunctionRenamed(BooleanFunction booleanFunction, int index, String oldName);
     void booleanFunctionInputsEdited(BooleanFunction booleanFunction, int index, List<String> oldInputs);
     void booleanFunctionTableEdited(BooleanFunction booleanFunction, int index, BitSet oldTable);
 }
