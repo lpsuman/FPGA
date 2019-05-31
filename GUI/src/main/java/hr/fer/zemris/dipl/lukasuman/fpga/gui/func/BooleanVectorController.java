@@ -24,16 +24,32 @@ public class BooleanVectorController extends AbstractGUIController<BooleanVector
     private JComboBox<Integer> numInputsComboBox;
     private JComboBox<Integer> numFunctionsComboBox;
 
+    private int indexVectorBeingEdited;
+
     public BooleanVectorController(SessionController parentSession) {
         super(parentSession, parentSession.getSessionData().getBoolVectors());
     }
 
     @Override
     protected void loadData() {
-        itemTableModel = new BoolVectorTableModel(parentSession, listOfItems);
+        indexVectorBeingEdited = -1;
+        itemTableModel = new BoolVectorTableModel(parentSession, getItems());
         itemTable = new MyJTable(itemTableModel);
         itemTable.setRowSelectionAllowed(true);
         itemTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+        itemTable.addColumnClickedListener(3, row -> {
+            if (indexVectorBeingEdited == -1 || row != indexVectorBeingEdited) {
+                getJfpga().getCurrentSession().getBooleanFunctionController().setItems(getItems().get(row).getBoolFunctions());
+                indexVectorBeingEdited = row;
+            }
+        });
+
+        itemTable.getSelectionModel().addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting()) {
+                stopEditingVector();
+            }
+        });
     }
 
     @Override
@@ -55,6 +71,7 @@ public class BooleanVectorController extends AbstractGUIController<BooleanVector
 
         upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getDuplicateSelectedVectorAction())));
         upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getRemoveSelectedVectorAction())));
+        upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getDisplayAllVectorsAction())));
 
         lowerPanel.add(new LJLabel(LocalizationKeys.BOOLEAN_VECTORS_KEY, getLocProv(), SwingConstants.CENTER), BorderLayout.NORTH);
         lowerPanel.add(new JScrollPane(itemTable), BorderLayout.CENTER);
@@ -67,6 +84,20 @@ public class BooleanVectorController extends AbstractGUIController<BooleanVector
 
     public JComboBox<Integer> getNumFunctionsComboBox() {
         return numFunctionsComboBox;
+    }
+
+    public void updateVectorBeingEdited() {
+        if (indexVectorBeingEdited != -1) {
+            getItems().get(indexVectorBeingEdited).updateTable(false);
+            itemTableModel.fireTableRowsUpdated(indexVectorBeingEdited, indexVectorBeingEdited);
+        }
+    }
+
+    public void stopEditingVector() {
+        if (indexVectorBeingEdited != -1) {
+            indexVectorBeingEdited = -1;
+            getJfpga().getDisplayAllFunctionsAction().actionPerformed(null);
+        }
     }
 
     @Override

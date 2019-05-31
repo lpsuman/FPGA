@@ -12,7 +12,6 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -36,8 +35,7 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
 
     @Override
     protected void loadData() {
-
-        itemTableModel = new FuncTableModel(parentSession, listOfItems);
+        itemTableModel = new FuncTableModel(parentSession, getItems());
         itemTable = new MyJTable(itemTableModel);
         itemTable.setRowSelectionAllowed(true);
         itemTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -123,6 +121,7 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
 
         upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getDuplicateSelectedFunctionAction())));
         upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getRemoveSelectedFunctionAction())));
+        upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getDisplayAllFunctionsAction())));
 
         lowerPanel.add(new LJLabel(LocalizationKeys.BOOLEAN_FUNCTIONS_KEY, getLocProv(), SwingConstants.CENTER), BorderLayout.NORTH);
         lowerPanel.add(new JScrollPane(itemTable), BorderLayout.CENTER);
@@ -139,10 +138,12 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
     public void changeFunctionInput(int inputIndex, String newInputID) {
         Utility.checkIfValidString(newInputID, "new boolean function's input");
 
-        List<BooleanFunction> selectedFunctions = getSelectedItems();
+        int[] selectedIndices = getIndicesSelectedItems();
 
-        if (selectedFunctions.size() == 1) {
-            BooleanFunction func = selectedFunctions.get(0);
+        if (selectedIndices.length == 0) {
+            return;
+        } else if (selectedIndices.length == 1) {
+            BooleanFunction func = getSelectedItem();
             Utility.checkRange(inputIndex, 0, func.getNumInputs() - 1);
             List<String> oldInputs = new ArrayList<>(func.getInputIDs());
             func.getInputIDs().set(inputIndex, newInputID);
@@ -153,16 +154,22 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
         } else {
             String oldInputID = truthTableModel.getInputIDs().get(inputIndex);
 
-            for (BooleanFunction selectedFunction : selectedFunctions) {
+            for (int selectedIndex : selectedIndices) {
+                BooleanFunction selectedFunction = getItem(selectedIndices[selectedIndex]);
                 List<String> inputIDs = selectedFunction.getInputIDs();
                 int index = inputIDs.indexOf(oldInputID);
 
                 if (index != -1) {
+                    List<String> oldInputs = new ArrayList<>(selectedFunction.getInputIDs());
                     inputIDs.set(index, newInputID);
+
+                    if (booleanFunctionListeners != null) {
+                        booleanFunctionListeners.forEach(l -> l.booleanFunctionInputsEdited(selectedFunction, selectedIndex, oldInputs));
+                    }
                 }
             }
 
-            BooleanVector selectionVector = new BooleanVector(selectedFunctions);
+            BooleanVector selectionVector = new BooleanVector(getSelectedItems());
             truthTableModel.setData(selectionVector);
             inputTableModel.setItems(selectionVector.getSortedInputIDs());
         }
@@ -170,6 +177,15 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
         inputTableModel.fireTableDataChanged();
         truthTableModel.fireTableStructureChanged();
         parentSession.setEdited(true);
+    }
+
+    public void tableDataChanged(int index, BitSet oldTable) {
+        if (booleanFunctionListeners != null) {
+            if (getIndexSelectedItem() < 0) {
+                return;
+            }
+            booleanFunctionListeners.forEach(l -> l.booleanFunctionTableEdited(getSelectedItem(), index, oldTable));
+        }
     }
 
     public JTextArea getExpressionTextArea() {

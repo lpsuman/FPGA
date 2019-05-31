@@ -1,15 +1,21 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.session;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JPanelPair;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.func.BooleanFunctionAdapter;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.func.BooleanFunctionController;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.func.BooleanVectorController;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.func.BooleanVectorListener;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationProvider;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.BitSet;
+import java.util.List;
 
 public class SessionController {
 
@@ -33,6 +39,41 @@ public class SessionController {
     private void loadSessionData() {
         booleanFunctionController = new BooleanFunctionController(this);
         booleanVectorController = new BooleanVectorController(this);
+
+        booleanFunctionController.addBooleanFunctionListener(new BooleanFunctionAdapter() {
+            @Override
+            public void itemAdded(BooleanFunction item, int indexInTable) {
+                updateVectorBeingEdited();
+            }
+
+            @Override
+            public void itemRemoved(BooleanFunction item, int indexInTable) {
+                updateVectorBeingEdited();
+            }
+
+            @Override
+            public void itemListChanged() {
+                if (booleanFunctionController.getItems() != booleanFunctionController.getAllItems()) {
+                    booleanVectorController.stopEditingVector();
+                }
+            }
+
+            @Override
+            public void booleanFunctionInputsEdited(BooleanFunction booleanFunction, int index, List<String> oldInputs) {
+                updateVectorBeingEdited();
+            }
+
+            @Override
+            public void booleanFunctionTableEdited(BooleanFunction booleanFunction, int index, BitSet oldTable) {
+                updateVectorBeingEdited();
+            }
+        });
+    }
+
+    private void updateVectorBeingEdited() {
+        if (booleanFunctionController.getItems() != booleanFunctionController.getAllItems()) {
+            booleanVectorController.updateVectorBeingEdited();
+        }
     }
 
     private void initGUI() {

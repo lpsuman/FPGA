@@ -21,14 +21,7 @@ public abstract class AbstractTableItemAction<T extends Duplicateable & Nameable
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        AbstractGUIController<T> controller = controllerProvider.get();
-        int indexSelectedItem = controller.getIndexSelectedItem();
-
-        if (indexSelectedItem < 0) {
-            return;
-        }
-
-        doAction(controller);
+        doAction(controllerProvider.get());
     }
 
     protected abstract void doAction(AbstractGUIController<T> controller);

@@ -20,6 +20,10 @@ public abstract class BooleanFunctionAdapter implements BooleanFunctionListener 
     }
 
     @Override
+    public void itemListChanged() {
+    }
+
+    @Override
     public void booleanFunctionInputsEdited(BooleanFunction booleanFunction, int index, List<String> oldInputs) {
     }
 

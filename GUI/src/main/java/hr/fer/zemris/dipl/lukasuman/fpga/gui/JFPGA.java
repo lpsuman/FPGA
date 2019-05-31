@@ -56,14 +56,17 @@ public class JFPGA extends JFrame {
     private Action generateFromTextAction;
     private LoadTextAction loadTextAction;
     private LoadTextAction loadExpressionAction;
+
     private Action generateRandomFunctionAction;
     private Action duplicateSelectedFunctionAction;
     private Action removeSelectedFunctionAction;
+    private Action displayAllFunctionsAction;
 
     private Action generateFromFunctionsAction;
     private Action generateRandomVectorAction;
     private Action duplicateSelectedVectorAction;
     private Action removeSelectedVectorAction;
+    private Action displayAllVectorsAction;
 
     /**Map used to link tab closing buttons to their respective tabs.*/
     private Map<JButton, Component> mapCloseButtonToComp;
@@ -142,6 +145,9 @@ public class JFPGA extends JFrame {
         removeSelectedFunctionAction = new RemoveTableItemAction<>(this,
                 () -> getCurrentSession().getBooleanFunctionController(),
                 LocalizationKeys.REMOVE_FUNCTION_KEY);
+        displayAllFunctionsAction = new DisplayAllTableItemAction<>(this,
+                () -> getCurrentSession().getBooleanFunctionController(),
+                LocalizationKeys.DISPLAY_ALL_FUNCTIONS_KEY);
 
         generateFromFunctionsAction = new GenerateFromFunctionsAction(this,
                 () -> getCurrentSession().getBooleanFunctionController().getSelectedItems());
@@ -158,6 +164,9 @@ public class JFPGA extends JFrame {
         removeSelectedVectorAction = new RemoveTableItemAction<>(this,
                 () -> getCurrentSession().getBooleanVectorController(),
                 LocalizationKeys.REMOVE_VECTOR_KEY);
+        displayAllVectorsAction = new DisplayAllTableItemAction<>(this,
+                () -> getCurrentSession().getBooleanVectorController(),
+                LocalizationKeys.DISPLAY_ALL_VECTORS_KEY);
     }
 
     private void createMenus() {
@@ -448,6 +457,10 @@ public class JFPGA extends JFrame {
         return removeSelectedFunctionAction;
     }
 
+    public Action getDisplayAllFunctionsAction() {
+        return displayAllFunctionsAction;
+    }
+
     public Action getGenerateFromFunctionsAction() {
         return generateFromFunctionsAction;
     }
@@ -462,5 +475,9 @@ public class JFPGA extends JFrame {
 
     public Action getRemoveSelectedVectorAction() {
         return removeSelectedVectorAction;
+    }
+
+    public Action getDisplayAllVectorsAction() {
+        return displayAllVectorsAction;
     }
 }

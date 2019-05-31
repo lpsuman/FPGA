@@ -39,17 +39,18 @@ public class LocalizationKeys {
     public static final String INPUT_S_ALREADY_EXISTS_KEY = "input_s_already_exists";
     public static final String TRUTH_TABLE_KEY = "truth_table";
     public static final String OUTPUTS_KEY = "outputs";
+    public static final String NAME_KEY = "name";
 
     public static final String INSERT_EXPRESSION_KEY = "insert_expression";
     public static final String GENERATE_FROM_EXPRESSION_KEY = "generate_from_br_expression";
     public static final String GENERATE_FROM_TEXT_KEY = "generate_from_br_text";
     public static final String LOAD_TEXT_KEY = "load_text";
     public static final String LOAD_EXPRESSION_KEY = "load_expression";
+    public static final String BOOLEAN_FUNCTIONS_KEY = "boolean_functions";
+    public static final String GENERATE_RANDOM_FUNCTION_KEY = "generate_br_random_function";
     public static final String DUPLICATE_FUNCTION_KEY = "duplicate_function";
     public static final String REMOVE_FUNCTION_KEY = "remove_function";
-    public static final String GENERATE_RANDOM_FUNCTION_KEY = "generate_br_random_function";
-    public static final String BOOLEAN_FUNCTIONS_KEY = "boolean_functions";
-    public static final String NAME_KEY = "name";
+    public static final String DISPLAY_ALL_FUNCTIONS_KEY = "display_all_functions";
 
     public static final String BOOLEAN_VECTORS_KEY = "boolean_vectors";
     public static final String FUNCTIONS_KEY = "functions";
@@ -57,6 +58,5 @@ public class LocalizationKeys {
     public static final String GENERATE_RANDOM_VECTOR_KEY = "generate_br_random_vector";
     public static final String DUPLICATE_VECTOR_KEY = "duplicate_vector";
     public static final String REMOVE_VECTOR_KEY = "remove_vector";
-
-
+    public static final String DISPLAY_ALL_VECTORS_KEY = "display_all_vectors";
 }

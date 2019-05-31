@@ -12,7 +12,6 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Nameable;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
@@ -22,15 +21,17 @@ import java.util.List;
 public abstract class AbstractGUIController<T extends Nameable> {
 
     protected SessionController parentSession;
-    protected List<T> listOfItems;
+    private List<T> allItems;
+    private List<T> items;
     protected JPanel mainPanel;
 
     protected MyAbstractTableModel<T> itemTableModel;
     protected MyJTable itemTable;
 
-    public AbstractGUIController(SessionController parentSession, List<T> listOfItems) {
+    public AbstractGUIController(SessionController parentSession, List<T> items) {
         this.parentSession = Utility.checkNull(parentSession, "parent session");
-        this.listOfItems = Utility.checkNull(listOfItems, "list of items");
+        this.items = Utility.checkNull(items, "list of items");
+        allItems = items;
 
         loadData();
         initGUI();
@@ -76,8 +77,24 @@ public abstract class AbstractGUIController<T extends Nameable> {
         return mainPanel;
     }
 
+    public List<T> getAllItems() {
+        return allItems;
+    }
+
     public List<T> getItems() {
-        return itemTableModel.getItems();
+        return items;
+    }
+
+    public void setItems(List<T> items) {
+        this.items = Utility.checkNull(items, "list of items");
+        itemTableModel.setItems(this.items);
+        itemTableModel.fireTableDataChanged();
+
+        if (getTableItemListeners() != null) {
+            getTableItemListeners().forEach(TableItemListener::itemListChanged);
+        }
+
+        parentSession.setEdited(true);
     }
 
     public int getNumItems() {
@@ -107,8 +124,13 @@ public abstract class AbstractGUIController<T extends Nameable> {
     }
 
     public T getItem(int index) {
-        Utility.checkRange(index, 0, getNumItems());
+        Utility.checkRange(index, 0, getNumItems() - 1);
         return getItems().get(index);
+    }
+
+    public void setItem(int index, T newItem) {
+        Utility.checkRange(index, 0, getNumItems() - 1);
+        getItems().set(index, newItem);
     }
 
     protected abstract Collection<? extends TableItemListener<T>> getTableItemListeners();
@@ -132,6 +154,7 @@ public abstract class AbstractGUIController<T extends Nameable> {
 
     public void removeItem(int index) {
         Utility.checkRange(index, 0, getNumItems() - 1);
+        boolean selectPrevious = index > 0;
         boolean selectNext = index < getNumItems() - 1;
         T removed = getItems().remove(index);
         itemTableModel.fireTableRowsDeleted(index, index);
@@ -141,7 +164,11 @@ public abstract class AbstractGUIController<T extends Nameable> {
         }
 
         if (selectNext) {
-            itemTable.setRowSelectionInterval(index, index);
+            itemTable.changeSelection(index, 0, false, false);
+//            itemTable.setRowSelectionInterval(index, index);
+        } else if (selectPrevious) {
+            itemTable.changeSelection(index - 1, 0, false, false);
+//            itemTable.setRowSelectionInterval(index - 1, index - 1);
         }
 
         parentSession.setEdited(true);

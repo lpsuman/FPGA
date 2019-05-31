@@ -15,6 +15,10 @@ public class RemoveTableItemAction<T extends Duplicateable & Nameable> extends A
 
     @Override
     protected void doAction(AbstractGUIController<T> controller) {
+        if (controller.getIndexSelectedItem() < 0) {
+            return;
+        }
+
         for (int indexSelectedItem : controller.getIndicesSelectedItems()) {
             controller.removeItem(indexSelectedItem);
         }
