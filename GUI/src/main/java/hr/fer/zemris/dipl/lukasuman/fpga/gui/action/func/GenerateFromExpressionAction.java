@@ -9,33 +9,26 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.parser.BoolParserException
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.AbstractAppAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.function.Supplier;
 
-public class GenerateFromExpressionAction extends AbstractAppAction {
+public class GenerateFromExpressionAction extends AbstractGenerateFromTextAction {
 
-    private TextProvider textProvider;
-
-    public GenerateFromExpressionAction(JFPGA jfpga, TextProvider textProvider) {
-        super(jfpga, LocalizationKeys.GENERATE_FROM_EXPRESSION_KEY);
-        this.textProvider = Utility.checkNull(textProvider, "expression provider");
+    public GenerateFromExpressionAction(JFPGA jfpga, Supplier<String> textProvider) {
+        super(jfpga, textProvider, LocalizationKeys.GENERATE_FROM_EXPRESSION_KEY);
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        String expression = textProvider.getText();
-
-        if (expression == null) {
-            return;
-        }
-
+    protected void doAction(String text) {
         BoolParser parser = jfpga.getParser();
         BoolExpression boolExpression = null;
 
         try {
-            boolExpression = parser.parse(new BoolLexer(Utility.getInputStreamFromString(expression)));
+            boolExpression = parser.parse(new BoolLexer(Utility.getInputStreamFromString(text)));
         } catch (BoolParserException exc) {
             showErrorMsg(exc.getMessage());
             return;

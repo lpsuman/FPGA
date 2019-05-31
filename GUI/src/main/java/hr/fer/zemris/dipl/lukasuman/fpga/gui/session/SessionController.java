@@ -1,6 +1,8 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.session;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.JPanelPair;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.func.BooleanFunctionController;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.func.BooleanVectorController;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationProvider;
@@ -30,12 +32,20 @@ public class SessionController {
 
     private void loadSessionData() {
         booleanFunctionController = new BooleanFunctionController(this);
+        booleanVectorController = new BooleanVectorController(this);
     }
 
     private void initGUI() {
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
-        mainPanel.add(booleanFunctionController.getMainPanel(), BorderLayout.CENTER);
+        JPanelPair outerAndInnerPair = GUIUtility.putGridBagInBorderCenter();
+        mainPanel = outerAndInnerPair.getUpperPanel();
+
+        GridBagConstraints gbc = GUIUtility.getGBC(0, 0, 0.3, 0.5);
+        mainPanel.add(booleanFunctionController.getMainPanel(), gbc);
+
+        gbc = GUIUtility.getGBC(1, 0, 0.1, 0.5);
+        mainPanel.add(booleanVectorController.getMainPanel(), gbc);
+
+        mainPanel = outerAndInnerPair.getLowerPanel();
     }
 
     public JPanel getMainPanel() {

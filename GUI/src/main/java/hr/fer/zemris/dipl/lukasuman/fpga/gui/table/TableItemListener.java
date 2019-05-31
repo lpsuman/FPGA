@@ -1,4 +1,4 @@
-package hr.fer.zemris.dipl.lukasuman.fpga.gui.func;
+package hr.fer.zemris.dipl.lukasuman.fpga.gui.table;
 
 public interface TableItemListener<T> {
 

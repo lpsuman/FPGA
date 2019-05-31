@@ -1,4 +1,4 @@
-package hr.fer.zemris.dipl.lukasuman.fpga.gui.func;
+package hr.fer.zemris.dipl.lukasuman.fpga.gui.table;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.util.AbstractNameHandler;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;

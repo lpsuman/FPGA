@@ -1,8 +1,7 @@
-package hr.fer.zemris.dipl.lukasuman.fpga.gui.func;
+package hr.fer.zemris.dipl.lukasuman.fpga.gui.table;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
-import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import javax.swing.*;
 import java.util.Arrays;

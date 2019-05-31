@@ -1,5 +1,6 @@
-package hr.fer.zemris.dipl.lukasuman.fpga.gui.func;
+package hr.fer.zemris.dipl.lukasuman.fpga.gui.table;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.func.AbstractGUIController;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
@@ -127,5 +128,19 @@ public abstract class MyAbstractTableModel<T> extends AbstractTableModel {
         }
 
         return columnIndex == 1;
+    }
+
+    protected void renameItem(Object aValue, int rowIndex, int columnIndex, AbstractGUIController controller) {
+        if (!isCellEditable(rowIndex, columnIndex)) {
+            throw new IllegalArgumentException("Cell is not editable.");
+        }
+
+        String newName = aValue.toString();
+        String oldName = controller.getItem(rowIndex).getName();
+
+        if (!newName.equals(oldName)) {
+            controller.changeItemName(rowIndex, aValue.toString());
+            fireTableCellUpdated(rowIndex, columnIndex);
+        }
     }
 }

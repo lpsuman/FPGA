@@ -1,6 +1,7 @@
-package hr.fer.zemris.dipl.lukasuman.fpga.gui.func;
+package hr.fer.zemris.dipl.lukasuman.fpga.gui.table;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIConstants;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -19,6 +20,7 @@ public class MyJTable extends JTable {
         super(dm);
         setMinimumColumnWidth(GUIConstants.MINIMUM_COLUMN_WIDTH);
         getModel().addTableModelListener(e -> setPreferredSize(getMinimumSize()));
+        setDefaultRenderer(Integer.class, GUIUtility.CENTER_TABLE_CELL_RENDERER);
     }
 
     @Override

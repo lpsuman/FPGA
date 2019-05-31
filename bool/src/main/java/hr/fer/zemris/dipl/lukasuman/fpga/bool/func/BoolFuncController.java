@@ -32,18 +32,22 @@ public class BoolFuncController {
         return generateRandomFunction(BoolFuncController.generateDefaultInputIDs(numInputs), numInputs);
     }
 
+    public static List<BooleanFunction> generateRandomFunctions(int numInputs, int numFunctions) {
+        List<BooleanFunction> functions = new ArrayList<>();
+        for (int i = 0; i < numFunctions; i++) {
+            functions.add(generateRandomFunction(numInputs));
+        }
+        return functions;
+    }
+
     public static BooleanFunction generateRandomFunction(List<String> inputIDs, int numInputs) {
         int numInputCombinations = (int) Math.pow(2, numInputs);
         BitSet bitSet = RNG.getRNG().nextBitSet(numInputCombinations);
         return new BooleanFunction(inputIDs, bitSet, DEFAULT_FUNC_NAME);
     }
 
-    public static BooleanVector generateRandomVector(int numFunctions, int numFunctionInputs) {
-        List<BooleanFunction> functions = new ArrayList<>();
-        for (int i = 0; i < numFunctions; i++) {
-            functions.add(generateRandomFunction(numFunctionInputs));
-        }
-        return new BooleanVector(functions);
+    public static BooleanVector generateRandomVector(int numFunctionInputs, int numFunctions) {
+        return new BooleanVector(generateRandomFunctions(numFunctionInputs, numFunctions));
     }
 
     public static BooleanFunction generateFromMask(int mask, int numInputs) {

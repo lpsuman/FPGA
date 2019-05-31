@@ -1,10 +1,10 @@
-package hr.fer.zemris.dipl.lukasuman.fpga.gui.func;
+package hr.fer.zemris.dipl.lukasuman.fpga.gui.table;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.func.AbstractGUIController;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.func.BooleanVectorController;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationProvider;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
-import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.util.List;
 
@@ -13,7 +13,8 @@ public class BoolVectorTableModel extends MyAbstractTableModel<BooleanVector> {
     private static Double[] COLUMN_WIDTH_PERCENTAGES = new Double[]{1.0, 4.0, 1.0, 1.0};
 
     public BoolVectorTableModel(SessionController parentSession, List<BooleanVector> booleanVectors) {
-        super(parentSession, booleanVectors, LocalizationKeys.INDEX_KEY,LocalizationKeys.NAME_KEY, LocalizationKeys.INPUTS_KEY);
+        super(parentSession, booleanVectors, LocalizationKeys.INDEX_KEY, LocalizationKeys.NAME_KEY,
+                LocalizationKeys.INPUTS_KEY, LocalizationKeys.FUNCTIONS_KEY);
         setColumnWidthPercentages(COLUMN_WIDTH_PERCENTAGES);
     }
 
@@ -39,17 +40,6 @@ public class BoolVectorTableModel extends MyAbstractTableModel<BooleanVector> {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        if (!isCellEditable(rowIndex, columnIndex)) {
-            throw new IllegalArgumentException("Cell is not editable.");
-        }
-
-        BooleanVectorController booleanVectorController = parentSession.getBooleanVectorController();
-        String newName = aValue.toString();
-//        String oldName = booleanVectorController
-//
-//        if (!newName.equals(oldName)) {
-//            booleanFunctionController.changeFunctionName(rowIndex, aValue.toString());
-//            fireTableCellUpdated(rowIndex, columnIndex);
-//        }
+        renameItem(aValue, rowIndex, columnIndex, parentSession.getBooleanVectorController());
     }
 }

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 
@@ -58,6 +59,11 @@ public class JFPGA extends JFrame {
     private Action generateRandomFunctionAction;
     private Action duplicateSelectedFunctionAction;
     private Action removeSelectedFunctionAction;
+
+    private Action generateFromFunctionsAction;
+    private Action generateRandomVectorAction;
+    private Action duplicateSelectedVectorAction;
+    private Action removeSelectedVectorAction;
 
     /**Map used to link tab closing buttons to their respective tabs.*/
     private Map<JButton, Component> mapCloseButtonToComp;
@@ -116,7 +122,7 @@ public class JFPGA extends JFrame {
         closeSessionAction = new CloseSessionAction(this);
         exitAction = new ExitAction(this);
 
-        TextProvider textProvider = () -> getCurrentSession().getBooleanFunctionController().getExpressionTextArea().getText();
+        Supplier<String> textProvider = () -> getCurrentSession().getBooleanFunctionController().getExpressionTextArea().getText();
         generateFromExpressionAction = new GenerateFromExpressionAction(this, textProvider);
         generateFromTextAction = new GenerateFromTextAction(this, textProvider);
 
@@ -136,6 +142,22 @@ public class JFPGA extends JFrame {
         removeSelectedFunctionAction = new RemoveTableItemAction<>(this,
                 () -> getCurrentSession().getBooleanFunctionController(),
                 LocalizationKeys.REMOVE_FUNCTION_KEY);
+
+        generateFromFunctionsAction = new GenerateFromFunctionsAction(this,
+                () -> getCurrentSession().getBooleanFunctionController().getSelectedItems());
+        generateRandomVectorAction = new GenerateRandomVectorAction(this, () -> {
+            JComboBox<Integer> numInputsComboBox = getCurrentSession().getBooleanVectorController().getNumInputsComboBox();
+            return numInputsComboBox.getItemAt(numInputsComboBox.getSelectedIndex());
+        }, () -> {
+            JComboBox<Integer> numFunctionsComboBox = getCurrentSession().getBooleanVectorController().getNumFunctionsComboBox();
+            return numFunctionsComboBox.getItemAt(numFunctionsComboBox.getSelectedIndex());
+        });
+        duplicateSelectedVectorAction = new DuplicateTableItemAction<>(this,
+                () -> getCurrentSession().getBooleanVectorController(),
+                LocalizationKeys.DUPLICATE_VECTOR_KEY);
+        removeSelectedVectorAction = new RemoveTableItemAction<>(this,
+                () -> getCurrentSession().getBooleanVectorController(),
+                LocalizationKeys.REMOVE_VECTOR_KEY);
     }
 
     private void createMenus() {
@@ -424,5 +446,21 @@ public class JFPGA extends JFrame {
 
     public Action getRemoveSelectedFunctionAction() {
         return removeSelectedFunctionAction;
+    }
+
+    public Action getGenerateFromFunctionsAction() {
+        return generateFromFunctionsAction;
+    }
+
+    public Action getGenerateRandomVectorAction() {
+        return generateRandomVectorAction;
+    }
+
+    public Action getDuplicateSelectedVectorAction() {
+        return duplicateSelectedVectorAction;
+    }
+
+    public Action getRemoveSelectedVectorAction() {
+        return removeSelectedVectorAction;
     }
 }

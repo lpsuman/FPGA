@@ -86,7 +86,7 @@ public class FuncTests {
 
     @Test
     void testVectorDuplicate() {
-        BooleanVector original = BoolFuncController.generateRandomVector(5, 3);
+        BooleanVector original = BoolFuncController.generateRandomVector(3, 5);
         BooleanVector clone = original.getDuplicate();
 
         TestUtil.testClone(original, clone);

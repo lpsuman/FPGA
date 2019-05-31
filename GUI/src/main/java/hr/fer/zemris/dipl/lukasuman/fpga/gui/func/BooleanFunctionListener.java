@@ -1,6 +1,7 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.func;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.table.TableItemListener;
 
 import java.util.BitSet;
 import java.util.List;

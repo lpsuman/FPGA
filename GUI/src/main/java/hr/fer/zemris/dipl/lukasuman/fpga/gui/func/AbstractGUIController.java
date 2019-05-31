@@ -1,12 +1,20 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.func;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.JPanelPair;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationProvider;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.table.MyAbstractTableModel;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.table.MyJTable;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.table.TableItemListener;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Nameable;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,7 +31,34 @@ public abstract class AbstractGUIController<T extends Nameable> {
     public AbstractGUIController(SessionController parentSession, List<T> listOfItems) {
         this.parentSession = Utility.checkNull(parentSession, "parent session");
         this.listOfItems = Utility.checkNull(listOfItems, "list of items");
+
+        loadData();
+        initGUI();
     }
+
+    protected abstract void loadData();
+
+    protected void initGUI() {
+        JPanelPair outerAndInnerPair = GUIUtility.putGridBagInBorderCenter();
+        mainPanel = outerAndInnerPair.getUpperPanel();
+
+        setupGUI();
+
+        mainPanel = outerAndInnerPair.getLowerPanel();
+        addResizeAndLocalizationListener(itemTable, itemTableModel);
+    }
+
+    protected void addResizeAndLocalizationListener(JTable table, MyAbstractTableModel tableModel) {
+        getJfpga().addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                GUIUtility.resizeColumns(table, tableModel);
+            }
+        });
+        getLocProv().addLocalizationListener(() -> GUIUtility.resizeColumns(table, tableModel));
+    }
+
+    protected abstract void setupGUI();
 
     public SessionController getParentSession() {
         return parentSession;

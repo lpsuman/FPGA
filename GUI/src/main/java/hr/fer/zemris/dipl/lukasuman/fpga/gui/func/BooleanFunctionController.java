@@ -7,15 +7,13 @@ import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JPanelPair;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.table.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.*;
 import java.util.List;
 
@@ -34,32 +32,21 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
 
     public BooleanFunctionController(SessionController parentSession) {
         super(parentSession, parentSession.getSessionData().getBoolFunctions());
-
-        loadData();
-        initGUI();
     }
 
-    private void loadData() {
-//        DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
-//        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+    @Override
+    protected void loadData() {
 
         itemTableModel = new FuncTableModel(parentSession, listOfItems);
         itemTable = new MyJTable(itemTableModel);
-        itemTable.setDefaultRenderer(Integer.class, centerRenderer);
         itemTable.setRowSelectionAllowed(true);
         itemTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         inputTableModel = new InputTableModel(parentSession);
         inputTable = new MyJTable(inputTableModel);
-        inputTable.setDefaultRenderer(Integer.class, centerRenderer);
 
         truthTableModel = new TruthTableModel(parentSession);
         truthTable = new MyJTable(truthTableModel);
-        truthTable.setDefaultRenderer(Integer.class, centerRenderer);
 
         itemTable.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
@@ -82,26 +69,13 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
             }
         });
 
-        getJfpga().addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                GUIUtility.resizeColumns(inputTable, inputTableModel);
-                GUIUtility.resizeColumns(itemTable, itemTableModel);
-            }
-        });
+        addResizeAndLocalizationListener(inputTable, inputTableModel);
     }
 
-    private void initGUI() {
-        mainPanel = GUIUtility.getPanel();
-        JPanel maxSizeMainPanel = GUIUtility.getPanel(new GridBagLayout());
-        mainPanel.add(maxSizeMainPanel, BorderLayout.CENTER);
-        JPanel temp = mainPanel;
-        mainPanel = maxSizeMainPanel;
-
+    @Override
+    protected void setupGUI() {
         initTable();
         initFuncList();
-
-        mainPanel = temp;
     }
 
     private void initTable() {
@@ -117,7 +91,7 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
         upperPanel.add(inputsAndButtonsPanel);
 
         JPanel inputsPanel = GUIUtility.getPanel();
-        GridBagConstraints gbc = GUIUtility.getGBC(0, 0, 0.3, 1.0, 1, 1);
+        GridBagConstraints gbc = GUIUtility.getGBC(0, 0, 0.3, 1.0);
         inputsAndButtonsPanel.add(inputsPanel, gbc);
         inputsPanel.add(new LJLabel(LocalizationKeys.INPUTS_KEY, getLocProv(), SwingConstants.CENTER), BorderLayout.NORTH);
         inputTable.setPreferredScrollableViewportSize(new Dimension(inputTable.getPreferredSize().width, inputTable.getRowHeight() * 6));
@@ -125,7 +99,7 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
         inputTable.applyMinSizeInScrollPane();
 
         JPanel buttonsPanel = GUIUtility.getPanel(new GridLayout(0, 1));
-        gbc = GUIUtility.getGBC(1, 0, 0.7, 1.0, 1, 1);
+        gbc = GUIUtility.getGBC(1, 0, 0.7, 1.0);
         inputsAndButtonsPanel.add(buttonsPanel, gbc);
         buttonsPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getGenerateFromExpressionAction())));
         buttonsPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getGenerateFromTextAction())));
@@ -141,31 +115,16 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
         JPanel upperPanel = panelPair.getUpperPanel();
         JPanel lowerPanel = panelPair.getLowerPanel();
 
-        JPanel generateRandomPanel = GUIUtility.getPanel(new GridBagLayout());
-        upperPanel.add(generateRandomPanel);
+        upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getGenerateRandomFunctionAction())));
 
-        JPanel genRandBtnPanel = GUIUtility.getPanel();
-        genRandBtnPanel.setBorder(new EmptyBorder(0, 0, 0, GUIConstants.DEFAULT_BORDER_SIZE));
-        genRandBtnPanel.add(new JButton(getJfpga().getGenerateRandomFunctionAction()));
-        GridBagConstraints gbc = GUIUtility.getGBC(0, 0, 0.8, 1.0, 1, 1);
-        generateRandomPanel.add(genRandBtnPanel, gbc);
-
-        numInputsComboBox = new JComboBox<>(Utility.generateRangeArray(
-                Constants.NUM_FUNCTION_INPUTS_LIMIT.getLowerLimit(),
-                Constants.NUM_FUNCTION_INPUTS_LIMIT.getUpperLimit() + 1));
-        JPanel genRandComboPanel = GUIUtility.getPanel();
-        genRandComboPanel.setBorder(new EmptyBorder(0, GUIConstants.DEFAULT_BORDER_SIZE, 0, 0));
-        genRandComboPanel.add(numInputsComboBox);
-        gbc = GUIUtility.getGBC(1, 0, 0.2, 1.0, 1, 1);
-        generateRandomPanel.add(genRandComboPanel, gbc);
+        numInputsComboBox = GUIUtility.getComboBoxFromLimit(Constants.NUM_FUNCTION_INPUTS_LIMIT);
+        numInputsComboBox.setSelectedIndex(1);
+        upperPanel.add(GUIUtility.getComboBoxPanel(numInputsComboBox, getLocProv(), LocalizationKeys.INPUTS_KEY));
 
         upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getDuplicateSelectedFunctionAction())));
         upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getRemoveSelectedFunctionAction())));
 
-        JPanel listDescPanel = GUIUtility.getPanel(new GridLayout(0, 1));
-        lowerPanel.add(listDescPanel, BorderLayout.NORTH);
-        listDescPanel.add(new LJLabel(LocalizationKeys.BOOLEAN_FUNCTIONS_KEY, getLocProv(), SwingConstants.CENTER));
-
+        lowerPanel.add(new LJLabel(LocalizationKeys.BOOLEAN_FUNCTIONS_KEY, getLocProv(), SwingConstants.CENTER), BorderLayout.NORTH);
         lowerPanel.add(new JScrollPane(itemTable), BorderLayout.CENTER);
         itemTable.applyMinSizeInScrollPane();
     }

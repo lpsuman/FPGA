@@ -18,7 +18,7 @@ public class DuplicateSessionAction extends AbstractAppAction {
     private static final int MNEMONIC_KEY = KeyEvent.VK_D;
 
     public DuplicateSessionAction(JFPGA jfpga) {
-        super(jfpga, LocalizationKeys.DUPLICATE_KEY);
+        super(jfpga, LocalizationKeys.DUPLICATE_SESSION_KEY);
         setValues(ACC_KEY, MNEMONIC_KEY);
     }
 

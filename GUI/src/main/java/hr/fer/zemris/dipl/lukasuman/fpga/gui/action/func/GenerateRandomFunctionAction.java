@@ -7,19 +7,20 @@ import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.awt.event.ActionEvent;
+import java.util.function.Supplier;
 
 public class GenerateRandomFunctionAction extends AbstractAppAction {
 
-    private NumberInputsProvider numberInputsProvider;
+    private Supplier<Integer> numberInputsProvider;
 
-    public GenerateRandomFunctionAction(JFPGA jfpga, NumberInputsProvider numberInputsProvider) {
-        super(jfpga, LocalizationKeys.GENERATE_RANDOM_KEY);
+    public GenerateRandomFunctionAction(JFPGA jfpga, Supplier<Integer> numberInputsProvider) {
+        super(jfpga, LocalizationKeys.GENERATE_RANDOM_FUNCTION_KEY);
         this.numberInputsProvider = Utility.checkNull(numberInputsProvider, "number of inputs provider");
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         jfpga.getCurrentSession().getBooleanFunctionController()
-                .addItem(BoolFuncController.generateRandomFunction(numberInputsProvider.getNumberInputs()));
+                .addItem(BoolFuncController.generateRandomFunction(numberInputsProvider.get()));
     }
 }
