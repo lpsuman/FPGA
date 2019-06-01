@@ -1,8 +1,6 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.table;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.func.AbstractGUIController;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.func.BooleanVectorController;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
 

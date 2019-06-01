@@ -1,6 +1,8 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.action.func;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFuncController;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIConstants;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.AbstractAppAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
@@ -22,9 +24,8 @@ public class GenerateRandomVectorAction extends AbstractAppAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        jfpga.getCurrentSession().getBooleanVectorController().addItem(BoolFuncController.generateRandomVector(
-                numInputsProvider.get(),
-                numFunctionsProvider.get()
-        ));
+        BooleanVector randVector = BoolFuncController.generateRandomVector(numInputsProvider.get(), numFunctionsProvider.get());
+        randVector.setName(GUIConstants.RANDOM_NAME);
+        jfpga.getCurrentSession().getBooleanVectorController().addItem(randVector);
     }
 }

@@ -59,4 +59,13 @@ public class LocalizationKeys {
     public static final String DUPLICATE_VECTOR_KEY = "duplicate_vector";
     public static final String REMOVE_VECTOR_KEY = "remove_vector";
     public static final String DISPLAY_ALL_VECTORS_KEY = "display_all_vectors";
+
+    public static final String NUMBER_OF_CLB_INPUTS_KEY = "number_of_br_clb_inputs";
+    public static final String SOLVING_MODE_KEY = "solving_mode";
+    public static final String RUN_KEY = "run_solver";
+    public static final String CLEAR_OUTPUT_KEY = "clear";
+    public static final String AUTO_CLEAR_OUTPUT_KEY = "automatically";
+
+    public static final String SOLUTIONS_KEY = "solutions";
+    public static final String BLOCKS_KEY = "blocks";
 }

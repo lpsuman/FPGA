@@ -9,6 +9,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.lexer.BoolLexer;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.parser.BoolParser;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BooleanSolver;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BoolVectorSolution;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.SolverMode;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
@@ -56,7 +57,7 @@ public class BooleanMain {
         }
 
         BoolVecProblem problem = new BoolVecProblem(new BooleanVector(functions), numCLBInputs);
-        BooleanSolver solver = new BooleanSolver();
+        BooleanSolver solver = new BooleanSolver(SolverMode.FAST, null);
         BoolVectorSolution solution = solver.solve(problem);
 
         if (solution == null) {

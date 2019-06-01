@@ -135,4 +135,24 @@ public class GUIUtility {
 
         return comboBoxPanel;
     }
+
+    public static <T> T getSelectedComboBoxValue(JComboBox<T> comboBox) {
+        return comboBox.getItemAt(comboBox.getSelectedIndex());
+    }
+
+    public static JPanel getClearableTextArea(JTextArea textArea, JButton clearButton, JToggleButton clearToggleButton) {
+        JPanel mainPanel = getPanel();
+        JScrollPane scrollPane = new JScrollPane(textArea,
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        JPanel controlPanel = getPanel(new GridLayout(1, 2));
+        mainPanel.add(controlPanel, BorderLayout.NORTH);
+
+        controlPanel.add(putIntoPanelWithBorder(clearButton));
+        clearButton.addActionListener((e) -> textArea.setText(""));
+        controlPanel.add(putIntoPanelWithBorder(clearToggleButton));
+
+        return mainPanel;
+    }
 }

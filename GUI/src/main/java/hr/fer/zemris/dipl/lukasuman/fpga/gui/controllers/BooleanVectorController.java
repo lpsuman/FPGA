@@ -1,4 +1,4 @@
-package hr.fer.zemris.dipl.lukasuman.fpga.gui.func;
+package hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
@@ -33,7 +33,7 @@ public class BooleanVectorController extends AbstractGUIController<BooleanVector
     @Override
     protected void loadData() {
         indexVectorBeingEdited = -1;
-        itemTableModel = new BoolVectorTableModel(parentSession, getItems());
+        itemTableModel = new BoolVectorTableModel(parentSession, getAllItems());
         itemTable = new MyJTable(itemTableModel);
         itemTable.setRowSelectionAllowed(true);
         itemTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);

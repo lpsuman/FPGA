@@ -1,4 +1,4 @@
-package hr.fer.zemris.dipl.lukasuman.fpga.gui.func;
+package hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
@@ -35,7 +35,7 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
 
     @Override
     protected void loadData() {
-        itemTableModel = new FuncTableModel(parentSession, getItems());
+        itemTableModel = new FuncTableModel(parentSession, getAllItems());
         itemTable = new MyJTable(itemTableModel);
         itemTable.setRowSelectionAllowed(true);
         itemTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -77,7 +77,7 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
     }
 
     private void initTable() {
-        JPanelPair panelPair = GUIUtility.generatePanelPair(mainPanel, 1, 0.4);
+        JPanelPair panelPair = GUIUtility.generatePanelPair(mainPanel, 0, 0.4);
         JPanel upperPanel = panelPair.getUpperPanel();
         JPanel lowerPanel = panelPair.getLowerPanel();
 
@@ -109,7 +109,7 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
     }
 
     private void initFuncList() {
-        JPanelPair panelPair = GUIUtility.generatePanelPair(mainPanel, 2, 0.2);
+        JPanelPair panelPair = GUIUtility.generatePanelPair(mainPanel, 1, 0.2);
         JPanel upperPanel = panelPair.getUpperPanel();
         JPanel lowerPanel = panelPair.getLowerPanel();
 

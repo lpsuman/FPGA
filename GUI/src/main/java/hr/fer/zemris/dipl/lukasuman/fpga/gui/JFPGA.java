@@ -1,11 +1,11 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui;
 
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.parser.BoolParser;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.LoadTextAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.func.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.session.*;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.icon.IconLoader;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.solve.ClearOutputAction;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.solve.RunSolverAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.FormLocalizationProvider;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LJMenu;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
@@ -68,6 +68,9 @@ public class JFPGA extends JFrame {
     private Action removeSelectedVectorAction;
     private Action displayAllVectorsAction;
 
+    private Action runSolverAction;
+    private Action clearOutputAction;
+
     /**Map used to link tab closing buttons to their respective tabs.*/
     private Map<JButton, Component> mapCloseButtonToComp;
 
@@ -118,13 +121,22 @@ public class JFPGA extends JFrame {
     }
 
     private void initActions() {
+        initSessionActions();
+        initFunctionActions();
+        initVectorActions();
+        initSolverActions();
+    }
+
+    private void initSessionActions() {
         newSessionAction = new NewSessionAction(this);
         openSessionAction = new OpenSessionAction(this);
         saveSessionAction = new SaveSessionAction(this);
         saveSessionAsAction = new SaveSessionAsAction(this);
         closeSessionAction = new CloseSessionAction(this);
         exitAction = new ExitAction(this);
+    }
 
+    private void initFunctionActions() {
         Supplier<String> textProvider = () -> getCurrentSession().getBooleanFunctionController().getExpressionTextArea().getText();
         generateFromExpressionAction = new GenerateFromExpressionAction(this, textProvider);
         generateFromTextAction = new GenerateFromTextAction(this, textProvider);
@@ -135,10 +147,8 @@ public class JFPGA extends JFrame {
         loadExpressionAction = new LoadTextAction(this, LocalizationKeys.LOAD_EXPRESSION_KEY);
         loadExpressionAction.addTextLoadListener(lines -> getCurrentSession().getBooleanFunctionController().getExpressionTextArea().setText(String.join("\n", lines)));
 
-        generateRandomFunctionAction = new GenerateRandomFunctionAction(this, () -> {
-            JComboBox<Integer> numInputsComboBox = getCurrentSession().getBooleanFunctionController().getNumInputsComboBox();
-            return numInputsComboBox.getItemAt(numInputsComboBox.getSelectedIndex());
-        });
+        generateRandomFunctionAction = new GenerateRandomFunctionAction(this,() ->
+            GUIUtility.getSelectedComboBoxValue(getCurrentSession().getBooleanFunctionController().getNumInputsComboBox()));
         duplicateSelectedFunctionAction = new DuplicateTableItemAction<>(this,
                 () -> getCurrentSession().getBooleanFunctionController(),
                 LocalizationKeys.DUPLICATE_FUNCTION_KEY);
@@ -148,16 +158,14 @@ public class JFPGA extends JFrame {
         displayAllFunctionsAction = new DisplayAllTableItemAction<>(this,
                 () -> getCurrentSession().getBooleanFunctionController(),
                 LocalizationKeys.DISPLAY_ALL_FUNCTIONS_KEY);
+    }
 
+    private void initVectorActions() {
         generateFromFunctionsAction = new GenerateFromFunctionsAction(this,
                 () -> getCurrentSession().getBooleanFunctionController().getSelectedItems());
-        generateRandomVectorAction = new GenerateRandomVectorAction(this, () -> {
-            JComboBox<Integer> numInputsComboBox = getCurrentSession().getBooleanVectorController().getNumInputsComboBox();
-            return numInputsComboBox.getItemAt(numInputsComboBox.getSelectedIndex());
-        }, () -> {
-            JComboBox<Integer> numFunctionsComboBox = getCurrentSession().getBooleanVectorController().getNumFunctionsComboBox();
-            return numFunctionsComboBox.getItemAt(numFunctionsComboBox.getSelectedIndex());
-        });
+        generateRandomVectorAction = new GenerateRandomVectorAction(this,
+                () -> GUIUtility.getSelectedComboBoxValue(getCurrentSession().getBooleanVectorController().getNumInputsComboBox()),
+                () -> GUIUtility.getSelectedComboBoxValue(getCurrentSession().getBooleanVectorController().getNumFunctionsComboBox()));
         duplicateSelectedVectorAction = new DuplicateTableItemAction<>(this,
                 () -> getCurrentSession().getBooleanVectorController(),
                 LocalizationKeys.DUPLICATE_VECTOR_KEY);
@@ -167,6 +175,15 @@ public class JFPGA extends JFrame {
         displayAllVectorsAction = new DisplayAllTableItemAction<>(this,
                 () -> getCurrentSession().getBooleanVectorController(),
                 LocalizationKeys.DISPLAY_ALL_VECTORS_KEY);
+    }
+
+    private void initSolverActions() {
+        runSolverAction = new RunSolverAction(this,
+                () -> getCurrentSession().getBooleanVectorController().getSelectedItem(),
+                () -> GUIUtility.getSelectedComboBoxValue(getCurrentSession().getSolverController().getNumCLBInputsComboBox()),
+                () -> GUIUtility.getSelectedComboBoxValue(getCurrentSession().getSolverController().getSolverModeComboBox()));
+
+        clearOutputAction = new ClearOutputAction(this);
     }
 
     private void createMenus() {
@@ -479,5 +496,13 @@ public class JFPGA extends JFrame {
 
     public Action getDisplayAllVectorsAction() {
         return displayAllVectorsAction;
+    }
+
+    public Action getRunSolverAction() {
+        return runSolverAction;
+    }
+
+    public Action getClearOutputAction() {
+        return clearOutputAction;
     }
 }

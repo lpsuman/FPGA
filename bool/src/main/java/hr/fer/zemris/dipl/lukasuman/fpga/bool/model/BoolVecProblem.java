@@ -13,10 +13,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.List;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solution<int[]>>, Serializable {
@@ -108,6 +105,10 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
 
     public BoolVecProblem(BooleanVector boolVector, int numCLBInputs) {
         this(boolVector, numCLBInputs, DEFAULT_NAME);
+    }
+
+    public BoolVecProblem(BooleanFunction func, int numCLBInputs) {
+        this(new BooleanVector(func), numCLBInputs);
     }
 
     public void setNextToSupply(Solution<int[]> solution) {

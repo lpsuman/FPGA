@@ -1,7 +1,7 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.action.func;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.func.AbstractGUIController;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.AbstractGUIController;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Duplicateable;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Nameable;
 

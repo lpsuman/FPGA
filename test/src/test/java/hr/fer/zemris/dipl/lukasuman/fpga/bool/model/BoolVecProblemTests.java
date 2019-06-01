@@ -49,9 +49,9 @@ public class BoolVecProblemTests {
     }
 
     private static void testBrute(int numFuncInputs, int numCLBInputs) {
-//        BooleanFunction func = BoolFuncController.generateFromMask(0b01011011, 3);
-//        BooleanFunction func = BoolFuncController.generateFromMask(0b1011001000111010, 4);
-//        BooleanFunction func = BoolFuncController.generateFromMask(0b00010010111011011011111101101100, 5);
+//        BooleanFunction controllers = BoolFuncController.generateFromMask(0b01011011, 3);
+//        BooleanFunction controllers = BoolFuncController.generateFromMask(0b1011001000111010, 4);
+//        BooleanFunction controllers = BoolFuncController.generateFromMask(0b00010010111011011011111101101100, 5);
         BooleanFunction func = BoolFuncController.generateRandomFunction(numFuncInputs);
         Solution<int[]> solution = BoolVecProblem.bruteSolve(func, numCLBInputs);
 

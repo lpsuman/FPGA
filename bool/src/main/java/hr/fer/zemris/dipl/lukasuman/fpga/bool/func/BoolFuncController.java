@@ -15,7 +15,7 @@ import java.util.NoSuchElementException;
  */
 public class BoolFuncController {
 
-    private static final String DEFAULT_FUNC_NAME = "func";
+    private static final String DEFAULT_FUNC_NAME = "controllers";
 
     public static List<String> generateDefaultInputIDs(int numInputs) {
         Utility.checkLimit(Constants.NUM_FUNCTION_INPUTS_LIMIT, numInputs);

@@ -1,5 +1,6 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.solver;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BlockConfiguration;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.crossover.AbstractBoolCrossover;
@@ -22,11 +23,13 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Resetable;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Timer;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -50,23 +53,75 @@ public class BooleanSolver implements Resetable, Serializable {
         }
     }
 
+    private SolverMode solverMode;
+    private Consumer<BoolVectorSolution> solutionConsumer;
     private Solution<int[]> bestSolutionWithCurrentNumCLB;
 
-    public BooleanSolver() {
+    public BooleanSolver(SolverMode solverMode, Consumer<BoolVectorSolution> solutionConsumer) {
+        this.solverMode = Utility.checkNull(solverMode, "solver mode");
+        this.solutionConsumer = solutionConsumer;
     }
 
     public BoolVectorSolution solve(BoolVecProblem problem) {
-        CLBController controller = problem.getClbController();
-        int numCLBInputs = controller.getNumCLBInputs();
+        List<BoolVectorSolution> perFunctionBestSolutions = doBruteSolve(problem);
+
+        if (solverMode == SolverMode.BRUTE) {
+            return solverIsDone(BoolVectorSolution.mergeSolutions(perFunctionBestSolutions));
+        }
+
+        List<RunResults> perFuncResults = solveIndividually(problem);
+        BoolVectorSolution solution = perFuncResults.get(0).result;
+
+        if (problem.getBoolVector().getNumFunctions() == 1) {
+            return solverIsDone(solution);
+        }
+
+        List<BoolVectorSolution> perFuncSolutions = perFuncResults.stream()
+                .map(result -> result.result)
+                .collect(Collectors.toList());
+        solution = BoolVectorSolution.mergeSolutions(perFuncSolutions);
+
+        if (Constants.STOP_AFTER_MERGING || solverMode == SolverMode.FAST) {
+            return solverIsDone(solution);
+        }
+
+        int numCLBEstimation = perFuncResults.stream()
+                .mapToInt(result -> result.result.getBlockConfiguration().getNumCLB())
+                .sum() - 1;
+
+        problem.getClbController().setNumCLB(numCLBEstimation);
+        RunResults mergedRunResult = doARun(problem, true, false);
+
+        if (mergedRunResult.result == null) {
+            System.out.println("Couldn't find a better solution than the merge of individual function's solutions.");
+            return solverIsDone(solution);
+        } else {
+            return solverIsDone(mergedRunResult.result);
+        }
+    }
+
+    private List<BoolVectorSolution> doBruteSolve(BoolVecProblem problem) {
+        int numCLBInputs = problem.getClbController().getNumCLBInputs();
         List<BooleanFunction> functions = problem.getBoolVector().getBoolFunctions();
-//        List<Integer> perFuncEstimates = new ArrayList<>(Arrays.asList(3, 3, 6, 6, 6));
+
+        List<BoolVectorSolution> perFunctionBestSolutions = new ArrayList<>();
+        for (BooleanFunction function : functions) {
+            BoolVecProblem singleFuncProblem = new BoolVecProblem(new BooleanVector(function), numCLBInputs);
+            BlockConfiguration bruteSolution = singleFuncProblem.generateBlockConfiguration(BoolVecProblem.bruteSolve(function, numCLBInputs));
+            perFunctionBestSolutions.add(new BoolVectorSolution(new BooleanVector(function), bruteSolution));
+        }
+
+        return perFunctionBestSolutions;
+    }
+
+    private List<RunResults> solveIndividually(BoolVecProblem problem) {
+        int numCLBInputs = problem.getClbController().getNumCLBInputs();
+        List<BooleanFunction> functions = problem.getBoolVector().getBoolFunctions();
 
         List<RunResults> perFuncResults = new ArrayList<>();
 
-        for (int i = 0; i < functions.size(); i++) {
-            BoolVecProblem singleFuncProblem = new BoolVecProblem(
-                    new BooleanVector(Collections.singletonList(functions.get(i))), numCLBInputs);
-//            singleFuncProblem.getClbController().setNumCLB(perFuncEstimates.get(i));
+        for (BooleanFunction function : functions) {
+            BoolVecProblem singleFuncProblem = new BoolVecProblem(new BooleanVector(function), numCLBInputs);
             perFuncResults.add(doARun(singleFuncProblem, true, true));
         }
 
@@ -101,32 +156,15 @@ public class BooleanSolver implements Resetable, Serializable {
             System.out.println(String.format("%4d   %4d   %10.3f", i, numberOfCLBs.get(i), elapsedTimes.get(i) / 1000.0));
         }
 
-        if (functions.size() == 1) {
-            return perFuncResults.get(0).result;
+        return perFuncResults;
+    }
+
+    private BoolVectorSolution solverIsDone(BoolVectorSolution solution) {
+        if (solutionConsumer != null) {
+            solutionConsumer.accept(solution);
         }
 
-        List<BoolVectorSolution> perFuncSolutions = perFuncResults.stream()
-                .map(result -> result.result)
-                .collect(Collectors.toList());
-        BoolVectorSolution mergedSolution = BoolVectorSolution.mergeSolutions(perFuncSolutions);
-
-        if (Constants.STOP_AFTER_MERGING) {
-            return mergedSolution;
-        }
-
-        int numCLBEstimation = perFuncResults.stream()
-                .mapToInt(result -> result.result.getBlockConfiguration().getNumCLB())
-                .sum() - 1;
-
-        problem.getClbController().setNumCLB(numCLBEstimation);
-        RunResults mergedRunResult = doARun(problem, true, false);
-
-        if (mergedRunResult.result == null) {
-            System.out.println("Couldn't find a better solution than the merge of individual function's solutions.");
-            return mergedSolution;
-        } else {
-            return mergedRunResult.result;
-        }
+        return solution;
     }
 
     private RunResults doARun(BoolVecProblem problem, boolean canDecreaseNumCLB, boolean canIncreaseNumCLB) {

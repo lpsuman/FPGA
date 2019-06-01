@@ -47,6 +47,10 @@ public class BooleanVector extends AbstractNameHandler implements Serializable, 
         this(boolFunctions, false);
     }
 
+    public BooleanVector(BooleanFunction func) {
+        this(Collections.singletonList(func));
+    }
+
     public BooleanVector(BooleanVector other) {
         super(Utility.checkNull(other, "boolean vector").getName());
         boolFunctions = new ArrayList<>(other.boolFunctions);

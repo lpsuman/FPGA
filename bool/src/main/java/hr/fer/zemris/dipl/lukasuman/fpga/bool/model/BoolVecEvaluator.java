@@ -15,19 +15,22 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
 
     private BoolVecProblem problem;
     private boolean useStructureFitness;
+    private boolean saveCLBOutputs;
 
-    private BitSet perCLBOutputs;
+    private BitSet[] perCLBFullOutputs;
+    private BitSet perCLBCurrentOutput;
     private int[][] numMatchingOutputs;
     private int[] bestMatchingCounts;
     private BitSet[] blockUsage;
     private BitSet unusedBlocks;
 
     public BoolVecEvaluator(BoolVecProblem problem, boolean useStructureFitness) {
-        this.problem = problem;
+        this.problem = Utility.checkNull(problem, "problem");
         this.useStructureFitness = useStructureFitness;
         getController().addCLBChangeListener(this);
         bestMatchingCounts = new int[getVector().getNumFunctions()];
         updateDataStructures();
+        saveCLBOutputs = false;
     }
 
     public BoolVecEvaluator(BoolVecProblem problem) {
@@ -36,7 +39,7 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
 
     private void updateDataStructures() {
         int numCLB = getController().getNumCLB();
-        perCLBOutputs = new BitSet(numCLB);
+        perCLBCurrentOutput = new BitSet(numCLB);
 
         int numFunctions = getVector().getNumFunctions();
         numMatchingOutputs = new int[numCLB][numFunctions];
@@ -44,6 +47,10 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
         int numInputs = getController().getNumInputs();
         blockUsage = Utility.newBitSetArray(numFunctions, numInputs + numCLB);
         unusedBlocks = new BitSet(numInputs + numCLB);
+    }
+
+    public void setSaveCLBOutputs(boolean saveCLBOutputs) {
+        this.saveCLBOutputs = saveCLBOutputs;
     }
 
     @Override
@@ -95,8 +102,10 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
         return fitness;
     }
 
-    private void calculateNumMatchingOutputs(int[] data, int numFunctions, int numCLB,
-                                             int numInputCombinations) {
+    private void calculateNumMatchingOutputs(int[] data, int numFunctions, int numCLB, int numInputCombinations) {
+        if (saveCLBOutputs) {
+            perCLBFullOutputs = Utility.newBitSetArray(numCLB, numInputCombinations);
+        }
 
         for (int i = 0; i < numCLB; i++) {
             Arrays.fill(numMatchingOutputs[i], 0);
@@ -125,12 +134,15 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
 
             log(() -> Utility.toBinaryString(inputCombinationFinal, getVector().getNumInputs(),
                     Constants.BOOL_VECTOR_PRINT_CELL_SIZE - 1));
-
             logPadding();
 
             for (int k = 0; k < numCLB; ++k) {
                 boolean outputCLB = calcCLBOutput(inputCombination, data, k);
-                perCLBOutputs.set(k, outputCLB);
+                perCLBCurrentOutput.set(k, outputCLB);
+
+                if (saveCLBOutputs) {
+                    perCLBFullOutputs[k].set(inputCombination, outputCLB);
+                }
 
                 log(() -> Utility.paddedChar(outputCLB ? '1' : '0', Constants.BOOL_VECTOR_PRINT_CELL_SIZE));
 
@@ -278,7 +290,7 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
             int inputID = data[offset + i];
 
             if (inputID >= numInputs) {
-                if (perCLBOutputs.get(inputID - numInputs)) {
+                if (perCLBCurrentOutput.get(inputID - numInputs)) {
                     extendedIndex++;
                 }
             } else {
@@ -309,6 +321,10 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
 
     public BitSet getUnusedBlocks() {
         return unusedBlocks;
+    }
+
+    public BitSet[] getPerCLBFullOutputs() {
+        return perCLBFullOutputs;
     }
 
     @Override

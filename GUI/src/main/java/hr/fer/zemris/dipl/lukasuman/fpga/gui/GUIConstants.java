@@ -8,8 +8,9 @@ public class GUIConstants {
     }
 
     public static final String DEFAULT_APPLICATION_NAME = "JFPGA";
-    public static final int DEFAULT_WINDOW_WIDTH = 900;
-    public static final int DEFAULT_WINDOW_HEIGHT = 900;
+    public static final int DEFAULT_WINDOW_HEIGHT = 800;
+    public static final double WINDOW_WIDTH_RATIO = 1.5;
+    public static final int DEFAULT_WINDOW_WIDTH = (int)(DEFAULT_WINDOW_HEIGHT * WINDOW_WIDTH_RATIO);
     public static final int DEFAULT_WINDOW_LOCATION_X = (1920 - DEFAULT_WINDOW_WIDTH) / 2;
     public static final int DEFAULT_WINDOW_LOCATION_Y = (1080 - DEFAULT_WINDOW_HEIGHT) / 2;
 
@@ -27,4 +28,7 @@ public class GUIConstants {
     public static final int EXPRESSION_TEXT_AREA_ROWS = 4;
     public static final int MINIMUM_COLUMN_WIDTH = 20;
     public static final double COMBO_BOX_WIDTH_WEIGHT = 0.33;
+
+    public static final String DUPLICATE_NAME_SUFFIX = "_copy";
+    public static final String RANDOM_NAME = "random";
 }

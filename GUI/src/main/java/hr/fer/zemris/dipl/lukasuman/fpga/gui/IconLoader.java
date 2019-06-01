@@ -1,6 +1,4 @@
-package hr.fer.zemris.dipl.lukasuman.fpga.gui.icon;
-
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIConstants;
+package hr.fer.zemris.dipl.lukasuman.fpga.gui;
 
 import javax.swing.*;
 import java.awt.*;

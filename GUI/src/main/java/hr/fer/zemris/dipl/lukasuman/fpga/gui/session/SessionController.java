@@ -1,14 +1,13 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.session;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JPanelPair;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.func.BooleanFunctionAdapter;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.func.BooleanFunctionController;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.func.BooleanVectorController;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.func.BooleanVectorListener;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.BooleanFunctionAdapter;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.BooleanFunctionController;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.BooleanVectorController;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.SolverController;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationProvider;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
@@ -27,6 +26,7 @@ public class SessionController {
     private JFPGA jfpga;
     private BooleanFunctionController booleanFunctionController;
     private BooleanVectorController booleanVectorController;
+    private SolverController solverController;
 
     public SessionController(SessionData sessionData, JFPGA jfpga, JLabel iconPanel) {
         this.sessionData = Utility.checkNull(sessionData, "session data");
@@ -39,6 +39,7 @@ public class SessionController {
     private void loadSessionData() {
         booleanFunctionController = new BooleanFunctionController(this);
         booleanVectorController = new BooleanVectorController(this);
+        solverController = new SolverController(this);
 
         booleanFunctionController.addBooleanFunctionListener(new BooleanFunctionAdapter() {
             @Override
@@ -86,6 +87,9 @@ public class SessionController {
         gbc = GUIUtility.getGBC(1, 0, 0.1, 0.5);
         mainPanel.add(booleanVectorController.getMainPanel(), gbc);
 
+        gbc = GUIUtility.getGBC(2, 0, 0.4, 0.5);
+        mainPanel.add(solverController.getMainPanel(), gbc);
+
         mainPanel = outerAndInnerPair.getLowerPanel();
     }
 
@@ -111,6 +115,10 @@ public class SessionController {
 
     public BooleanVectorController getBooleanVectorController() {
         return booleanVectorController;
+    }
+
+    public SolverController getSolverController() {
+        return solverController;
     }
 
     public boolean isEdited() {
