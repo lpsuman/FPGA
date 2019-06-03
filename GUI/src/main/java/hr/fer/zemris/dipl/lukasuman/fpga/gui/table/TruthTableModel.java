@@ -1,5 +1,6 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.table;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.AbstractGUIController;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.AbstractNameHandler;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
@@ -7,14 +8,12 @@ import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TruthTableModel extends MyAbstractTableModel {
 
+    private static final List<Object> DEFAULT_ITEMS = new ArrayList<>();
     private static final List<String> DEFAULT_INPUT_IDS = Arrays.asList("a", "b", "c", "d");
     private static final List<String> DEFAULT_OUTPUT_IDS = Arrays.asList("f1", "f2", "f3");
     private static final BitSet[] DEFAULT_TRUTH_TABLES = new BitSet[DEFAULT_OUTPUT_IDS.size()];
@@ -30,9 +29,9 @@ public class TruthTableModel extends MyAbstractTableModel {
     private List<String> outputIDs;
     private BitSet[] truthTables;
 
-    public TruthTableModel(SessionController parentSession) {
-        super(parentSession, null, LocalizationKeys.INDEX_KEY);
-        loadDefaultData();
+    public TruthTableModel(SessionController parentSession, AbstractGUIController parentController) {
+        super(parentSession, parentController, null, LocalizationKeys.INDEX_KEY);
+        loadDefaultItems();
     }
 
     public void setData(List<String> inputIDs, List<String> outputIDs, BitSet[] truthTables) {
@@ -78,7 +77,13 @@ public class TruthTableModel extends MyAbstractTableModel {
         setData(booleanFunction.getInputIDs(), booleanFunction.getName(), booleanFunction.getTruthTable());
     }
 
-    private void loadDefaultData() {
+    @Override
+    protected List getDefaultItems() {
+        return DEFAULT_ITEMS;
+    }
+
+    @Override
+    public void loadDefaultItems() {
         setData(DEFAULT_INPUT_IDS, DEFAULT_OUTPUT_IDS, DEFAULT_TRUTH_TABLES);
     }
 
@@ -179,13 +184,9 @@ public class TruthTableModel extends MyAbstractTableModel {
     }
 
     @Override
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
+    public boolean isColumnEditable(int columnIndex) {
         if (truthTables.length > 1) {
             return false;
-        }
-
-        if (displayIndices) {
-            columnIndex -= 1;
         }
 
         return columnIndex >= getNumInputs();

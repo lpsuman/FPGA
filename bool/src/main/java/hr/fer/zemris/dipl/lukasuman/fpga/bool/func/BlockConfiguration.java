@@ -1,17 +1,22 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.func;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.CLBController;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Duplicateable;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
 /**
  * This class represents a configuration of CLBs. It is used as a data storage and can't be evaluated by itself.
  */
-public class BlockConfiguration implements Serializable {
+public class BlockConfiguration implements Serializable, Duplicateable<BlockConfiguration> {
 
     private static final long serialVersionUID = 4470315848595252310L;
 
@@ -45,6 +50,10 @@ public class BlockConfiguration implements Serializable {
 
         this.numCLB = numCLB;
         this.numCLBInputs = numCLBInputs;
+    }
+
+    public BlockConfiguration(BlockConfiguration other) {
+        this(other.numCLBInputs, other.numCLB, Arrays.copyOf(other.data, other.data.length), new ArrayList<>(other.outputIndices));
     }
 
     public int getNumCLB() {
@@ -149,6 +158,17 @@ public class BlockConfiguration implements Serializable {
         }
     }
 
+    public Solution<int[]> getAsFlatArray() {
+        int[] flatData = new int[data.length + outputIndices.size()];
+        System.arraycopy(data, 0, flatData, 0, data.length);
+
+        for (int i = 0; i < outputIndices.size(); i++) {
+            flatData[data.length + i] = outputIndices.get(i);
+        }
+
+        return new IntArraySolution(flatData);
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -158,5 +178,10 @@ public class BlockConfiguration implements Serializable {
         //TODO
 
         return sb.toString();
+    }
+
+    @Override
+    public BlockConfiguration getDuplicate() {
+        return new BlockConfiguration(this);
     }
 }

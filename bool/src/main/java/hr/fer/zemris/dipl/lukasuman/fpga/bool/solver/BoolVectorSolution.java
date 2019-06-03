@@ -4,13 +4,14 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.AbstractNameHandler;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BlockConfiguration;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Duplicateable;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class BoolVectorSolution extends AbstractNameHandler implements Serializable {
+public class BoolVectorSolution extends AbstractNameHandler implements Serializable, Duplicateable<BoolVectorSolution> {
 
     private static final long serialVersionUID = 2274732589717742103L;
 
@@ -28,6 +29,10 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
 
     public BoolVectorSolution(BooleanVector boolVector, BlockConfiguration blockConfiguration) {
         this(boolVector, blockConfiguration, DEFAULT_NAME);
+    }
+
+    public BoolVectorSolution(BoolVectorSolution other) {
+        this(other.boolVector.getDuplicate(), other.blockConfiguration.getDuplicate(), other.getName());
     }
 
     public BooleanVector getBoolVector() {
@@ -255,5 +260,10 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
         }
 
         return true;
+    }
+
+    @Override
+    public BoolVectorSolution getDuplicate() {
+        return new BoolVectorSolution(this);
     }
 }

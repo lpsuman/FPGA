@@ -17,6 +17,6 @@ public class ShowMessageAction extends AbstractAppAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         String msg = jfpga.getFlp().getString(messageLocalizationKey);
-        showInfoMsg(msg);
+        jfpga.showInfoMsg(msg);
     }
 }

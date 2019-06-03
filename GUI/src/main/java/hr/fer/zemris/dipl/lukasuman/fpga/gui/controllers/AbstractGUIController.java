@@ -23,6 +23,7 @@ public abstract class AbstractGUIController<T extends Nameable> {
     protected SessionController parentSession;
     private List<T> allItems;
     private List<T> items;
+    private boolean areItemsEditable;
     protected JPanel mainPanel;
 
     protected MyAbstractTableModel<T> itemTableModel;
@@ -32,6 +33,7 @@ public abstract class AbstractGUIController<T extends Nameable> {
         this.parentSession = Utility.checkNull(parentSession, "parent session");
         this.items = Utility.checkNull(items, "list of items");
         allItems = items;
+        areItemsEditable = true;
 
         loadData();
         initGUI();
@@ -85,16 +87,29 @@ public abstract class AbstractGUIController<T extends Nameable> {
         return items;
     }
 
-    public void setItems(List<T> items) {
+    public boolean areItemsEditable() {
+        return areItemsEditable;
+    }
+
+    public void setAreItemsEditable(boolean areItemsEditable) {
+        if (areItemsEditable == this.areItemsEditable) {
+            return;
+        }
+        this.areItemsEditable = areItemsEditable;
+        updateActionsAreEnabled();
+    }
+
+    public abstract void updateActionsAreEnabled();
+
+    public void setItems(List<T> items, boolean areItemsEditable) {
         this.items = Utility.checkNull(items, "list of items");
+        setAreItemsEditable(areItemsEditable);
         itemTableModel.setItems(this.items);
         itemTableModel.fireTableDataChanged();
 
         if (getTableItemListeners() != null) {
             getTableItemListeners().forEach(TableItemListener::itemListChanged);
         }
-
-        parentSession.setEdited(true);
     }
 
     public int getNumItems() {

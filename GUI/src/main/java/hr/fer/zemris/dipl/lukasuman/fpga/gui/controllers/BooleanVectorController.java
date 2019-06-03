@@ -33,14 +33,14 @@ public class BooleanVectorController extends AbstractGUIController<BooleanVector
     @Override
     protected void loadData() {
         indexVectorBeingEdited = -1;
-        itemTableModel = new BoolVectorTableModel(parentSession, getAllItems());
+        itemTableModel = new BoolVectorTableModel(parentSession, this, getAllItems());
         itemTable = new MyJTable(itemTableModel);
         itemTable.setRowSelectionAllowed(true);
         itemTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         itemTable.addColumnClickedListener(3, row -> {
             if (indexVectorBeingEdited == -1 || row != indexVectorBeingEdited) {
-                getJfpga().getCurrentSession().getBooleanFunctionController().setItems(getItems().get(row).getBoolFunctions());
+                getJfpga().getCurrentSession().getBooleanFunctionController().setItems(getItems().get(row).getBoolFunctions(), areItemsEditable());
                 indexVectorBeingEdited = row;
             }
         });
@@ -76,6 +76,14 @@ public class BooleanVectorController extends AbstractGUIController<BooleanVector
         lowerPanel.add(new LJLabel(LocalizationKeys.BOOLEAN_VECTORS_KEY, getLocProv(), SwingConstants.CENTER), BorderLayout.NORTH);
         lowerPanel.add(new JScrollPane(itemTable), BorderLayout.CENTER);
         itemTable.applyMinSizeInScrollPane();
+    }
+
+    @Override
+    public void updateActionsAreEnabled() {
+        getJfpga().getGenerateFromFunctionsAction().setEnabled(areItemsEditable());
+        getJfpga().getGenerateRandomVectorAction().setEnabled(areItemsEditable());
+        getJfpga().getDuplicateSelectedVectorAction().setEnabled(areItemsEditable());
+        getJfpga().getRemoveSelectedVectorAction().setEnabled(areItemsEditable());
     }
 
     public JComboBox<Integer> getNumInputsComboBox() {

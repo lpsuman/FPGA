@@ -43,30 +43,6 @@ public abstract class AbstractAppAction extends LocalizableAction {
 		putValue(Action.MNEMONIC_KEY, keyEvent);
 	}
 
-	protected void showErrorMsg(String errorMsg) {
-		JOptionPane.showMessageDialog(
-				jfpga,
-				errorMsg,
-				jfpga.getFlp().getString(LocalizationKeys.ERROR_KEY),
-				JOptionPane.ERROR_MESSAGE);
-	}
-
-	protected void showWarningMsg(String warningMsg) {
-		JOptionPane.showMessageDialog(
-				jfpga,
-				warningMsg,
-				jfpga.getFlp().getString(LocalizationKeys.ERROR_KEY),
-				JOptionPane.ERROR_MESSAGE);
-	}
-
-	protected void showInfoMsg(String infoMsg) {
-		JOptionPane.showMessageDialog(
-				jfpga,
-				infoMsg,
-				jfpga.getFlp().getString(LocalizationKeys.NOTIFICATION_KEY),
-				JOptionPane.INFORMATION_MESSAGE);
-	}
-
 	private JFileChooser getFileChooser(String titleKey, FileFilter fileFilter, boolean enableMultiSelection) {
 		JFileChooser jfc = new JFileChooser(GUIConstants.DATA_ABSOLUTE_PATH);
 		jfc.setDialogTitle(jfpga.getFlp().getString(titleKey));
@@ -98,7 +74,7 @@ public abstract class AbstractAppAction extends LocalizableAction {
 			filePaths[i] = fileNames[i].toPath();
 
 			if (!Files.isReadable(filePaths[i])) {
-				showErrorMsg(String.format(jfpga.getFlp().getString(LocalizationKeys.FILE_S_DOES_NOT_EXIST),
+				jfpga.showErrorMsg(String.format(jfpga.getFlp().getString(LocalizationKeys.FILE_S_DOES_NOT_EXIST_KEY),
 						fileNames[i].getAbsolutePath()));
 				filePaths[i] = null;
 			}
@@ -108,19 +84,19 @@ public abstract class AbstractAppAction extends LocalizableAction {
 	}
 
 	protected void warnCouldNotOpen(Path filePath, String reasonMsgKey) {
-		showErrorMsg(String.format(jfpga.getFlp().getString(LocalizationKeys.FILE_S_COULD_NOT_BE_OPENED_KEY) + "\n%s",
+		jfpga.showErrorMsg(String.format(jfpga.getFlp().getString(LocalizationKeys.FILE_S_COULD_NOT_BE_OPENED_KEY) + "\n%s",
 				filePath, jfpga.getFlp().getString(reasonMsgKey)));
 	}
 
 	protected void warnNothingToSave(String nothingToSaveKey) {
-		showWarningMsg(jfpga.getFlp().getString(nothingToSaveKey));
+		jfpga.showWarningMsg(jfpga.getFlp().getString(nothingToSaveKey));
 	}
 
 	protected Path askForSaveDestination(String saveDialogTitleKey, FileNameExtensionFilter fileFilter) {
 		JFileChooser jfc = getFileChooser(saveDialogTitleKey, fileFilter, false);
 
 		if (jfc.showSaveDialog(jfpga) != JFileChooser.APPROVE_OPTION) {
-			showWarningMsg(jfpga.getFlp().getString(LocalizationKeys.NOTHING_WAS_SAVED_KEY));
+			jfpga.showWarningMsg(jfpga.getFlp().getString(LocalizationKeys.NOTHING_WAS_SAVED_KEY));
 			return null;
 		}
 
@@ -149,11 +125,11 @@ public abstract class AbstractAppAction extends LocalizableAction {
 	}
 
 	protected void warnCouldNotSave(Path filePath, String reasonMsgKey) {
-		showWarningMsg(String.format(jfpga.getFlp().getString(LocalizationKeys.FILE_S_COULD_NOT_BE_SAVED_KEY) + "\n%s",
+		jfpga.showWarningMsg(String.format(jfpga.getFlp().getString(LocalizationKeys.FILE_S_COULD_NOT_BE_SAVED_KEY) + "\n%s",
 				filePath, jfpga.getFlp().getString(reasonMsgKey)));
 	}
 
 	protected void notifyFileSaved(Path filePath) {
-		showInfoMsg(String.format(jfpga.getFlp().getString(LocalizationKeys.FILE_S_SAVED_KEY), filePath));
+		jfpga.showInfoMsg(String.format(jfpga.getFlp().getString(LocalizationKeys.FILE_S_SAVED_KEY), filePath));
 	}
 }

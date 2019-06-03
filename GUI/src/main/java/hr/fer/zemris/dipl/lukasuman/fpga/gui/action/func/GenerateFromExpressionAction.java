@@ -25,12 +25,12 @@ public class GenerateFromExpressionAction extends AbstractGenerateFromTextAction
     @Override
     protected void doAction(String text) {
         BoolParser parser = jfpga.getParser();
-        BoolExpression boolExpression = null;
+        BoolExpression boolExpression;
 
         try {
             boolExpression = parser.parse(new BoolLexer(Utility.getInputStreamFromString(text)));
         } catch (BoolParserException exc) {
-            showErrorMsg(exc.getMessage());
+            jfpga.showErrorMsg(exc.getMessage());
             return;
         }
 

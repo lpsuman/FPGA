@@ -1,5 +1,6 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.table;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.AbstractGUIController;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
 
@@ -9,12 +10,18 @@ import java.util.List;
 
 public class InputTableModel extends MyAbstractTableModel<String> {
 
-    private static List<String> DEFAULT_INPUT_IDS = Arrays.asList("a", "b", "c");
-    private static Double[] COLUMN_WIDTH_PERCENTAGES = new Double[]{1.0, 4.0};
+    private static final List<String> DEFAULT_INPUT_IDS = Arrays.asList("a", "b", "c");
+    private static final Double[] COLUMN_WIDTH_PERCENTAGES = new Double[]{1.0, 4.0};
 
-    public InputTableModel(SessionController parentSession) {
-        super(parentSession, DEFAULT_INPUT_IDS, LocalizationKeys.INDEX_KEY, LocalizationKeys.INPUTS_KEY);
+    public InputTableModel(SessionController parentSession, AbstractGUIController parentController) {
+        super(parentSession, parentController, null,
+                LocalizationKeys.INDEX_KEY, LocalizationKeys.INPUTS_KEY);
         setColumnWidthPercentages(COLUMN_WIDTH_PERCENTAGES);
+    }
+
+    @Override
+    protected List<String> getDefaultItems() {
+        return DEFAULT_INPUT_IDS;
     }
 
     @Override
@@ -40,11 +47,8 @@ public class InputTableModel extends MyAbstractTableModel<String> {
 
         for (int i = 0; i < items.size(); i++) {
             if (i != rowIndex && newInputID.equals(items.get(i))) {
-                JOptionPane.showMessageDialog(
-                        parentSession.getJfpga(),
-                        String.format(parentSession.getLocProv().getString(LocalizationKeys.INPUT_S_ALREADY_EXISTS_KEY), newInputID),
-                        parentSession.getLocProv().getString(LocalizationKeys.ERROR_KEY),
-                        JOptionPane.ERROR_MESSAGE);
+                parentSession.getJfpga().showErrorMsg(String.format(parentSession.getLocProv()
+                        .getString(LocalizationKeys.INPUT_S_ALREADY_EXISTS_KEY), newInputID));
                 return;
             }
         }

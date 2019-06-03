@@ -1,6 +1,8 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.func;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.TestUtil;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecProblem;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 import org.junit.jupiter.api.Test;
 
@@ -90,5 +92,16 @@ public class FuncTests {
         BooleanVector clone = original.getDuplicate();
 
         TestUtil.testClone(original, clone);
+    }
+
+    @Test
+    void testBlockConfigurationToArray() {
+        BoolVecProblem problem = new BoolVecProblem(BoolFuncController.generateRandomVector(3, 1), 2);
+        Solution<int[]> randomSolution = problem.get();
+        BlockConfiguration blockConfiguration = problem.generateBlockConfiguration(randomSolution);
+        Solution<int[]> result = blockConfiguration.getAsFlatArray();
+
+        assertNotNull(result);
+        assertEquals(randomSolution, result);
     }
 }

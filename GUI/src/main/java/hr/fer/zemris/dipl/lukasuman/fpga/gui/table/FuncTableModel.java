@@ -1,18 +1,30 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.table;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.AbstractGUIController;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FuncTableModel extends MyAbstractTableModel<BooleanFunction> {
 
-    private static Double[] COLUMN_WIDTH_PERCENTAGES = new Double[]{1.0, 4.0, 1.0};
+    private static final List<BooleanFunction> DEFAULT_ITEMS = new ArrayList<>();
+    private static final Double[] COLUMN_WIDTH_PERCENTAGES = new Double[]{1.0, 4.0, 1.0};
 
-    public FuncTableModel(SessionController parentSession, List<BooleanFunction> booleanFunctions) {
-        super(parentSession, booleanFunctions, LocalizationKeys.INDEX_KEY, LocalizationKeys.NAME_KEY, LocalizationKeys.INPUTS_KEY);
+    public FuncTableModel(SessionController parentSession, AbstractGUIController parentController,
+                          List<BooleanFunction> booleanFunctions) {
+
+        super(parentSession, parentController, booleanFunctions,
+                LocalizationKeys.INDEX_KEY, LocalizationKeys.NAME_KEY, LocalizationKeys.INPUTS_KEY);
+
         setColumnWidthPercentages(COLUMN_WIDTH_PERCENTAGES);
+    }
+
+    @Override
+    protected List<BooleanFunction> getDefaultItems() {
+        return DEFAULT_ITEMS;
     }
 
     @Override

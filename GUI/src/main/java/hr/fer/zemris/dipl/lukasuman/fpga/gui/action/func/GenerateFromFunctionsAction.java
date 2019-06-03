@@ -24,6 +24,7 @@ public class GenerateFromFunctionsAction extends AbstractAppAction {
     public void actionPerformed(ActionEvent e) {
         List<BooleanFunction> functions = functionSupplier.get();
         if (functions == null || functions.isEmpty()) {
+            jfpga.showWarningMsg(jfpga.getFlp().getString(LocalizationKeys.NO_FUNCTIONS_SELECTED_MSG_KEY));
             return;
         }
         jfpga.getCurrentSession().getBooleanVectorController().addItem(new BooleanVector(functions));

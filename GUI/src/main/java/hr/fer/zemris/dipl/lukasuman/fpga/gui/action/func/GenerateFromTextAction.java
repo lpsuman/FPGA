@@ -21,7 +21,7 @@ public class GenerateFromTextAction extends AbstractGenerateFromTextAction {
         try {
             newFunc = BoolFuncController.generateFromText(Collections.singletonList(text));
         } catch (IllegalArgumentException exc) {
-            showErrorMsg(exc.getMessage());
+            jfpga.showErrorMsg(exc.getMessage());
             return;
         }
 

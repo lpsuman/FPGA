@@ -82,7 +82,7 @@ public class SessionData implements Serializable {
     public static void serializeToFile(SessionData sessionData, String filePath) throws IOException {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath))) {
             out.writeObject(sessionData);
-            System.out.println("Session data is saved in: " + filePath);
+//            System.out.println("Session data is saved in: " + filePath);
         }
     }
 }

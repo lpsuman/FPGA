@@ -1,9 +1,15 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.session;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecProblem;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BoolVectorSolution;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BooleanSolver;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.SolverMode;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIConstants;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JPanelPair;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.solve.RunSolverAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.BooleanFunctionAdapter;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.BooleanFunctionController;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.BooleanVectorController;
@@ -27,6 +33,8 @@ public class SessionController {
     private BooleanFunctionController booleanFunctionController;
     private BooleanVectorController booleanVectorController;
     private SolverController solverController;
+
+    private BooleanSolver solver;
 
     public SessionController(SessionData sessionData, JFPGA jfpga, JLabel iconPanel) {
         this.sessionData = Utility.checkNull(sessionData, "session data");
@@ -54,9 +62,7 @@ public class SessionController {
 
             @Override
             public void itemListChanged() {
-                if (booleanFunctionController.getItems() != booleanFunctionController.getAllItems()) {
-                    booleanVectorController.stopEditingVector();
-                }
+                booleanVectorController.stopEditingVector();
             }
 
             @Override
@@ -91,6 +97,58 @@ public class SessionController {
         mainPanel.add(solverController.getMainPanel(), gbc);
 
         mainPanel = outerAndInnerPair.getLowerPanel();
+    }
+
+    public void updateAsCurrentSession() {
+        booleanFunctionController.updateActionsAreEnabled();
+        booleanVectorController.updateActionsAreEnabled();
+        solverController.updateActionsAreEnabled();
+    }
+
+    public void runBooleanSolver(BoolVecProblem problem, SolverMode solverMode) {
+        solver = new BooleanSolver(solverMode, solution -> {
+            if (solution != null) {
+                getSolverController().addItem(solution);
+            }
+        });
+
+        SwingWorker<BoolVectorSolution, Void> worker = new SwingWorker<>() {
+            @Override
+            protected BoolVectorSolution doInBackground() {
+                try {
+                    return solver.solve(problem);
+                } catch (Exception exc) {
+                    exc.printStackTrace();
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                booleanSolverStopped();
+            }
+        };
+
+        jfpga.getRunSolverAction().setEnabled(false);
+        jfpga.getStopSolverAction().setEnabled(true);
+        System.setOut(solverController.getTextAreaOutputStream());
+
+        if (GUIConstants.SHOW_ERRORS_IN_GUI) {
+            System.setErr(solverController.getTextAreaOutputStream());
+        }
+
+        worker.execute();
+    }
+
+    public void stopBooleanSolver() {
+        solver.stop();
+        booleanSolverStopped();
+    }
+
+    private void booleanSolverStopped() {
+        jfpga.getRunSolverAction().setEnabled(true);
+        jfpga.getStopSolverAction().setEnabled(false);
     }
 
     public JPanel getMainPanel() {

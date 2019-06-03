@@ -35,15 +35,15 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
 
     @Override
     protected void loadData() {
-        itemTableModel = new FuncTableModel(parentSession, getAllItems());
+        itemTableModel = new FuncTableModel(parentSession, this, getAllItems());
         itemTable = new MyJTable(itemTableModel);
         itemTable.setRowSelectionAllowed(true);
         itemTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-        inputTableModel = new InputTableModel(parentSession);
+        inputTableModel = new InputTableModel(parentSession, this);
         inputTable = new MyJTable(inputTableModel);
 
-        truthTableModel = new TruthTableModel(parentSession);
+        truthTableModel = new TruthTableModel(parentSession, this);
         truthTable = new MyJTable(truthTableModel);
 
         itemTable.getSelectionModel().addListSelectionListener(e -> {
@@ -126,6 +126,22 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
         lowerPanel.add(new LJLabel(LocalizationKeys.BOOLEAN_FUNCTIONS_KEY, getLocProv(), SwingConstants.CENTER), BorderLayout.NORTH);
         lowerPanel.add(new JScrollPane(itemTable), BorderLayout.CENTER);
         itemTable.applyMinSizeInScrollPane();
+    }
+
+    @Override
+    public void setItems(List<BooleanFunction> items, boolean areItemsEditable) {
+        super.setItems(items, areItemsEditable);
+        inputTableModel.loadDefaultItems();
+        truthTableModel.loadDefaultItems();
+    }
+
+    @Override
+    public void updateActionsAreEnabled() {
+        getJfpga().getGenerateFromExpressionAction().setEnabled(areItemsEditable());
+        getJfpga().getGenerateFromTextAction().setEnabled(areItemsEditable());
+        getJfpga().getGenerateRandomFunctionAction().setEnabled(areItemsEditable());
+        getJfpga().getDuplicateSelectedFunctionAction().setEnabled(areItemsEditable());
+        getJfpga().getRemoveSelectedFunctionAction().setEnabled(areItemsEditable());
     }
 
     @Override

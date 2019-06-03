@@ -20,9 +20,9 @@ public class BooleanMain {
 
     private static final boolean USE_NON_RANDOM_FUNCTIONS = false;
     private static final boolean SHOW_TWO_VARIABLE_FUNC_CONVERSION = false;
-    private static final int NUM_FUNCTIONS = 1;
-    private static final int NUM_FUNC_INPUTS = 6;
-    private static final int NUM_CLB_INPUTS = 3;
+    private static final int NUM_FUNCTIONS = 3;
+    private static final int NUM_FUNC_INPUTS = 3;
+    private static final int NUM_CLB_INPUTS = 2;
 
     public static void main(String[] args) {
         List<BooleanFunction> functions = new ArrayList<>();

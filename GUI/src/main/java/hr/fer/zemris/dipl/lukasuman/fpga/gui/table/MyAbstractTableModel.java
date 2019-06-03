@@ -10,15 +10,24 @@ import java.util.List;
 public abstract class MyAbstractTableModel<T> extends AbstractTableModel {
 
     protected SessionController parentSession;
+    private AbstractGUIController parentController;
     protected List<T> items;
     private String[] columnNameKeys;
     protected String[] columnNames;
     private Double[] columnWidthPercentages;
     protected boolean displayIndices;
 
-    public MyAbstractTableModel(SessionController parentSession, List<T> items, String... columnNameKeys) {
+    public MyAbstractTableModel(SessionController parentSession, AbstractGUIController parentController,
+                                List<T> items, String... columnNameKeys) {
+
         this.parentSession = Utility.checkNull(parentSession, "parent session");
-        this.items = items;
+        this.parentController = Utility.checkNull(parentController, "parent controller");
+
+        if (items == null) {
+            loadDefaultItems();
+        } else {
+            this.items = items;
+        }
 
         if (columnNameKeys != null) {
             this.columnNameKeys = columnNameKeys;
@@ -30,12 +39,19 @@ public abstract class MyAbstractTableModel<T> extends AbstractTableModel {
         displayIndices = true;
     }
 
+    protected abstract List<T> getDefaultItems();
+
+    public void loadDefaultItems() {
+        setItems(getDefaultItems());
+    }
+
     public List<T> getItems() {
         return items;
     }
 
     public void setItems(List<T> items) {
-        this.items = Utility.checkIfValidCollection(items, "items");
+        Utility.checkNull(items, "items");
+        this.items = Utility.checkIfContainsNull(items, "items");
         fireTableDataChanged();
     }
 
@@ -123,10 +139,18 @@ public abstract class MyAbstractTableModel<T> extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
+        if (!parentController.areItemsEditable() || items == getDefaultItems()) {
+            return false;
+        }
+
         if (!displayIndices) {
             columnIndex += 1;
         }
 
+        return isColumnEditable(columnIndex);
+    }
+
+    protected boolean isColumnEditable(int columnIndex) {
         return columnIndex == 1;
     }
 

@@ -10,11 +10,11 @@ import java.util.function.Supplier;
 public class DisplayAllTableItemAction<T extends Duplicateable & Nameable> extends AbstractTableItemAction<T> {
 
     public DisplayAllTableItemAction(JFPGA jfpga, Supplier<AbstractGUIController<T>> controllerProvider, String localizationKey) {
-        super(jfpga, controllerProvider, localizationKey);
+        super(jfpga, controllerProvider, localizationKey, null);
     }
 
     @Override
     protected void doAction(AbstractGUIController<T> controller) {
-        controller.setItems(controller.getAllItems());
+        controller.setItems(controller.getAllItems(), true);
     }
 }

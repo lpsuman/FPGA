@@ -3,10 +3,10 @@ package hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BoolVectorSolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.SolverMode;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIConstants;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JPanelPair;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JTextAreaOutputStream;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LJButton;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LJLabel;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
@@ -27,6 +27,7 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
     private JComboBox<SolverMode> solverModeComboBox;
 
     private JTextArea outputTextArea;
+    private PrintStream textAreaOutputStream;
     private JButton clearTextButton;
     private JToggleButton clearToggleButton;
 
@@ -36,14 +37,14 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
 
     @Override
     protected void loadData() {
-        itemTableModel = new BoolVecSolutionTableModel(parentSession, getAllItems());
+        itemTableModel = new BoolVecSolutionTableModel(parentSession, this, getAllItems());
         itemTable = new MyJTable(itemTableModel);
         itemTable.setRowSelectionAllowed(true);
         itemTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         itemTable.addColumnClickedListener(3, (row) -> {
             BooleanVector vectorClone = new BooleanVector(getItem(row).getBoolVector());
-            getJfpga().getCurrentSession().getBooleanVectorController().setItems(Collections.singletonList(vectorClone));
+            getJfpga().getCurrentSession().getBooleanVectorController().setItems(Collections.singletonList(vectorClone), false);
         });
     }
 
@@ -59,13 +60,14 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
         JPanel lowerPanel = panelPair.getLowerPanel();
 
         numCLBInputsComboBox = GUIUtility.getComboBoxFromLimit(Constants.NUM_CLB_INPUTS_LIMIT);
-        numCLBInputsComboBox.setSelectedIndex(1);
+//        numCLBInputsComboBox.setSelectedIndex(1);
         upperPanel.add(GUIUtility.getComboBoxPanel(numCLBInputsComboBox, getLocProv(), LocalizationKeys.NUMBER_OF_CLB_INPUTS_KEY));
 
         solverModeComboBox = new JComboBox<>(SolverMode.values());
         upperPanel.add(GUIUtility.getComboBoxPanel(solverModeComboBox, getLocProv(), LocalizationKeys.SOLVING_MODE_KEY));
 
         upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getRunSolverAction())));
+        upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getStopSolverAction())));
 
         clearTextButton = new JButton(getJfpga().getClearOutputAction());
         //TODO toggle button
@@ -73,8 +75,8 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
 
         outputTextArea = new JTextArea();
         outputTextArea.setEditable(false);
-        JTextAreaOutputStream out = new JTextAreaOutputStream(outputTextArea);
-        System.setOut(new PrintStream(out));
+
+        textAreaOutputStream = new PrintStream(new JTextAreaOutputStream(outputTextArea, GUIConstants.REDIRECT_OUT));
         lowerPanel.add(GUIUtility.getClearableTextArea(outputTextArea, clearTextButton, clearToggleButton), BorderLayout.CENTER);
     }
 
@@ -83,9 +85,16 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
         JPanel upperPanel = panelPair.getUpperPanel();
         JPanel lowerPanel = panelPair.getLowerPanel();
 
+        upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getRemoveSelectedSolutionAction())));
+
         lowerPanel.add(new LJLabel(LocalizationKeys.SOLUTIONS_KEY, getLocProv(), SwingConstants.CENTER), BorderLayout.NORTH);
         lowerPanel.add(new JScrollPane(itemTable), BorderLayout.CENTER);
         itemTable.applyMinSizeInScrollPane();
+    }
+
+    @Override
+    public void updateActionsAreEnabled() {
+        getJfpga().getRemoveSelectedSolutionAction().setEnabled(areItemsEditable());
     }
 
     @Override
@@ -103,6 +112,10 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
 
     public JTextArea getOutputTextArea() {
         return outputTextArea;
+    }
+
+    public PrintStream getTextAreaOutputStream() {
+        return textAreaOutputStream;
     }
 
     public JButton getClearTextButton() {

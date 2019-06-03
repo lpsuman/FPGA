@@ -13,6 +13,8 @@ public class GUIConstants {
     public static final int DEFAULT_WINDOW_WIDTH = (int)(DEFAULT_WINDOW_HEIGHT * WINDOW_WIDTH_RATIO);
     public static final int DEFAULT_WINDOW_LOCATION_X = (1920 - DEFAULT_WINDOW_WIDTH) / 2;
     public static final int DEFAULT_WINDOW_LOCATION_Y = (1080 - DEFAULT_WINDOW_HEIGHT) / 2;
+    public static final boolean REDIRECT_OUT = false;
+    public static final boolean SHOW_ERRORS_IN_GUI = false;
 
     public static final String DEFAULT_LANGUAGE = "en";
     public static final String[] SUPPORTED_LANGUAGES = {"English", "Hrvatski"};

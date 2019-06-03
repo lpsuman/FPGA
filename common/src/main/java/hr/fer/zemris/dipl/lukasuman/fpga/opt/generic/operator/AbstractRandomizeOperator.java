@@ -9,6 +9,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractRandomizeOperator implements OperatorRandomizer, FitnessListener, TerminationListener, Operator {
 
@@ -48,7 +49,7 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
             globalStatsList.add(new AtomicOperatorStatistics());
         }
 
-        waitingSolutions = new HashMap<>();
+        waitingSolutions = new ConcurrentHashMap<>();
         bestFitness = 0.0;
         operatorNames = new ArrayList<>(numOperators);
         operatorChances = null;

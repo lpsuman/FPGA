@@ -2,6 +2,7 @@ package hr.fer.zemris.dipl.lukasuman.fpga.gui.action.func;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.AbstractAppAction;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.awt.event.ActionEvent;
@@ -19,7 +20,8 @@ public abstract class AbstractGenerateFromTextAction extends AbstractAppAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         String text = textProvider.get();
-        if (text == null || text.isEmpty()) {
+        if (text == null || text.isEmpty() || text.equals(jfpga.getFlp().getString(LocalizationKeys.INSERT_EXPRESSION_KEY))) {
+            jfpga.showWarningMsg(jfpga.getFlp().getString(LocalizationKeys.NO_TEXT_MSG_KEY));
             return;
         }
 

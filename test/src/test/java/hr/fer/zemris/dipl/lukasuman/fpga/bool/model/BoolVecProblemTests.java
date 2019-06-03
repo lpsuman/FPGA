@@ -1,5 +1,6 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.model;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BlockConfiguration;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFuncController;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
@@ -19,7 +20,7 @@ public class BoolVecProblemTests {
     private static final int NUM_FUNC_TO_TEST = 3;
 
     @Test
-    void testTrim() {
+    void testTrimFirst() {
         int[] redundantSolutionData = new int[]{
                 3, 1, 0, 72,
                 3, 4, 2, 28,
@@ -48,17 +49,27 @@ public class BoolVecProblemTests {
         assertArrayEquals(expectedTrimmedSolutionData, trimmedSolution.getData());
     }
 
+    @Test
+    void testTrimAllButLast() {
+        //TODO testTrimAllButLast
+    }
+
+    @Test
+    void testTrimAll() {
+        //TODO testTrimAll
+    }
+
     private static void testBrute(int numFuncInputs, int numCLBInputs) {
 //        BooleanFunction controllers = BoolFuncController.generateFromMask(0b01011011, 3);
 //        BooleanFunction controllers = BoolFuncController.generateFromMask(0b1011001000111010, 4);
 //        BooleanFunction controllers = BoolFuncController.generateFromMask(0b00010010111011011011111101101100, 5);
         BooleanFunction func = BoolFuncController.generateRandomFunction(numFuncInputs);
-        Solution<int[]> solution = BoolVecProblem.bruteSolve(func, numCLBInputs);
-
-        assertNotNull(solution);
+        BlockConfiguration blockConfiguration = BoolVecProblem.bruteSolve(func, numCLBInputs);
+        assertNotNull(blockConfiguration);
+        Solution<int[]> solution = blockConfiguration.getAsFlatArray();
 
         BoolVecProblem problem = new BoolVecProblem(new BooleanVector(Collections.singletonList(func), false), numCLBInputs);
-        CLBController clbController =problem.getClbController();
+        CLBController clbController = problem.getClbController();
         clbController.setNumCLB((solution.getData().length - 1) / clbController.getIntsPerCLB());
         BoolVecEvaluator evaluator = new BoolVecEvaluator(problem);
         evaluator.setLogging(true);

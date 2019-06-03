@@ -13,10 +13,13 @@ import java.util.function.Supplier;
 public abstract class AbstractTableItemAction<T extends Duplicateable & Nameable> extends AbstractAppAction {
 
     private Supplier<AbstractGUIController<T>> controllerProvider;
+    protected String targetLocalizationKey;
 
-    public AbstractTableItemAction(JFPGA jfpga, Supplier<AbstractGUIController<T>> controllerProvider, String localizationKey) {
+    public AbstractTableItemAction(JFPGA jfpga, Supplier<AbstractGUIController<T>> controllerProvider,
+                                   String localizationKey, String targetLocalizationKey) {
         super(jfpga, localizationKey);
         this.controllerProvider = Utility.checkNull(controllerProvider, "controller provider");
+        this.targetLocalizationKey = targetLocalizationKey;
     }
 
     @Override

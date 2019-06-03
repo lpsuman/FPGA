@@ -54,6 +54,9 @@ public class Constants {
     public static final ArgumentLimit<Double> ANNEALING_THRESHOLD_LIMIT =
             new ArgumentIntervalLimit<>("annealing threshold", 0.0, 1.0);
 
+    public static final ArgumentLimit<Double> DOUBLE_RATIO_LIMIT =
+            new ArgumentIntervalLimit<>("ratio limit", 0.0, 1.0);
+
     public static final int MAXIMUM_INPUT_ID_LENGTH = 10;
     public static final int MAXIMUM_NAME_LENGTH = 30;
 

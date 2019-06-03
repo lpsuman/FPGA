@@ -1,17 +1,22 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.table;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BoolVectorSolution;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.AbstractGUIController;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BoolVecSolutionTableModel extends MyAbstractTableModel<BoolVectorSolution> {
 
+    private static final List<BoolVectorSolution> DEFAULT_ITEMS = new ArrayList<>();
     private static Double[] COLUMN_WIDTH_PERCENTAGES = new Double[]{1.0, 4.0, 1.0, 1.0, 1.0, 1.0};
 
-    public BoolVecSolutionTableModel(SessionController parentSession, List<BoolVectorSolution> boolVectorSolutions) {
-        super(parentSession, boolVectorSolutions,
+    public BoolVecSolutionTableModel(SessionController parentSession, AbstractGUIController parentController,
+                                     List<BoolVectorSolution> boolVectorSolutions) {
+
+        super(parentSession, parentController, boolVectorSolutions,
                 LocalizationKeys.INDEX_KEY,
                 LocalizationKeys.NAME_KEY,
                 LocalizationKeys.INPUTS_KEY,
@@ -19,6 +24,11 @@ public class BoolVecSolutionTableModel extends MyAbstractTableModel<BoolVectorSo
                 LocalizationKeys.INPUTS_KEY,
                 LocalizationKeys.BLOCKS_KEY);
         setColumnWidthPercentages(COLUMN_WIDTH_PERCENTAGES);
+    }
+
+    @Override
+    protected List<BoolVectorSolution> getDefaultItems() {
+        return DEFAULT_ITEMS;
     }
 
     @Override

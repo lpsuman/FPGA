@@ -6,6 +6,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.evaluator.Evaluator;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Timer;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,8 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
     private Evaluator<T> evaluator;
     private GAThreadPool<T> threadPool;
 
+    private double maxNonImprovingGenerationsRatio;
+    private double minImprovingGenerationsRatio;
     private boolean shouldDoFullRuns;
 
     public ParallelGA(Supplier<Solution<T>> candidateSupplier, Evaluator<T> evaluator, GAThreadPool<T> threadPool,
@@ -36,7 +39,11 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
         this.elitismSize = elitismSize;
         this.threshold = threshold;
         this.timeToStop = timeToStop;
+
         shouldDoFullRuns = false;
+        setDoFullRuns(false);
+        setMaxNonImprovingGenerationsRatio(Constants.DEFAULT_NON_IMPROVING_GENERATION_STOP_RATIO);
+        setMinImprovingGenerationsRatio(Constants.DEFAULT_IMPROVING_GENERATION_CONTINUE_RATIO);
     }
 
     public ParallelGA(Supplier<Solution<T>> candidateSupplier, Evaluator<T> evaluator, GAThreadPool<T> threadPool,
@@ -59,17 +66,13 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
                 Constants.DEFAULT_POPULATION_SIZE, Constants.DEFAULT_MAX_NUM_GENERATIONS);
     }
 
-    public void setDoFullRuns(boolean shouldDoFullRuns) {
-        this.shouldDoFullRuns = shouldDoFullRuns;
-    }
-
     @Override
     public Solution<T> run() {
         threadPool.runThreads();
 
         int lastImprovingGeneration = 0;
-        int maxNonImprovingGenerations = (int)(maxGenerations * Constants.DEFAULT_NON_IMPROVING_GENERATION_STOP_RATIO);
-        int minImprovingGenerations = (int)(maxGenerations * Constants.DEFAULT_IMPROVING_GENERATION_CONTINUE_RATIO);
+        int maxNonImprovingGenerations = (int)(maxGenerations * maxNonImprovingGenerationsRatio);
+        int minImprovingGenerations = (int)(maxGenerations * minImprovingGenerationsRatio);
         boolean continuedAfterMaxGenerations = false;
 
         List<Solution<T>> population = generatePopulation();
@@ -190,6 +193,11 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
         return best;
     }
 
+    @Override
+    public void stop() {
+        threadPool.shutdown();
+    }
+
     private List<Solution<T>> generatePopulation() {
         List<Solution<T>> population = new ArrayList<>(populationSize);
 
@@ -202,5 +210,27 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
         population.sort(AbstractSolution.COMPARATOR_BY_FITNESS.reversed());
 
         return population;
+    }
+
+    public void setDoFullRuns(boolean shouldDoFullRuns) {
+        this.shouldDoFullRuns = shouldDoFullRuns;
+    }
+
+    public double getMaxNonImprovingGenerationsRatio() {
+        return maxNonImprovingGenerationsRatio;
+    }
+
+    public void setMaxNonImprovingGenerationsRatio(double maxNonImprovingGenerationsRatio) {
+        Utility.checkLimit(Constants.DOUBLE_RATIO_LIMIT, maxNonImprovingGenerationsRatio);
+        this.maxNonImprovingGenerationsRatio = maxNonImprovingGenerationsRatio;
+    }
+
+    public double getMinImprovingGenerationsRatio() {
+        return minImprovingGenerationsRatio;
+    }
+
+    public void setMinImprovingGenerationsRatio(double minImprovingGenerationsRatio) {
+        Utility.checkLimit(Constants.DOUBLE_RATIO_LIMIT, minImprovingGenerationsRatio);
+        this.minImprovingGenerationsRatio = minImprovingGenerationsRatio;
     }
 }

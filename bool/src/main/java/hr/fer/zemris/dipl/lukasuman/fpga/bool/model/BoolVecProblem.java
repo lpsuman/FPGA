@@ -300,7 +300,7 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         return clbController;
     }
 
-    public static Solution<int[]> bruteSolve(BooleanFunction func, int numCLBInputs) {
+    public static BlockConfiguration bruteSolve(BooleanFunction func, int numCLBInputs) {
         Utility.checkNull(func, "boolean function");
         Utility.checkLimit(Constants.NUM_CLB_INPUTS_LIMIT, numCLBInputs);
 
@@ -331,12 +331,11 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         }
 
         CLBController clbController = new CLBController(func.getNumInputs(), numCLBInputs, numCLB);
-        int[] data = new int[numCLB * clbController.getIntsPerCLB() + 1];
+        int[] data = new int[numCLB * clbController.getIntsPerCLB()];
 
         recursiveFill(clbController, multiplexerData, RNG.getRNG(), func.getTruthTable(), data, 0, depth, 1, numCLBRatio);
 
-        data[data.length - 1] = numCLB - 1;
-        return new IntArraySolution(data);
+        return new BlockConfiguration(numCLBInputs, numCLB, data, Collections.singletonList(numCLB - 1));
     }
 
     private static void recursiveFill(CLBController clbController, MultiplexerData multiplexerData, IRNG random,
@@ -415,14 +414,14 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         }
     }
 
-    private static Solution<int[]> bruteSolveForTwoInputs(BooleanFunction func) {
+    private static BlockConfiguration bruteSolveForTwoInputs(BooleanFunction func) {
         BitSet truthTable = func.getTruthTable();
         int numFuncInputs = func.getNumInputs();
         int maxDepth = numFuncInputs - 2;
         int numCLBForNegations = numFuncInputs - 2;
         int numCLBForTableStorage = func.getNumInputCombinations() / 4;
         int numCLB = numCLBForNegations + numCLBForTableStorage + 3 * (int)(Math.pow(2, maxDepth) - 1);
-        int[] data = new int[numCLB * 3 + 1];
+        int[] data = new int[numCLB * 3];
 
         for (int i = 0; i < numFuncInputs - 2; i++) {
             int offsetCLB = i * 3;
@@ -443,8 +442,7 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         CLBController clbController = new CLBController(numFuncInputs, 2, numCLB);
         recursiveTwoInputFill(clbController, data, 0, maxDepth, 1, numCLB - 1);
 
-        data[data.length - 1] = numCLB - 1;
-        return new IntArraySolution(data);
+        return new BlockConfiguration(2, numCLB, data, Collections.singletonList(numCLB - 1));
     }
 
     private static void recursiveTwoInputFill(CLBController clbController, int[] data,
@@ -459,24 +457,16 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         int indexChildInTree;
         int indexChildCLB;
 
-        data[offsetData--] = 0b0001;
-        indexChildInTree = indexTree * 2;
-        indexChildCLB = clbController.getNumCLB() - (indexChildInTree * 3) + 2;
-        if (depth + 1 < maxDepth) {
-            data[offsetData] = indexChildCLB + clbController.getNumInputs();
-            recursiveTwoInputFill(clbController, data, depth + 1, maxDepth, indexChildInTree, indexChildCLB);
+        for (int i = 0; i < 2; i++) {
+            indexChildInTree = indexTree * 2 + i;
+            data[offsetData--] = 0b0001;
+            indexChildCLB = clbController.getNumCLB() - (indexChildInTree * 3) + 2;
+            if (depth + 1 < maxDepth) {
+                data[offsetData] = indexChildCLB + clbController.getNumInputs();
+                recursiveTwoInputFill(clbController, data, depth + 1, maxDepth, indexChildInTree, indexChildCLB);
+            }
+            offsetData--;
+            data[offsetData--] = depth + i * clbController.getNumInputs();
         }
-        offsetData--;
-        data[offsetData--] = depth;
-
-        data[offsetData--] = 0b0001;
-        indexChildInTree = indexTree * 2 + 1;
-        indexChildCLB = clbController.getNumCLB() - (indexChildInTree * 3) + 2;
-        if (depth + 1 < maxDepth) {
-            data[offsetData] = indexChildCLB + clbController.getNumInputs();
-            recursiveTwoInputFill(clbController, data, depth + 1, maxDepth, indexChildInTree, indexChildCLB);
-        }
-        offsetData--;
-        data[offsetData] = depth + clbController.getNumInputs();
     }
 }

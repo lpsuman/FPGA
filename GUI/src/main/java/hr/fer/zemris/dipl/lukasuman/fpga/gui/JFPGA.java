@@ -1,11 +1,13 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.parser.BoolParser;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BoolVectorSolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.LoadTextAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.func.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.session.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.solve.ClearOutputAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.solve.RunSolverAction;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.solve.StopSolverAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.FormLocalizationProvider;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LJMenu;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
@@ -69,7 +71,9 @@ public class JFPGA extends JFrame {
     private Action displayAllVectorsAction;
 
     private Action runSolverAction;
+    private Action stopSolverAction;
     private Action clearOutputAction;
+    private Action removeSelectedSolutionAction;
 
     /**Map used to link tab closing buttons to their respective tabs.*/
     private Map<JButton, Component> mapCloseButtonToComp;
@@ -104,6 +108,17 @@ public class JFPGA extends JFrame {
         sessions = new ArrayList<>();
         mapCloseButtonToComp = new HashMap<>();
         flp = new FormLocalizationProvider(LocalizationProviderImpl.getInstance(), this);
+        flp.addLocalizationListener(() -> {
+            UIManager.put("OptionPane.yesButtonText", flp.getString(LocalizationKeys.YES_KEY));
+            UIManager.put("OptionPane.noButtonText", flp.getString(LocalizationKeys.NO_KEY));
+            UIManager.put("OptionPane.cancelButtonText", flp.getString(LocalizationKeys.CANCEL_KEY));
+
+            UIManager.put("FileChooser.openButtonText", flp.getString(LocalizationKeys.OPEN_KEY));
+            UIManager.put("FileChooser.cancelButtonText", flp.getString(LocalizationKeys.CANCEL_KEY));
+            UIManager.put("FileChooser.lookInLabelText", flp.getString(LocalizationKeys.JFC_LOOK_IN_KEY));
+            UIManager.put("FileChooser.fileNameLabelText", flp.getString(LocalizationKeys.JFC_FILE_NAME_KEY));
+            UIManager.put("FileChooser.filesOfTypeLabelText", flp.getString(LocalizationKeys.JFC_FILES_OF_TYPE_KEY));
+        });
         parser = new BoolParser();
 
         initActions();
@@ -151,10 +166,12 @@ public class JFPGA extends JFrame {
             GUIUtility.getSelectedComboBoxValue(getCurrentSession().getBooleanFunctionController().getNumInputsComboBox()));
         duplicateSelectedFunctionAction = new DuplicateTableItemAction<>(this,
                 () -> getCurrentSession().getBooleanFunctionController(),
-                LocalizationKeys.DUPLICATE_FUNCTION_KEY);
+                LocalizationKeys.DUPLICATE_FUNCTION_KEY,
+                LocalizationKeys.ONE_OR_MORE_FUNCTIONS_KEY);
         removeSelectedFunctionAction = new RemoveTableItemAction<>(this,
                 () -> getCurrentSession().getBooleanFunctionController(),
-                LocalizationKeys.REMOVE_FUNCTION_KEY);
+                LocalizationKeys.REMOVE_FUNCTION_KEY,
+                LocalizationKeys.ONE_OR_MORE_FUNCTIONS_KEY);
         displayAllFunctionsAction = new DisplayAllTableItemAction<>(this,
                 () -> getCurrentSession().getBooleanFunctionController(),
                 LocalizationKeys.DISPLAY_ALL_FUNCTIONS_KEY);
@@ -168,10 +185,12 @@ public class JFPGA extends JFrame {
                 () -> GUIUtility.getSelectedComboBoxValue(getCurrentSession().getBooleanVectorController().getNumFunctionsComboBox()));
         duplicateSelectedVectorAction = new DuplicateTableItemAction<>(this,
                 () -> getCurrentSession().getBooleanVectorController(),
-                LocalizationKeys.DUPLICATE_VECTOR_KEY);
+                LocalizationKeys.DUPLICATE_VECTOR_KEY,
+                LocalizationKeys.ONE_OR_MORE_VECTORS_KEY);
         removeSelectedVectorAction = new RemoveTableItemAction<>(this,
                 () -> getCurrentSession().getBooleanVectorController(),
-                LocalizationKeys.REMOVE_VECTOR_KEY);
+                LocalizationKeys.REMOVE_VECTOR_KEY,
+                LocalizationKeys.ONE_OR_MORE_VECTORS_KEY);
         displayAllVectorsAction = new DisplayAllTableItemAction<>(this,
                 () -> getCurrentSession().getBooleanVectorController(),
                 LocalizationKeys.DISPLAY_ALL_VECTORS_KEY);
@@ -183,13 +202,21 @@ public class JFPGA extends JFrame {
                 () -> GUIUtility.getSelectedComboBoxValue(getCurrentSession().getSolverController().getNumCLBInputsComboBox()),
                 () -> GUIUtility.getSelectedComboBoxValue(getCurrentSession().getSolverController().getSolverModeComboBox()));
 
+        stopSolverAction = new StopSolverAction(this);
+        stopSolverAction.setEnabled(false);
+
         clearOutputAction = new ClearOutputAction(this);
+
+        removeSelectedSolutionAction = new RemoveTableItemAction<>(this,
+                () -> getCurrentSession().getSolverController(),
+                LocalizationKeys.REMOVE_SOLUTION_KEY,
+                LocalizationKeys.ONE_OR_MORE_SOLUTIONS_KEY);
     }
 
     private void createMenus() {
         JMenuBar menuBar = new JMenuBar();
 
-        JMenu fileMenu = new LJMenu("file", flp);
+        JMenu fileMenu = new LJMenu(LocalizationKeys.FILE_KEY, flp);
         menuBar.add(fileMenu);
 
         fileMenu.add(new JMenuItem(newSessionAction));
@@ -201,7 +228,7 @@ public class JFPGA extends JFrame {
         fileMenu.addSeparator();
         fileMenu.add(new JMenuItem(exitAction));
 
-        JMenu editMenu = new LJMenu("edit", flp);
+        JMenu editMenu = new LJMenu(LocalizationKeys.EDIT_KEY, flp);
         menuBar.add(editMenu);
 
         JMenu languageMenu = new JMenu("Languages/Jezici");
@@ -242,6 +269,7 @@ public class JFPGA extends JFrame {
                 }
                 prefix += " - ";
 
+                sessions.get(index).updateAsCurrentSession();
             }
             setTitle(prefix + GUIConstants.DEFAULT_APPLICATION_NAME);
         });
@@ -250,11 +278,7 @@ public class JFPGA extends JFrame {
             redDiskette = IconLoader.loadRedDisketteIcon();
             blueDiskette = IconLoader.loadBlueDisketteIcon();
         } catch (IOException exc) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Error while trying to load icons!",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
+            showErrorMsg("Error while trying to load icons!");
             System.exit(-1);
         }
     }
@@ -400,6 +424,30 @@ public class JFPGA extends JFrame {
         }
     }
 
+    public void showErrorMsg(String errorMsg) {
+        JOptionPane.showMessageDialog(
+                this,
+                errorMsg,
+                flp.getString(LocalizationKeys.ERROR_KEY),
+                JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void showWarningMsg(String warningMsg) {
+        JOptionPane.showMessageDialog(
+                this,
+                warningMsg,
+                flp.getString(LocalizationKeys.WARNING_KEY),
+                JOptionPane.WARNING_MESSAGE);
+    }
+
+    public void showInfoMsg(String infoMsg) {
+        JOptionPane.showMessageDialog(
+                this,
+                infoMsg,
+                flp.getString(LocalizationKeys.NOTIFICATION_KEY),
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+
     public FormLocalizationProvider getFlp() {
         return flp;
     }
@@ -502,7 +550,15 @@ public class JFPGA extends JFrame {
         return runSolverAction;
     }
 
+    public Action getStopSolverAction() {
+        return stopSolverAction;
+    }
+
     public Action getClearOutputAction() {
         return clearOutputAction;
+    }
+
+    public Action getRemoveSelectedSolutionAction() {
+        return removeSelectedSolutionAction;
     }
 }

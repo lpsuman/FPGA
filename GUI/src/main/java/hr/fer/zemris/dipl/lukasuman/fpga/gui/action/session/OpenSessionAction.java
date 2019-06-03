@@ -46,7 +46,7 @@ public class OpenSessionAction extends AbstractAppAction {
                 return;
             } catch (ClassNotFoundException exc) {
                 exc.printStackTrace();
-                warnCouldNotOpen(filePath, LocalizationKeys.INVALID_DATA_FORMAT);
+                warnCouldNotOpen(filePath, LocalizationKeys.INVALID_DATA_FORMAT_KEY);
                 return;
             }
 

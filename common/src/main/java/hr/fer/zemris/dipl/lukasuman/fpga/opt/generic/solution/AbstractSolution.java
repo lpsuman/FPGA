@@ -1,6 +1,7 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 public abstract class AbstractSolution<T> implements Solution<T> {
 
@@ -45,5 +46,18 @@ public abstract class AbstractSolution<T> implements Solution<T> {
     @Override
     public int compareTo(Solution<T> o) {
         return -Double.compare(fitness, o.getFitness());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractSolution<?> that = (AbstractSolution<?>) o;
+        return data.equals(that.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(data);
     }
 }
