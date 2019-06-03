@@ -19,6 +19,20 @@ public class BoolVecProblemTests {
 
     private static final int NUM_FUNC_TO_TEST = 3;
 
+    private static void testTrim(int[] redundantSolutionData, int[] expectedTrimmedData, BitSet redundantIndices,
+                                 int numCLB, int numCLBInputs, int numInputs) {
+
+        BooleanFunction func = BoolFuncController.generateRandomFunction(numInputs);
+        Solution<int[]> redundantSolution = new IntArraySolution(redundantSolutionData);
+
+        BoolVecProblem problem = new BoolVecProblem(new BooleanVector(Collections.singletonList(func)), numCLBInputs);
+        problem.getClbController().setNumCLB(numCLB);
+        Solution<int[]> trimmedSolution = problem.trimmedBoolSolution(redundantSolution, redundantIndices);
+
+        assertNotNull(trimmedSolution);
+        assertArrayEquals(expectedTrimmedData, trimmedSolution.getData());
+    }
+
     @Test
     void testTrimFirst() {
         int[] redundantSolutionData = new int[]{
@@ -29,33 +43,33 @@ public class BoolVecProblemTests {
                 8, 4, 2, 25,
                 7, 8, 9, 73,
                 10};
-        int[] expectedTrimmedSolutionData = new int[]{
+        int[] expectedTrimmedData = new int[]{
                 3, 4, 2, 28,
                 0, 5, 2, 104,
                 6, 2, 1, 9,
                 7, 4, 2, 25,
                 6, 7, 8, 73,
                 9};
-        BooleanFunction func = new BooleanFunction(5, Utility.bitSetFromMask(
-                0b00101100001001011000010111010101, 32));
-        Solution<int[]> redundantSolution = new IntArraySolution(redundantSolutionData);
-
-        BoolVecProblem problem = new BoolVecProblem(new BooleanVector(Collections.singletonList(func)), 3);
-        problem.getClbController().setNumCLB(6);
         BitSet redundantIndices = Utility.bitSetFromMask(0b00000100000, 11);
-        Solution<int[]> trimmedSolution = problem.trimmedBoolSolution(redundantSolution, redundantIndices);
+        testTrim(redundantSolutionData, expectedTrimmedData, redundantIndices, 6, 3, 5);
+    }
 
-        assertNotNull(trimmedSolution);
-        assertArrayEquals(expectedTrimmedSolutionData, trimmedSolution.getData());
+    @Test
+    void testTrimAllButFirst() {
+        int[] redundantSolutionData = new int[]{
+                0, 0, 0b0001,
+                3, 3, 0b1000,
+                2, 3, 0b1011,
+                3};
+        int[] expectedTrimmedData = new int[]{
+                0, 0, 0b0001,
+                3};
+        BitSet redundantIndices = Utility.bitSetFromMask(0b000011, 6);
+        testTrim(redundantSolutionData, expectedTrimmedData, redundantIndices, 3, 2, 3);
     }
 
     @Test
     void testTrimAllButLast() {
-        //TODO testTrimAllButLast
-    }
-
-    @Test
-    void testTrimAll() {
         //TODO testTrimAll
     }
 

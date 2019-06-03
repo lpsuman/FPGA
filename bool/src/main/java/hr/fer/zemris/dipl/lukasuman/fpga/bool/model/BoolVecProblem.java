@@ -201,7 +201,7 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
 
         appendSolution(sb, solution, evaluator.getBlockUsage());
 
-        int numUnusedBlocks = evaluator.getUnusedBlocks().cardinality();
+        int numUnusedBlocks = evaluator.getUnusedCLBBlocks().cardinality();
         sb.append(String.format("\nThere were %d unused blocks.\n", numUnusedBlocks)).append('\n');
 
         return sb.toString();
@@ -226,6 +226,17 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
 
         int[] solutionData = solution.getData();
         int numUnusedBlocks = unusedBlocks.cardinality();
+
+        for (int i = 0; i < clbController.getNumInputs(); i++) {
+            if (unusedBlocks.get(i)) {
+                numUnusedBlocks--;
+            }
+        }
+
+        if (numUnusedBlocks == 0) {
+            return solution.duplicate();
+        }
+
         int[] trimmedData = new int[solutionData.length - numUnusedBlocks * clbController.getIntsPerCLB()];
         int numInputs = clbController.getNumInputs();
         int numCLBInputs = clbController.getNumCLBInputs();

@@ -70,6 +70,16 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
         return recursiveResult;
     }
 
+    public List<String> getAsExpressions() {
+        List<String> result = new ArrayList<>();
+
+        for (int i = 0; i < boolVector.getNumFunctions(); i++) {
+            result.add(getAsExpression(i));
+        }
+
+        return result;
+    }
+
     private String recursiveBlockToString(int indexCLB, String[] perBlockStrings) {
         int numInputs = boolVector.getNumInputs();
         if (indexCLB < numInputs) {

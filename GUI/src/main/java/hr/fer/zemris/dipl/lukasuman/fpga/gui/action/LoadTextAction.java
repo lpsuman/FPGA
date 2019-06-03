@@ -8,27 +8,20 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 import java.awt.event.ActionEvent;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class LoadTextAction extends AbstractAppAction {
 
-    private SetListener<TextLoadListener> listeners;
+    private Consumer<List<String>> textConsumer;
 
-    public LoadTextAction(JFPGA jfpga, String localizationKey) {
+    public LoadTextAction(JFPGA jfpga, String localizationKey, Consumer<List<String>> textConsumer) {
         super(jfpga, localizationKey);
-        listeners = new SetListener<>();
-    }
-
-    public void addTextLoadListener(TextLoadListener listener) {
-        listeners.addListener(listener);
-    }
-
-    public void removeTextLoadListener(TextLoadListener listener) {
-        listeners.removeListener(listener);
+        this.textConsumer = Utility.checkNull(textConsumer, "text consumer");
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Path[] filePaths = askForFilesToOpen(LocalizationKeys.LOAD_EXPRESSION_KEY, textFileFilter);
+        Path[] filePaths = askForFilesToOpen(getLocalizationKey(), textFileFilter);
 
         if (filePaths == null) {
             return;
@@ -45,7 +38,7 @@ public class LoadTextAction extends AbstractAppAction {
                 continue;
             }
 
-            listeners.getListeners().forEach(l -> l.textLoaded(lines));
+            textConsumer.accept(lines);
         }
     }
 }

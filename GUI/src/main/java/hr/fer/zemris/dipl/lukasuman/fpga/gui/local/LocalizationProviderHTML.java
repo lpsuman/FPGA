@@ -11,10 +11,10 @@ import java.util.ResourceBundle;
  * @author Luka Suman
  * @version 1.0
  */
-public class LocalizationProviderImpl extends AbstractLocalizationProvider {
+public class LocalizationProviderHTML extends AbstractLocalizationProvider {
 
 	/**Stored singleton instance.*/
-	private static final LocalizationProviderImpl instance = new LocalizationProviderImpl();
+	private static final LocalizationProviderHTML instance = new LocalizationProviderHTML();
 
 	/**The language (hr/en/de).*/
 	private String language;
@@ -23,17 +23,17 @@ public class LocalizationProviderImpl extends AbstractLocalizationProvider {
 	private ResourceBundle bundle;
 
 	/**
-	 * Creates a new {@link LocalizationProviderImpl}.
+	 * Creates a new {@link LocalizationProviderHTML}.
 	 */
-	private LocalizationProviderImpl() {
+	private LocalizationProviderHTML() {
 		super();
 	}
 
 	/**
-	 * Used to get the singleton instance of {@linkplain LocalizationProviderImpl}.
+	 * Used to get the singleton instance of {@linkplain LocalizationProviderHTML}.
 	 * @return Returns the instance.
 	 */
-	public static LocalizationProviderImpl getInstance() {
+	public static LocalizationProviderHTML getInstance() {
 		return instance;
 	}
 
@@ -53,7 +53,13 @@ public class LocalizationProviderImpl extends AbstractLocalizationProvider {
 	@Override
 	public String getString(String key) {
 		Utility.checkNull(key, "localization key");
-		return bundle.getString(key);
+		String result = bundle.getString(key);
+
+		if (result.contains("<br>")) {
+			result = "<html><center>" + result + "</center></html>";
+		}
+
+		return result;
 	}
 
 	/**

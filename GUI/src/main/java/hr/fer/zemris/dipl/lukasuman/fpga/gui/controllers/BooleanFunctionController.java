@@ -96,12 +96,14 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
         inputsPanel.add(new JScrollPane(inputTable), BorderLayout.CENTER);
         inputTable.applyMinSizeInScrollPane();
 
-        JPanel buttonsPanel = GUIUtility.getPanel(new GridLayout(0, 1));
+        JPanel buttonsPanel = GUIUtility.getPanel();
+        buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.PAGE_AXIS));
         gbc = GUIUtility.getGBC(1, 0, 0.7, 1.0);
         inputsAndButtonsPanel.add(buttonsPanel, gbc);
         buttonsPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getGenerateFromExpressionAction())));
         buttonsPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getGenerateFromTextAction())));
         buttonsPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getLoadTextAction())));
+        buttonsPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getSaveTextAction())));
 
         lowerPanel.add(new LJLabel(LocalizationKeys.TRUTH_TABLE_KEY, getLocProv(), SwingConstants.CENTER), BorderLayout.NORTH);
         lowerPanel.add(new JScrollPane(truthTable), BorderLayout.CENTER);

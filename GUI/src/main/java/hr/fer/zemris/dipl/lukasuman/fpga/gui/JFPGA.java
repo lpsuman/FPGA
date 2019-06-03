@@ -1,17 +1,18 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.parser.BoolParser;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BoolVectorSolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.LoadTextAction;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.SaveTextAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.func.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.session.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.solve.ClearOutputAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.solve.RunSolverAction;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.solve.SolutionToExpressionAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.solve.StopSolverAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.FormLocalizationProvider;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LJMenu;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationProviderImpl;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationProviderHTML;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionData;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -56,8 +58,8 @@ public class JFPGA extends JFrame {
 
     private Action generateFromExpressionAction;
     private Action generateFromTextAction;
-    private LoadTextAction loadTextAction;
-    private LoadTextAction loadExpressionAction;
+    private Action loadTextAction;
+    private Action saveTextAction;
 
     private Action generateRandomFunctionAction;
     private Action duplicateSelectedFunctionAction;
@@ -73,6 +75,8 @@ public class JFPGA extends JFrame {
     private Action runSolverAction;
     private Action stopSolverAction;
     private Action clearOutputAction;
+
+    private Action solutionToExpressionAction;
     private Action removeSelectedSolutionAction;
 
     /**Map used to link tab closing buttons to their respective tabs.*/
@@ -107,7 +111,7 @@ public class JFPGA extends JFrame {
 
         sessions = new ArrayList<>();
         mapCloseButtonToComp = new HashMap<>();
-        flp = new FormLocalizationProvider(LocalizationProviderImpl.getInstance(), this);
+        flp = new FormLocalizationProvider(LocalizationProviderHTML.getInstance(), this);
         flp.addLocalizationListener(() -> {
             UIManager.put("OptionPane.yesButtonText", flp.getString(LocalizationKeys.YES_KEY));
             UIManager.put("OptionPane.noButtonText", flp.getString(LocalizationKeys.NO_KEY));
@@ -130,7 +134,7 @@ public class JFPGA extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            LocalizationProviderImpl.getInstance().setLanguage(GUIConstants.DEFAULT_LANGUAGE);
+            LocalizationProviderHTML.getInstance().setLanguage(GUIConstants.DEFAULT_LANGUAGE);
             new JFPGA().setVisible(true);
         });
     }
@@ -152,15 +156,14 @@ public class JFPGA extends JFrame {
     }
 
     private void initFunctionActions() {
-        Supplier<String> textProvider = () -> getCurrentSession().getBooleanFunctionController().getExpressionTextArea().getText();
-        generateFromExpressionAction = new GenerateFromExpressionAction(this, textProvider);
-        generateFromTextAction = new GenerateFromTextAction(this, textProvider);
+        Supplier<String> textSupplier = () -> getCurrentSession().getBooleanFunctionController().getExpressionTextArea().getText();
+        Consumer<List<String>> textConsumer = lines ->
+                getCurrentSession().getBooleanFunctionController().getExpressionTextArea().setText(String.join("\n", lines));
+        generateFromExpressionAction = new GenerateFromExpressionAction(this, textSupplier);
+        generateFromTextAction = new GenerateFromTextAction(this, textSupplier);
 
-        loadTextAction = new LoadTextAction(this, LocalizationKeys.LOAD_TEXT_KEY);
-        loadTextAction.addTextLoadListener(lines -> getCurrentSession().getBooleanFunctionController().getExpressionTextArea().setText(String.join("\n", lines)));
-
-        loadExpressionAction = new LoadTextAction(this, LocalizationKeys.LOAD_EXPRESSION_KEY);
-        loadExpressionAction.addTextLoadListener(lines -> getCurrentSession().getBooleanFunctionController().getExpressionTextArea().setText(String.join("\n", lines)));
+        loadTextAction = new LoadTextAction(this, LocalizationKeys.LOAD_TEXT_KEY, textConsumer);
+        saveTextAction = new SaveTextAction(this, LocalizationKeys.SAVE_TEXT_KEY, textSupplier);
 
         generateRandomFunctionAction = new GenerateRandomFunctionAction(this,() ->
             GUIUtility.getSelectedComboBoxValue(getCurrentSession().getBooleanFunctionController().getNumInputsComboBox()));
@@ -175,6 +178,8 @@ public class JFPGA extends JFrame {
         displayAllFunctionsAction = new DisplayAllTableItemAction<>(this,
                 () -> getCurrentSession().getBooleanFunctionController(),
                 LocalizationKeys.DISPLAY_ALL_FUNCTIONS_KEY);
+
+        solutionToExpressionAction = new SolutionToExpressionAction(this, textConsumer);
     }
 
     private void initVectorActions() {
@@ -204,7 +209,6 @@ public class JFPGA extends JFrame {
 
         stopSolverAction = new StopSolverAction(this);
         stopSolverAction.setEnabled(false);
-
         clearOutputAction = new ClearOutputAction(this);
 
         removeSelectedSolutionAction = new RemoveTableItemAction<>(this,
@@ -237,7 +241,7 @@ public class JFPGA extends JFrame {
         for (String language : GUIConstants.SUPPORTED_LANGUAGES) {
             JMenuItem menuItem = new JMenuItem(language);
             menuItem.addActionListener(e -> {
-                LocalizationProviderImpl.getInstance().setLanguage(
+                LocalizationProviderHTML.getInstance().setLanguage(
                         language.substring(0, 2).toLowerCase());
             });
             languageMenu.add(menuItem);
@@ -502,12 +506,12 @@ public class JFPGA extends JFrame {
         return generateFromTextAction;
     }
 
-    public LoadTextAction getLoadTextAction() {
+    public Action getLoadTextAction() {
         return loadTextAction;
     }
 
-    public LoadTextAction getLoadExpressionAction() {
-        return loadExpressionAction;
+    public Action getSaveTextAction() {
+        return saveTextAction;
     }
 
     public Action getGenerateRandomFunctionAction() {
@@ -556,6 +560,10 @@ public class JFPGA extends JFrame {
 
     public Action getClearOutputAction() {
         return clearOutputAction;
+    }
+
+    public Action getSolutionToExpressionAction() {
+        return solutionToExpressionAction;
     }
 
     public Action getRemoveSelectedSolutionAction() {

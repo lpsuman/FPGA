@@ -2,6 +2,7 @@ package hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BoolVectorSolution;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.FuncToExpressionConverter;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.SolverMode;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIConstants;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
@@ -31,6 +32,8 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
     private JButton clearTextButton;
     private JToggleButton clearToggleButton;
 
+    private JComboBox<FuncToExpressionConverter.FuncToStringMappingTypes> mappingTypesJComboBox;
+
     public SolverController(SessionController parentSession) {
         super(parentSession, parentSession.getSessionData().getBoolSolutions());
     }
@@ -45,6 +48,15 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
         itemTable.addColumnClickedListener(3, (row) -> {
             BooleanVector vectorClone = new BooleanVector(getItem(row).getBoolVector());
             getJfpga().getCurrentSession().getBooleanVectorController().setItems(Collections.singletonList(vectorClone), false);
+        });
+
+        itemTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int selectedIndex = getIndexSelectedItem();
+                if (selectedIndex != -1) {
+                    getJfpga().getSolutionToExpressionAction().setEnabled(getSelectedItem().canBeConvertedToExpression());
+                }
+            }
         });
     }
 
@@ -64,6 +76,7 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
         upperPanel.add(GUIUtility.getComboBoxPanel(numCLBInputsComboBox, getLocProv(), LocalizationKeys.NUMBER_OF_CLB_INPUTS_KEY));
 
         solverModeComboBox = new JComboBox<>(SolverMode.values());
+        solverModeComboBox.setSelectedIndex(1);
         upperPanel.add(GUIUtility.getComboBoxPanel(solverModeComboBox, getLocProv(), LocalizationKeys.SOLVING_MODE_KEY));
 
         upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getRunSolverAction())));
@@ -85,6 +98,9 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
         JPanel upperPanel = panelPair.getUpperPanel();
         JPanel lowerPanel = panelPair.getLowerPanel();
 
+        upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getSolutionToExpressionAction())));
+        mappingTypesJComboBox = new JComboBox<>(FuncToExpressionConverter.FuncToStringMappingTypes.values());
+        upperPanel.add(GUIUtility.putIntoPanelWithBorder(mappingTypesJComboBox));
         upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getRemoveSelectedSolutionAction())));
 
         lowerPanel.add(new LJLabel(LocalizationKeys.SOLUTIONS_KEY, getLocProv(), SwingConstants.CENTER), BorderLayout.NORTH);
@@ -124,5 +140,9 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
 
     public JToggleButton getClearToggleButton() {
         return clearToggleButton;
+    }
+
+    public JComboBox<FuncToExpressionConverter.FuncToStringMappingTypes> getMappingTypesJComboBox() {
+        return mappingTypesJComboBox;
     }
 }

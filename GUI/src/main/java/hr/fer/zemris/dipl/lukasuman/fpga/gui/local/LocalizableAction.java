@@ -17,9 +17,9 @@ public abstract class LocalizableAction extends AbstractAction {
 
 	private LocalizationHandler localizationHandler;
 
-	public LocalizableAction(String key, LocalizationProvider lp) {
+	public LocalizableAction(String localizationKey, LocalizationProvider lp) {
 		super();
-		localizationHandler = new LocalizationHandler(key, lp, this::updateValues);
+		localizationHandler = new LocalizationHandler(localizationKey, lp, this::updateValues);
 		updateValues();
 	}
 
@@ -34,5 +34,9 @@ public abstract class LocalizableAction extends AbstractAction {
 		} catch (MissingResourceException exc) {
 			putValue(Action.SHORT_DESCRIPTION, localizationHandler.getString());
 		}
+	}
+
+	protected String getLocalizationKey() {
+		return localizationHandler.getKey();
 	}
 }

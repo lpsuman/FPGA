@@ -299,6 +299,10 @@ public class Utility {
         return result;
     }
 
+    public static boolean saveTextFile(String filePath, String text) {
+        return saveTextFile(filePath, Arrays.asList(text.split("\\r?\\n")));
+    }
+
     public static boolean saveTextFile(String filePath, List<String> lines) {
         checkIfValidString(filePath, "file path");
         checkIfValidCollection(lines, "list of lines");

@@ -360,7 +360,7 @@ public class BooleanSolver implements Resetable, Serializable {
             numCLBOfBest = controller.getNumCLB();
 //            algorithm.setDoFullRuns(true);
             System.out.println(problem.getSolutionTestResults(bestSolution, evaluator));
-            int numUnusedBlocks = evaluator.getUnusedBlocks().cardinality();
+            int numUnusedBlocks = evaluator.getUnusedCLBBlocks().cardinality();
 
             if (!canDecreaseNumCLB) {
                 System.out.println("Not allowed to decrease num of CLB, stopping.");
@@ -405,10 +405,10 @@ public class BooleanSolver implements Resetable, Serializable {
         problem.getClbController().setNumCLB(numCLBOfBest);
         evaluator.setLogging(true);
         evaluator.evaluateSolution(bestSolution, false);
-        int numUnusedBlocksInBest = evaluator.getUnusedBlocks().cardinality();
+        int numUnusedBlocksInBest = evaluator.getUnusedCLBBlocks().cardinality();
 
         if (numUnusedBlocksInBest > 0) {
-            bestSolution = problem.trimmedBoolSolution(bestSolution, evaluator.getUnusedBlocks());
+            bestSolution = problem.trimmedBoolSolution(bestSolution, evaluator.getUnusedCLBBlocks());
             problem.getClbController().setNumCLB(numCLBOfBest -  numUnusedBlocksInBest);
             evaluator.resetLog();
             evaluator.evaluateSolution(bestSolution, false);

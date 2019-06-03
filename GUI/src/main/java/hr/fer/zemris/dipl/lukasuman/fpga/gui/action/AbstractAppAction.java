@@ -27,8 +27,8 @@ public abstract class AbstractAppAction extends LocalizableAction {
 	/**The parent application.*/
 	protected JFPGA jfpga;
 
-	public AbstractAppAction(JFPGA jfpga, String key) {
-		super(key, Utility.checkNull(jfpga, "JFPGA").getFlp());
+	public AbstractAppAction(JFPGA jfpga, String localizationKey) {
+		super(localizationKey, Utility.checkNull(jfpga, "JFPGA").getFlp());
 		this.jfpga = jfpga;
 
 	}

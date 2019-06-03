@@ -323,6 +323,16 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
         return unusedBlocks;
     }
 
+    public BitSet getUnusedCLBBlocks() {
+        BitSet result = (BitSet) unusedBlocks.clone();
+
+        for (int i = 0; i < getController().getNumInputs(); i++) {
+            result.set(i, false);
+        }
+
+        return result;
+    }
+
     public BitSet[] getPerCLBFullOutputs() {
         return perCLBFullOutputs;
     }

@@ -64,6 +64,7 @@ public class LocalizationKeys {
     public static final String GENERATE_FROM_TEXT_KEY = "generate_from_br_text";
     public static final String NO_TEXT_MSG_KEY = "no_text_msg";
     public static final String LOAD_TEXT_KEY = "load_text";
+    public static final String SAVE_TEXT_KEY = "save_text";
     public static final String LOAD_EXPRESSION_KEY = "load_expression";
     public static final String BOOLEAN_FUNCTIONS_KEY = "boolean_functions";
     public static final String GENERATE_RANDOM_FUNCTION_KEY = "generate_br_random_function";
@@ -90,5 +91,6 @@ public class LocalizationKeys {
 
     public static final String SOLUTIONS_KEY = "solutions";
     public static final String BLOCKS_KEY = "blocks";
+    public static final String GENERATE_EXPRESSION_KEY = "generate_br_expression";
     public static final String REMOVE_SOLUTION_KEY = "remove_solution";
 }
