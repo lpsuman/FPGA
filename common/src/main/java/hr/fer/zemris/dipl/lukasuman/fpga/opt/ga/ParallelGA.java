@@ -18,11 +18,11 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
     private final int maxGenerations;
     private final int elitismSize;
     private final double threshold;
-    private final long timeToStop;
+    private long timeToStop;
 
-    private Supplier<Solution<T>> candidateSupplier;
-    private Evaluator<T> evaluator;
-    private GAThreadPool<T> threadPool;
+    private final Supplier<Solution<T>> candidateSupplier;
+    private final Evaluator<T> evaluator;
+    private final GAThreadPool<T> threadPool;
 
     private double maxNonImprovingGenerationsRatio;
     private double minImprovingGenerationsRatio;
@@ -86,6 +86,7 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
         Timer timer = null;
         if (timeToStop > 0) {
             timer = new Timer(timeToStop);
+            timer.start();
         }
 
         try {
@@ -142,7 +143,7 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
                 }
 
                 if (!shouldDoFullRuns && timer != null && timer.isTimeLimitReached()) {
-                    System.out.println(String.format("Execution time limit of %d seconds reached.", timeToStop / 1000));
+                    System.out.println(String.format("Execution time limit of %.3f seconds reached.", timeToStop / 1000.0));
                     break;
                 }
 
@@ -210,6 +211,10 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
         population.sort(AbstractSolution.COMPARATOR_BY_FITNESS.reversed());
 
         return population;
+    }
+
+    public void setTimeToStop(long timeToStop) {
+        this.timeToStop = timeToStop;
     }
 
     public void setDoFullRuns(boolean shouldDoFullRuns) {

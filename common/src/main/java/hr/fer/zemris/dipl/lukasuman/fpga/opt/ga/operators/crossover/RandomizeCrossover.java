@@ -10,8 +10,8 @@ public class RandomizeCrossover<T> extends AbstractRandomizeOperator implements 
 
     private List<? extends Crossover<T>> crossovers;
 
-    public RandomizeCrossover(List<? extends Crossover<T>> crossovers) {
-        super(Utility.checkNull(crossovers, "list of crossovers"));
+    public RandomizeCrossover(List<? extends Crossover<T>> crossovers, boolean useStatistics) {
+        super(Utility.checkNull(crossovers, "list of crossovers"), useStatistics);
         this.crossovers = crossovers;
         this.crossovers.forEach(c -> operatorNames.add(c.toString()));
     }

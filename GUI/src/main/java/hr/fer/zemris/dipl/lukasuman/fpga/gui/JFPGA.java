@@ -104,6 +104,7 @@ public class JFPGA extends JFrame {
                     if (!sessions.isEmpty()) {
                         saveSessionPaths();
                     }
+                    saveLanguage();
                     dispose();
                 }
             }
@@ -112,6 +113,7 @@ public class JFPGA extends JFrame {
         sessions = new ArrayList<>();
         mapCloseButtonToComp = new HashMap<>();
         flp = new FormLocalizationProvider(LocalizationProviderHTML.getInstance(), this);
+        loadLanguage();
         flp.addLocalizationListener(() -> {
             UIManager.put("OptionPane.yesButtonText", flp.getString(LocalizationKeys.YES_KEY));
             UIManager.put("OptionPane.noButtonText", flp.getString(LocalizationKeys.NO_KEY));
@@ -219,35 +221,51 @@ public class JFPGA extends JFrame {
 
     private void createMenus() {
         JMenuBar menuBar = new JMenuBar();
-
-        JMenu fileMenu = new LJMenu(LocalizationKeys.FILE_KEY, flp);
-        menuBar.add(fileMenu);
-
-        fileMenu.add(new JMenuItem(newSessionAction));
-        fileMenu.add(new JMenuItem(openSessionAction));
-        fileMenu.add(new JMenuItem(saveSessionAction));
-        fileMenu.add(new JMenuItem(saveSessionAsAction));
-        fileMenu.add(new JMenuItem(closeSessionAction));
-
-        fileMenu.addSeparator();
-        fileMenu.add(new JMenuItem(exitAction));
-
-        JMenu editMenu = new LJMenu(LocalizationKeys.EDIT_KEY, flp);
-        menuBar.add(editMenu);
+        menuBar.add(createMenu(LocalizationKeys.FILE_KEY, Collections.singletonList(4),
+                newSessionAction,
+                openSessionAction,
+                saveSessionAction,
+                saveSessionAsAction,
+                closeSessionAction,
+                exitAction));
+        menuBar.add(createMenu(LocalizationKeys.FUNCTIONS_KEY, Collections.singletonList(3),
+                generateFromExpressionAction,
+                generateFromTextAction,
+                loadTextAction,
+                saveTextAction,
+                duplicateSelectedFunctionAction,
+                removeSelectedFunctionAction,
+                displayAllFunctionsAction));
+        menuBar.add(createMenu(LocalizationKeys.VECTORS_KEY, Collections.singletonList(0),
+                generateFromFunctionsAction,
+                duplicateSelectedVectorAction,
+                removeSelectedVectorAction,
+                displayAllVectorsAction));
+        menuBar.add(createMenu(LocalizationKeys.SOLUTIONS_KEY, null,
+                removeSelectedSolutionAction));
 
         JMenu languageMenu = new JMenu("Languages/Jezici");
         menuBar.add(languageMenu);
 
         for (String language : GUIConstants.SUPPORTED_LANGUAGES) {
             JMenuItem menuItem = new JMenuItem(language);
-            menuItem.addActionListener(e -> {
-                LocalizationProviderHTML.getInstance().setLanguage(
-                        language.substring(0, 2).toLowerCase());
-            });
+            menuItem.addActionListener(e -> LocalizationProviderHTML.getInstance().setLanguage(
+                    language.substring(0, 2).toLowerCase()));
             languageMenu.add(menuItem);
         }
 
         this.setJMenuBar(menuBar);
+    }
+
+    private JMenu createMenu(String menuLocKey, List<Integer> separators, Action... menuItemActions) {
+        JMenu menu = new LJMenu(menuLocKey, flp);
+        for (int i = 0; i < menuItemActions.length; i++) {
+            menu.add(new JMenuItem(menuItemActions[i]));
+            if (separators != null && separators.contains(i)) {
+                menu.addSeparator();
+            }
+        }
+        return menu;
     }
 
     private void initGUI() {
@@ -398,11 +416,11 @@ public class JFPGA extends JFrame {
                 .filter(Objects::nonNull)
                 .map(Path::toString)
                 .collect(Collectors.toList());
-        Utility.saveTextFile(GUIConstants.PREVIOUS_SESSIONS_FILE_PATH, sessionPaths);
+        Utility.saveTextFile(GUIConstants.getLastSessionsFilePath(), sessionPaths);
     }
 
     private void loadPreviousSessions() {
-        List<String> sessionPaths = Utility.readTextFile(GUIConstants.PREVIOUS_SESSIONS_FILE_PATH);
+        List<String> sessionPaths = Utility.readTextFile(GUIConstants.getLastSessionsFilePath());
 
         if (sessionPaths == null) {
             System.err.println("No file of previous sessions found.");
@@ -425,6 +443,27 @@ public class JFPGA extends JFrame {
             }
 
             createNewSession(sessionData, blueDiskette);
+        }
+    }
+
+    private void saveLanguage() {
+        Utility.saveTextFile(GUIConstants.getLastLanguageFilePath(), LocalizationProviderHTML.getInstance().getLanguage());
+    }
+
+    private void loadLanguage() {
+        List<String> lines = Utility.readTextFile(GUIConstants.getLastLanguageFilePath());
+
+        if (lines == null) {
+            return;
+        }
+
+        String previous_language = lines.get(0);
+        List<String> supportedLangTags = Arrays.stream(GUIConstants.SUPPORTED_LANGUAGES)
+                .map(t -> t.substring(0, 2).toLowerCase())
+                .collect(Collectors.toList());
+
+        if (supportedLangTags.contains(previous_language)) {
+            LocalizationProviderHTML.getInstance().setLanguage(previous_language);
         }
     }
 

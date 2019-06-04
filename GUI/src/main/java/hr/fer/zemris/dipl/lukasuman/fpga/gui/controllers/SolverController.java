@@ -8,6 +8,8 @@ import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIConstants;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JPanelPair;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JTextAreaOutputStream;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LJComboBox;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LJComboBoxRenderer;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LJLabel;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
@@ -17,8 +19,10 @@ import hr.fer.zemris.dipl.lukasuman.fpga.gui.table.TableItemListener;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 
 import javax.swing.*;
+import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -75,7 +79,12 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
 //        numCLBInputsComboBox.setSelectedIndex(1);
         upperPanel.add(GUIUtility.getComboBoxPanel(numCLBInputsComboBox, getLocProv(), LocalizationKeys.NUMBER_OF_CLB_INPUTS_KEY));
 
-        solverModeComboBox = new JComboBox<>(SolverMode.values());
+        solverModeComboBox = new LJComboBox<>(SolverMode.values(), getLocProv(), Arrays.asList(
+                LocalizationKeys.BRUTE_SOLVE_MODE_KEY,
+                LocalizationKeys.FAST_SOLVE_MODE_KEY,
+                LocalizationKeys.NORMAL_SOLVE_MODE_KEY,
+                LocalizationKeys.FULL_SOLVE_MODE_KEY
+        ));
         solverModeComboBox.setSelectedIndex(1);
         upperPanel.add(GUIUtility.getComboBoxPanel(solverModeComboBox, getLocProv(), LocalizationKeys.SOLVING_MODE_KEY));
 
@@ -88,6 +97,7 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
 
         outputTextArea = new JTextArea();
         outputTextArea.setEditable(false);
+//        ((DefaultCaret)outputTextArea.getCaret()).setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
 
         textAreaOutputStream = new PrintStream(new JTextAreaOutputStream(outputTextArea, GUIConstants.REDIRECT_OUT));
         lowerPanel.add(GUIUtility.getClearableTextArea(outputTextArea, clearTextButton, clearToggleButton), BorderLayout.CENTER);

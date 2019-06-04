@@ -40,8 +40,8 @@ public class Timer {
         return lastLapDuration;
     }
 
-    public void setStopTime(long stopTime) {
-        this.stopTime = stopTime;
+    public void setStopTime(long deltaTime) {
+        this.stopTime = System.currentTimeMillis() + deltaTime;
     }
 
     public void setStopTime(int deltaTime) {
@@ -49,6 +49,11 @@ public class Timer {
     }
 
     public boolean isTimeLimitReached() {
-        return System.currentTimeMillis() >= stopTime;
+        return getRemainingTime() < 0;
+    }
+
+    public long getRemainingTime() {
+        long currentTime = System.currentTimeMillis();
+        return stopTime - currentTime;
     }
 }

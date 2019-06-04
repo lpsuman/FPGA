@@ -10,8 +10,8 @@ public class RandomizeMutation<T> extends AbstractRandomizeOperator implements M
 
     private List<? extends Mutation<T>> mutations;
 
-    public RandomizeMutation(List<? extends Mutation<T>> mutations) {
-        super(Utility.checkNull(mutations, "list of mutations"));
+    public RandomizeMutation(List<? extends Mutation<T>> mutations, boolean useStatistics) {
+        super(Utility.checkNull(mutations, "list of mutations"), useStatistics);
         this.mutations = mutations;
         this.mutations.forEach(m -> operatorNames.add(m.toString()));
     }

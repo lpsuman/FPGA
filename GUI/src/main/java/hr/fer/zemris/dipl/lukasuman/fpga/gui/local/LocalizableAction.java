@@ -12,9 +12,6 @@ public abstract class LocalizableAction extends AbstractAction {
 
 	private static final long serialVersionUID = 6383078233483329169L;
 
-	/**Key suffix for fetching action's description.*/
-	private static final String KEY_SHORT_DESC_SUFFIX = "_desc";
-
 	private LocalizationHandler localizationHandler;
 
 	public LocalizableAction(String localizationKey, LocalizationProvider lp) {
@@ -30,7 +27,7 @@ public abstract class LocalizableAction extends AbstractAction {
 		putValue(Action.NAME, localizationHandler.getString());
 		try {
 			putValue(Action.SHORT_DESCRIPTION, localizationHandler.getLp()
-					.getString(localizationHandler.getKey() + KEY_SHORT_DESC_SUFFIX));
+					.getString(localizationHandler.getKey() + LocalizationKeys.SHORT_DESC_SUFFIX_KEY));
 		} catch (MissingResourceException exc) {
 			putValue(Action.SHORT_DESCRIPTION, localizationHandler.getString());
 		}

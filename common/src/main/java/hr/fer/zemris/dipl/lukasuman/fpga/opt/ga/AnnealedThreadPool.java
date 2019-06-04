@@ -141,7 +141,7 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
                 if (shouldTerminate.get()) {
                     synchronized (AnnealedThreadPool.this) {
                         if (numRemainingTerminationAcknowledged.compareAndSet(-1, threads.length)) {
-                            System.out.println("Terminate called.");
+//                            System.out.println("Terminate called.");
                         }
 
                         if (numRemainingTerminationAcknowledged.decrementAndGet() == 0) {
@@ -206,7 +206,7 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
         shouldTerminate.set(false);
         numRemainingTerminationAcknowledged.set(-1);
 
-        System.out.println(String.format("Threadpool starting with %d threads.", threads.length));
+//        System.out.println(String.format("Threadpool starting with %d threads.", threads.length));
 
         for (int i = 0; i < threads.length; i++) {
             threads[i] = threadFactory.apply(runnable);
@@ -275,7 +275,7 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
         }
 
         isShuttingDown = true;
-        System.out.println("Threadpool is shutting down.");
+//        System.out.println("Threadpool is shutting down.");
 
         for (int i = 0; i < threads.length; i++) {
             putInQueue(incoming, RED_PILL);
@@ -293,7 +293,7 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
                     "Threadpool was shutdown with %d elements in incoming.", incoming.size()));
         }
 
-        System.out.println("Threadpool shutdown is complete.");
+//        System.out.println("Threadpool shutdown is complete.");
         notifyAll();
 
         synchronized (CALCULATION_SYNC_OBJECT) {

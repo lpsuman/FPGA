@@ -197,7 +197,7 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         sb.append(evaluator.getLog()).append('\n');
         evaluator.resetLog();
         evaluator.setLogging(false);
-        sb.append(solutionToString(solution, evaluator.getBlockUsage())).append('\n');
+//        sb.append(solutionToString(solution, evaluator.getBlockUsage())).append('\n');
 
         appendSolution(sb, solution, evaluator.getBlockUsage());
 

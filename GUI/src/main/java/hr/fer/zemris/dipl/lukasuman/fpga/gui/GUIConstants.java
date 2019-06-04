@@ -1,5 +1,7 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
+
 import java.awt.*;
 
 public class GUIConstants {
@@ -19,8 +21,17 @@ public class GUIConstants {
     public static final String DEFAULT_LANGUAGE = "en";
     public static final String[] SUPPORTED_LANGUAGES = {"English", "Hrvatski"};
     public static final String TRANSLATION_BUNDLE_PATH = "translations";
-    public static final String DATA_ABSOLUTE_PATH = "C:/FER/Diplomski/FPGA/GUI/data/sessions";
-    public static final String PREVIOUS_SESSIONS_FILE_PATH = DATA_ABSOLUTE_PATH + "\\last_session.txt";
+    public static final String SESSIONS_FOLDER = "/data/sessions/";
+    public static final String LAST_SESSIONS_FILE_NAME = "last_sessions.txt";
+    public static final String LAST_LANGUAGE_FILE_NAME = "language.txt";
+
+    public static String getLastSessionsFilePath() {
+        return Utility.getWorkingDir() + SESSIONS_FOLDER + LAST_SESSIONS_FILE_NAME;
+    }
+
+    public static String getLastLanguageFilePath() {
+        return Utility.getWorkingDir() + SESSIONS_FOLDER + LAST_LANGUAGE_FILE_NAME;
+    }
 
     public static final Dimension CLOSE_BUTTON_SIZE = new Dimension(22, 22);
     public static final Dimension ICON_SIZE = new Dimension(18, 18);

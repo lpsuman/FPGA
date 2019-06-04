@@ -391,4 +391,8 @@ public class Utility {
 
         return bitSet;
     }
+
+    public static String getWorkingDir() {
+        return System.getProperty("user.dir");
+    }
 }

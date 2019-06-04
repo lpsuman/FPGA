@@ -23,6 +23,7 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
         }
     }
 
+    private boolean useStatistics;
     private List<OperatorStatistics> statsList;
     private List<OperatorStatistics> cumulativeStatsList;
     private List<OperatorStatistics> globalStatsList;
@@ -37,32 +38,41 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
     //TODO modification of operator chances
     //TODO operator chances in constructor
 
-    public AbstractRandomizeOperator(int numOperators) {
+    public AbstractRandomizeOperator(int numOperators, boolean useStatistics) {
         Utility.checkLimit(Constants.NUM_OPERATORS_LIMIT, numOperators);
+        this.useStatistics = useStatistics;
 
-        statsList = new ArrayList<>(numOperators);
-        cumulativeStatsList = new ArrayList<>(numOperators);
-        globalStatsList = new ArrayList<>(numOperators);
-        for (int i = 0; i < numOperators; i++) {
-            statsList.add(new AtomicOperatorStatistics());
-            cumulativeStatsList.add(new AtomicOperatorStatistics());
-            globalStatsList.add(new AtomicOperatorStatistics());
+        if (useStatistics) {
+            statsList = new ArrayList<>(numOperators);
+            cumulativeStatsList = new ArrayList<>(numOperators);
+            globalStatsList = new ArrayList<>(numOperators);
+            for (int i = 0; i < numOperators; i++) {
+                statsList.add(new AtomicOperatorStatistics());
+                cumulativeStatsList.add(new AtomicOperatorStatistics());
+                globalStatsList.add(new AtomicOperatorStatistics());
+            }
+            waitingSolutions = new ConcurrentHashMap<>();
         }
 
-        waitingSolutions = new ConcurrentHashMap<>();
         bestFitness = 0.0;
         operatorNames = new ArrayList<>(numOperators);
         operatorChances = null;
     }
 
-    public AbstractRandomizeOperator(List<? extends Operator> operators) {
-        this(Utility.checkNull(operators, "operators").size());
+    public AbstractRandomizeOperator(List<? extends Operator> operators, boolean useStatistics) {
+        this(Utility.checkNull(operators, "operators").size(), useStatistics);
 
         if (operators.isEmpty()) {
             throw new IllegalArgumentException("List of operators must not be empty.");
         }
 
         calcOperatorChances(operators);
+    }
+
+    private void checkIfUsingStatistics() {
+        if (!useStatistics) {
+            throw new IllegalArgumentException("Operator randomizer is not setup to track operator statistics.");
+        }
     }
 
     private void calcOperatorChances(List<? extends Operator> operators) {
@@ -95,26 +105,31 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
     }
 
     protected void addWaitingSolution(Solution solution, double prevFitness, int indexOperator) {
+        checkIfUsingStatistics();
         waitingSolutions.put(solution, new WaitingSolutionData(prevFitness, indexOperator));
     }
 
     @Override
     public List<OperatorStatistics> getLatestResults() {
+        checkIfUsingStatistics();
         return statsList;
     }
 
     @Override
     public List<OperatorStatistics> getCumulativeResults() {
+        checkIfUsingStatistics();
         return cumulativeStatsList;
     }
 
     @Override
     public List<OperatorStatistics> getGlobalResults() {
+        checkIfUsingStatistics();
         return globalStatsList;
     }
 
     @Override
     public String resultsToString(List<OperatorStatistics> operatorStatistics) {
+        checkIfUsingStatistics();
         StringBuilder sb = new StringBuilder();
         sb.append('\n');
         sb.append(getResultMessage());
@@ -136,12 +151,14 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
 
     @Override
     public void reset() {
+        checkIfUsingStatistics();
         OperatorStatistics.resetStatistics(statsList);
         OperatorStatistics.resetStatistics(cumulativeStatsList);
     }
 
     @Override
     public void fitnessChanged(Solution solution) {
+        checkIfUsingStatistics();
         WaitingSolutionData data = waitingSolutions.get(solution);
         if (data == null) {
             return;
@@ -155,11 +172,13 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
 
     @Override
     public void updateBestFitness(Solution solution) {
+        checkIfUsingStatistics();
         bestFitness = solution.getFitness();
     }
 
     @Override
     public void terminate() {
+        checkIfUsingStatistics();
         OperatorStatistics.sumStatistics(cumulativeStatsList, statsList);
         OperatorStatistics.sumStatistics(globalStatsList, statsList);
         OperatorStatistics.resetStatistics(statsList);
@@ -167,6 +186,7 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
 
     @Override
     public void setIgnoreFitnessChanges(boolean ignoreFitnessChanges) {
+        checkIfUsingStatistics();
         shouldIgnoreFitnessChanges = ignoreFitnessChanges;
     }
 

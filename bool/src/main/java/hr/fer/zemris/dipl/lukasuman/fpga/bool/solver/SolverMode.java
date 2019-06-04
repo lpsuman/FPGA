@@ -15,17 +15,17 @@ public enum SolverMode {
     BRUTE(0),
 
     /**
-     * Faster method which uses Karnaugh maps and relies on the simplicity of the boolean function's truth table.
+     * Faster method which uses time limited GA and relies on the simplicity of the boolean function's truth table.
      * Rarely effective on random functions, but might quickly find a good solution on functions given by expressions.
      */
-    FAST(10),
+    FAST(10_000),
 
     /**
-     * Normal solving mode uses heuristics to find better solutions. There is no guarantee that a better solution
-     * exists. Even if a better solution might exist, there is no guarantee how much time it will take to find it
-     * (if at all). Thus the algorithm stops after when it "feels" it's not worth trying anymore.
+     * Normal solving mode doesn't use a time limit when solving individual functions. There is no guarantee that a
+     * better solution exists. Even if a better solution might exist, there is no guarantee how much time it will
+     * take to find it (if at all). Thus the algorithm stops when it "feels" it's not worth trying anymore.
      */
-    NORMAL(60),
+    NORMAL(60_000),
 
     /**
      * Complete solving mode does the same thing as normal mode, but it tries much harder in exploring the
@@ -33,13 +33,13 @@ public enum SolverMode {
      */
     FULL(-1);
 
-    private int maxRunningTimeSeconds;
+    private int maxRunningTimeMilliseconds;
 
-    SolverMode(int maxRunningTimeSeconds) {
-        this.maxRunningTimeSeconds = maxRunningTimeSeconds;
+    SolverMode(int maxRunningTimeMilliseconds) {
+        this.maxRunningTimeMilliseconds = maxRunningTimeMilliseconds;
     }
 
-    public int getMaxRunningTimeSeconds() {
-        return maxRunningTimeSeconds;
+    public int getMaxRunningTimeMilliseconds() {
+        return maxRunningTimeMilliseconds;
     }
 }

@@ -5,6 +5,9 @@ public class LocalizationKeys {
     private LocalizationKeys() {
     }
 
+    /**Key suffix for fetching action's description.*/
+    static final String SHORT_DESC_SUFFIX_KEY = "_desc";
+
     public static final String FILE_KEY = "file";
     public static final String EDIT_KEY = "edit";
     public static final String SORT_KEY = "sort";
@@ -66,14 +69,15 @@ public class LocalizationKeys {
     public static final String LOAD_TEXT_KEY = "load_text";
     public static final String SAVE_TEXT_KEY = "save_text";
     public static final String LOAD_EXPRESSION_KEY = "load_expression";
+    public static final String FUNCTIONS_KEY = "functions";
     public static final String BOOLEAN_FUNCTIONS_KEY = "boolean_functions";
     public static final String GENERATE_RANDOM_FUNCTION_KEY = "generate_br_random_function";
     public static final String DUPLICATE_FUNCTION_KEY = "duplicate_function";
     public static final String REMOVE_FUNCTION_KEY = "remove_function";
     public static final String DISPLAY_ALL_FUNCTIONS_KEY = "display_all_functions";
 
+    public static final String VECTORS_KEY = "vectors";
     public static final String BOOLEAN_VECTORS_KEY = "boolean_vectors";
-    public static final String FUNCTIONS_KEY = "functions";
     public static final String GENERATE_FROM_FUNCTIONS_KEY = "generate_br_from_functions";
     public static final String NO_FUNCTIONS_SELECTED_MSG_KEY = "no_functions_selected_msg";
     public static final String GENERATE_RANDOM_VECTOR_KEY = "generate_br_random_vector";
@@ -88,6 +92,10 @@ public class LocalizationKeys {
     public static final String NO_VECTOR_SELECTED_MSG_KEY = "no_vector_selected_msg";
     public static final String CLEAR_OUTPUT_KEY = "clear";
     public static final String AUTO_CLEAR_OUTPUT_KEY = "automatically";
+    public static final String BRUTE_SOLVE_MODE_KEY = "brute";
+    public static final String FAST_SOLVE_MODE_KEY = "fast";
+    public static final String NORMAL_SOLVE_MODE_KEY = "normal";
+    public static final String FULL_SOLVE_MODE_KEY = "full";
 
     public static final String SOLUTIONS_KEY = "solutions";
     public static final String BLOCKS_KEY = "blocks";
