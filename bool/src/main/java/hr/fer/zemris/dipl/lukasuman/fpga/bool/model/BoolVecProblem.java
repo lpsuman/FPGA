@@ -102,6 +102,17 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         super(name);
         this.boolVector = Utility.checkNull(boolVector, "boolean vector");
         clbController = new CLBController(boolVector, numCLBInputs);
+        clbController.addCLBChangeListener(new CLBChangeListener() {
+            @Override
+            public void numCLBInputsChanged(int prevNumCLBInputs, int newNumCLBInputs) {
+                throw new IllegalStateException("Can't change the number of CLB inputs for problem.");
+            }
+
+            @Override
+            public void numCLBChanged(int prevNumCLB, int newNumCLB) {
+                clearNextToSupply();
+            }
+        });
     }
 
     public BoolVecProblem(BooleanVector boolVector, int numCLBInputs) {
@@ -120,6 +131,11 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
     public void setNextToSupplyList(List<Solution<int[]>> solutions, int indexCurrToSupply) {
         this.nextToSupplyList = Utility.checkIfValidCollection(solutions, "list of solutions to supply next");
         this.indexCurrToSupply = Utility.checkRange(indexCurrToSupply, 0, solutions.size() - 1);
+    }
+
+    public void clearNextToSupply() {
+        nextToSupply = null;
+        nextToSupplyList = null;
     }
 
     @Override
@@ -178,7 +194,7 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
 
         BlockConfiguration.appendFormattedInputData(sb, sortedIDs, blockUsage);
         BlockConfiguration.appendFormattedCLBData(sb, clbController, data, blockUsage);
-        BlockConfiguration.appendFormattedOutputData(sb, data, data.length - boolVector.getNumFunctions());
+        BlockConfiguration.appendFormattedOutputData(sb, data, data.length - boolVector.getNumFunctions(), boolVector);
     }
 
     public String solutionToString(Solution<int[]> solution, BitSet[] blockUsage) {
@@ -322,24 +338,26 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
 
         MultiplexerData multiplexerData = new MultiplexerData(numCLBInputs);
         int truthTableSize = func.getNumInputCombinations();
-        int numCLBRatio;
+        int numCLBRatio = 1;
         int depth = 0;
         int numCLBInDepth = 1;
         int numCLB = 1;
 
-        while (true) {
-            numCLBRatio = numCLBInDepth * multiplexerData.sectorSize / truthTableSize;
+        if (func.getNumInputs() > numCLBInputs) {
+            while (true) {
+                numCLBRatio = numCLBInDepth * multiplexerData.sectorSize / truthTableSize;
 
-            if (numCLBRatio >= 1) {
-                if (numCLBRatio != 1) {
-                    numCLB -= (numCLB - 1) / numCLBRatio;
+                if (numCLBRatio >= 1) {
+                    if (numCLBRatio != 1) {
+                        numCLB -= (numCLB - 1) / numCLBRatio;
+                    }
+                    break;
                 }
-                break;
-            }
 
-            depth++;
-            numCLBInDepth *= multiplexerData.numBranchingCLBs;
-            numCLB += numCLBInDepth;
+                depth++;
+                numCLBInDepth *= multiplexerData.numBranchingCLBs;
+                numCLB += numCLBInDepth;
+            }
         }
 
         CLBController clbController = new CLBController(func.getNumInputs(), numCLBInputs, numCLB);
@@ -368,7 +386,11 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         int numBranchingCLB = multiplexerData.numBranchingCLBs;
         int numExtraInputsToIgnore = 0;
 
-        if (depth == 0 && numCLBRatio != 1) {
+        if (clbController.getNumCLB() == 1) {
+            numInputsToIgnore = clbController.getNumCLBInputs() - clbController.getNumInputs();
+            numNonBranchingInputs = clbController.getNumInputs();
+            numBranchingCLB = 0;
+        } else if (depth == 0 && numCLBRatio != 1) {
             numExtraInputsToIgnore = (int)(Math.log(numCLBRatio) / Math.log(2));
             numInputsToIgnore += numExtraInputsToIgnore;
             numNonBranchingInputs -= numExtraInputsToIgnore;
@@ -419,16 +441,22 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         } else {
             int input = (depth + 1) * multiplexerData.numExtraInputs - numCLBRatio;
 
-            for (int i = 0; i < multiplexerData.numBranchingCLBs; i++) {
+            for (int i = 0; i < numBranchingCLB; i++) {
                 data[offsetInData] = input;
                 offsetInData++;
                 input++;
             }
 
-            int startIndex = (clbController.getNumCLB() - treeIndex) * multiplexerData.sectorSize;
+            int numBitsToCopy = multiplexerData.sectorSize;
+
+            if (clbController.getNumCLB() == 1) {
+                numBitsToCopy = (int) Math.pow(2, clbController.getNumInputs());
+            }
+
+            int startIndex = (clbController.getNumCLB() - treeIndex) * numBitsToCopy;
             int[] tableData = BoolFuncController.bitSetToArray(truthTable, startIndex,
-                    startIndex + multiplexerData.sectorSize,
-                    multiplexerData.numBitsInTable / multiplexerData.sectorSize);
+                    startIndex + numBitsToCopy,
+                    multiplexerData.numBitsInTable / numBitsToCopy);
 
             System.arraycopy(tableData, 0, data, offsetInData, tableData.length);
         }
@@ -443,24 +471,33 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         int numCLB = numCLBForNegations + numCLBForTableStorage + 3 * (int)(Math.pow(2, maxDepth) - 1);
         int[] data = new int[numCLB * 3];
 
-        for (int i = 0; i < numFuncInputs - 2; i++) {
-            int offsetCLB = i * 3;
-            data[offsetCLB] = i;
-            data[offsetCLB + 1] = i;
-            data[offsetCLB + 2] = 0b1100;
-        }
+        if (numFuncInputs == 2) {
+            data[0] = 0;
+            data[1] = 1;
+            data[2] = BoolFuncController.bitSetToArray(func)[0];
+        } else {
+            for (int i = 0; i < numFuncInputs - 2; i++) {
+                int offsetCLB = i * 3;
+                data[offsetCLB] = i;
+                data[offsetCLB + 1] = i;
+                data[offsetCLB + 2] = 0b1100;
+            }
 
-        int offset = numCLBForNegations * 3;
-        for (int i = 0; i < numCLBForTableStorage; i++) {
-            data[offset++] = numFuncInputs - 2;
-            data[offset++] = numFuncInputs - 1;
-            data[offset++] = BoolFuncController.bitSetToArray(truthTable, i * 4, (i + 1) * 4, 1)[0];
+            int offset = numCLBForNegations * 3;
+            for (int i = 0; i < numCLBForTableStorage; i++) {
+                data[offset++] = numFuncInputs - 2;
+                data[offset++] = numFuncInputs - 1;
+                data[offset++] = BoolFuncController.bitSetToArray(truthTable, i * 4, (i + 1) * 4, 1)[0];
 
-            data[offset - 1 + (numCLBForTableStorage + i / 2) * 3 - 1] = numFuncInputs + numCLBForNegations + i;
+                data[offset - 1 + (numCLBForTableStorage + i / 2) * 3 - 1] = numFuncInputs + numCLBForNegations + i;
+            }
         }
 
         CLBController clbController = new CLBController(numFuncInputs, 2, numCLB);
-        recursiveTwoInputFill(clbController, data, 0, maxDepth, 1, numCLB - 1);
+
+        if (numCLB > 1) {
+            recursiveTwoInputFill(clbController, data, 0, maxDepth, 1, numCLB - 1);
+        }
 
         return new BoolVectorSolution(new BooleanVector(func),
                 new BlockConfiguration(2, numCLB, data, Collections.singletonList(clbController.getNumInputs() + numCLB - 1)));

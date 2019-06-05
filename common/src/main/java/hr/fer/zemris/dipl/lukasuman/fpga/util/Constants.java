@@ -10,7 +10,7 @@ public class Constants {
     public static final boolean USE_STRUCTURE_FITNESS = false;
 
     public static final int DEFAULT_MAX_NUM_GENERATIONS = 2000;
-    public static final int DEFAULT_POPULATION_SIZE = 1000;
+    public static final int DEFAULT_POPULATION_SIZE = 300;
     public static final double OPERATOR_CHANCE_MULTIPLIER = 0.0;
 
     public static final double NUM_CLB_ESTIMATION_MULTIPLIER = 2.0;
@@ -25,7 +25,7 @@ public class Constants {
     public static final double DEFAULT_SKIP_INCREASE_NUM_CLB_AMOUNT = 0.5;
     public static final double SINGLE_CLB_MAX_NON_IMPROVING_MODIFIER = 0.05;
 
-    public static final boolean STOP_AFTER_MERGING = true;
+    public static final boolean STOP_AFTER_MERGING = false;
 
     public static final ArgumentLimit<Integer> NUM_FUNCTION_INPUTS_LIMIT =
             new ArgumentIntervalLimit<>("number of inputs for boolean function", 2, 10);

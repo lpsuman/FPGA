@@ -44,11 +44,11 @@ public class CLBController implements Serializable {
     public void setNumCLBInputs(int numCLBInputs) {
         Utility.checkLimit(Constants.NUM_CLB_INPUTS_LIMIT, numCLBInputs);
 
-        if (numCLBInputs > numInputs) {
-            throw new IllegalArgumentException(String.format(
-                    "Number of CLB inputs (%d given) should be smaller than the number of boolean vector inputs (%d).",
-                    numCLBInputs, numInputs));
-        }
+//        if (numCLBInputs > numInputs) {
+//            throw new IllegalArgumentException(String.format(
+//                    "Number of CLB inputs (%d given) should be smaller than the number of boolean vector inputs (%d).",
+//                    numCLBInputs, numInputs));
+//        }
 
         int prevNumCLBInputs = this.numCLBInputs;
         this.numCLBInputs = numCLBInputs;

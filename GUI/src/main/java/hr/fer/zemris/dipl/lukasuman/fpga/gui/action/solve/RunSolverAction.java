@@ -1,5 +1,6 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.action.solve;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecProblem;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.SolverMode;
@@ -41,7 +42,16 @@ public class RunSolverAction extends AbstractAppAction {
 
         //TODO check if auto clear text
 
-        jfpga.getCurrentSession().runBooleanSolver(new BoolVecProblem(vectorToSolve, numCLBInputsProvider.get()),
+        int numCLBInputs = numCLBInputsProvider.get();
+
+//        for (BooleanFunction boolFunction : vectorToSolve.getBoolFunctions()) {
+//            if (boolFunction.getNumInputs() <= numCLBInputs) {
+//                jfpga.showWarningMsg(jfpga.getFlp().getString(LocalizationKeys.INVALID_NUM_CLB_INPUTS_MSG_KEY));
+//                return;
+//            }
+//        }
+
+        jfpga.getCurrentSession().runBooleanSolver(new BoolVecProblem(vectorToSolve, numCLBInputs),
                 solverModeProvider.get());
     }
 }

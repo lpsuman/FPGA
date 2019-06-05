@@ -87,7 +87,7 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
         JPanel inputAndModePanel = GUIUtility.getPanel(new GridLayout(1, 2));
         upperPanel.add(inputAndModePanel);
         numCLBInputsComboBox = GUIUtility.getComboBoxFromLimit(Constants.NUM_CLB_INPUTS_LIMIT);
-//        numCLBInputsComboBox.setSelectedIndex(1);
+        numCLBInputsComboBox.setSelectedIndex(GUIConstants.DEFAULT_NUM_CLB_INPUTS_COMBOBOX_INDEX);
         inputAndModePanel.add(GUIUtility.getComboBoxPanel(numCLBInputsComboBox, getLocProv(),
                 LocalizationKeys.NUMBER_OF_CLB_INPUTS_KEY));
 
@@ -97,7 +97,7 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
                 LocalizationKeys.NORMAL_SOLVE_MODE_KEY,
                 LocalizationKeys.FULL_SOLVE_MODE_KEY
         ));
-        solverModeComboBox.setSelectedIndex(1);
+        solverModeComboBox.setSelectedIndex(GUIConstants.DEFAULT_SOLVE_MODE_COMBOBOX_INDEX);
         inputAndModePanel.add(GUIUtility.getComboBoxPanel(solverModeComboBox, getLocProv(),
                 LocalizationKeys.SOLVING_MODE_KEY));
 

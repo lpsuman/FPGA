@@ -155,10 +155,16 @@ public class BlockConfiguration implements Serializable, Duplicateable<BlockConf
         }
     }
 
-    public static void appendFormattedOutputData(StringBuilder sb, int[] outputIndices, int startIndex) {
+    public static void appendFormattedOutputData(StringBuilder sb, int[] outputIndices, int startIndex,
+                                                 BooleanVector booleanVector) {
+
         int funcIndex = 0;
         for (int i = startIndex, n = outputIndices.length; i < n; i++) {
-            sb.append(String.format("F%d at %4d", funcIndex, outputIndices[i]));
+            if (booleanVector != null) {
+                sb.append(String.format("%s   at %4d", booleanVector.getBoolFunctions().get(i - startIndex).getName(), outputIndices[i]));
+            } else {
+                sb.append(String.format("F%d at %4d", funcIndex, outputIndices[i]));
+            }
             funcIndex++;
 
             if (i < n - 1) {

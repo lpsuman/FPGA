@@ -13,8 +13,9 @@ public class GUIConstants {
     public static final int DEFAULT_WINDOW_HEIGHT = 800;
     public static final double WINDOW_WIDTH_RATIO = 1.5;
     public static final int DEFAULT_WINDOW_WIDTH = (int)(DEFAULT_WINDOW_HEIGHT * WINDOW_WIDTH_RATIO);
-    public static final int DEFAULT_WINDOW_LOCATION_X = (1920 - DEFAULT_WINDOW_WIDTH) / 2;
-    public static final int DEFAULT_WINDOW_LOCATION_Y = (1080 - DEFAULT_WINDOW_HEIGHT) / 2;
+    private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
+    public static final int DEFAULT_WINDOW_LOCATION_X = (SCREEN_SIZE.width - DEFAULT_WINDOW_WIDTH) / 2;
+    public static final int DEFAULT_WINDOW_LOCATION_Y = (SCREEN_SIZE.height - DEFAULT_WINDOW_HEIGHT) / 2;
     public static final boolean REDIRECT_OUT = false;
     public static final boolean SHOW_ERRORS_IN_GUI = false;
 
@@ -43,6 +44,9 @@ public class GUIConstants {
     public static final double COMBO_BOX_WIDTH_WEIGHT = 0.33;
     public static final double FORMATTED_TEXT_FIELD_WIDTH_WEIGHT = 0.00;
     public static final double CHECK_BOX_WIDTH_WEIGHT = 0.00;
+
+    public static final int DEFAULT_NUM_CLB_INPUTS_COMBOBOX_INDEX = 1;
+    public static final int DEFAULT_SOLVE_MODE_COMBOBOX_INDEX = 2;
 
     public static final String DUPLICATE_NAME_SUFFIX = "_copy";
     public static final String RANDOM_NAME = "random";

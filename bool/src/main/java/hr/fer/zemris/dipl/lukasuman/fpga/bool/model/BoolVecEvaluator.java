@@ -125,6 +125,7 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
         for (int i = 0; i < numFunctions; i ++) {
             final int iFinal = i;
             log(() -> Utility.paddedString("F" + iFinal, Constants.BOOL_VECTOR_PRINT_CELL_SIZE));
+//            log(() -> Utility.paddedString(getVector().getBoolFunctions().get(iFinal).getName(), Constants.BOOL_VECTOR_PRINT_CELL_SIZE));
         }
 
         log(() -> "\n\n");

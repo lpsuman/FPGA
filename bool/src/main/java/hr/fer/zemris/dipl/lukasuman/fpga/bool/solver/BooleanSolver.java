@@ -195,10 +195,11 @@ public class BooleanSolver implements Resetable, Serializable {
         RunResults mergedRunResult = doARun(problem, true, false,
                 solverMode.getMaxRunningTimeMilliseconds() * numFunctions);
 
-        if (mergedRunResult == null || mergedRunResult.result == null) {
+        if (mergedRunResult.result == null) {
             System.out.println("Couldn't find a better solution than the merge of individual function's solutions.");
             return solverIsDone(solution, problem);
         } else {
+            System.out.println("Found a solution better than the merge of individual function's solutions");
             return solverIsDone(mergedRunResult.result, problem);
         }
     }
@@ -471,6 +472,8 @@ public class BooleanSolver implements Resetable, Serializable {
             numFailed = 0;
             numConsecutiveBestFitnessBelowThreshold = 0;
         }
+
+        reset();
 
         return handleResults(bestSolution, numCLBOfBest, problem,
                 randomCrossovers, randomMutations, evaluators, evaluator, timer);
