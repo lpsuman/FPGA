@@ -1,0 +1,1 @@
+(a and c and not d) or (c xor not b) or d
