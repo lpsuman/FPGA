@@ -1,8 +1,11 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.solver;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BlockConfiguration;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFuncController;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecEvaluator;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecProblem;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 import org.junit.jupiter.api.Test;
 
@@ -78,5 +81,14 @@ public class MergingTests {
         assertEquals(expectedOutputIndices, mergedBlockConfiguration.getOutputIndices());
 
         System.out.println(mergedSolution);
+    }
+
+    @Test
+    void testMergingRandom() {
+        BooleanVector randomVector = BoolFuncController.generateRandomVector(3, 3);
+        BoolVecProblem problem = new BoolVecProblem(randomVector, 2);
+        BoolVecEvaluator evaluator = new BoolVecEvaluator(problem);
+        List<BoolVectorSolution> bruteSolutions = BoolVecProblem.bruteSolve(randomVector, 2);
+        BoolVectorSolution mergedSolution = BoolVectorSolution.mergeSolutions(bruteSolutions);
     }
 }

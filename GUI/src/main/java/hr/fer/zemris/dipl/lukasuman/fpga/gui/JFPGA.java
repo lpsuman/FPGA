@@ -5,10 +5,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.LoadTextAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.SaveTextAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.func.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.session.*;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.solve.ClearOutputAction;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.solve.RunSolverAction;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.solve.SolutionToExpressionAction;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.solve.StopSolverAction;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.solve.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.FormLocalizationProvider;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LJMenu;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
@@ -77,6 +74,7 @@ public class JFPGA extends JFrame {
     private Action clearOutputAction;
 
     private Action solutionToExpressionAction;
+    private Action printSolutionAction;
     private Action removeSelectedSolutionAction;
 
     /**Map used to link tab closing buttons to their respective tabs.*/
@@ -182,6 +180,7 @@ public class JFPGA extends JFrame {
                 LocalizationKeys.DISPLAY_ALL_FUNCTIONS_KEY);
 
         solutionToExpressionAction = new SolutionToExpressionAction(this, textConsumer);
+        solutionToExpressionAction.setEnabled(false);
     }
 
     private void initVectorActions() {
@@ -212,6 +211,14 @@ public class JFPGA extends JFrame {
         stopSolverAction = new StopSolverAction(this);
         stopSolverAction.setEnabled(false);
         clearOutputAction = new ClearOutputAction(this);
+
+        printSolutionAction = new PrintSolutionAction(this, () -> {
+            if (getCurrentSession().getSolverController().getIndexSelectedItem() != -1) {
+                return getCurrentSession().getSolverController().getSelectedItem();
+            } else {
+                return null;
+            }
+        }, (text) -> getCurrentSession().getSolverController().getOutputTextArea().append(text));
 
         removeSelectedSolutionAction = new RemoveTableItemAction<>(this,
                 () -> getCurrentSession().getSolverController(),
@@ -603,6 +610,10 @@ public class JFPGA extends JFrame {
 
     public Action getSolutionToExpressionAction() {
         return solutionToExpressionAction;
+    }
+
+    public Action getPrintSolutionAction() {
+        return printSolutionAction;
     }
 
     public Action getRemoveSelectedSolutionAction() {

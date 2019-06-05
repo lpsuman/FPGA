@@ -1,6 +1,7 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.func;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.CLBController;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.FuncToExpressionConverter;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
@@ -115,7 +116,7 @@ public class BlockConfiguration implements Serializable, Duplicateable<BlockConf
 
 //            sb.append('\n');
 //            sb.append(String.format(Constants.SOLUTION_PRINT_FORMAT, i + boolVector.getNumInputs()));
-            sb.append("    ");
+            sb.append(String.format("%" + Constants.BOOL_VECTOR_PRINT_CELL_SIZE + "s", ""));
             int sizeOfLUT = blockSize - numCLBInputs;
 
             for (int j = 0; j < sizeOfLUT; ++j) {
@@ -125,6 +126,14 @@ public class BlockConfiguration implements Serializable, Duplicateable<BlockConf
                     numUsedBits = (int) Math.pow(2, numCLBInputs) - 32 * (sizeOfLUT - 1);
                 }
                 sb.append(Utility.toBinaryString(intValue, numUsedBits));
+            }
+
+            if (numCLBInputs == 2) {
+                sb.append(String.format("%" + Constants.BOOL_VECTOR_PRINT_CELL_SIZE + "s", ""));
+
+                sb.append(FuncToExpressionConverter.getUnenclosedString(data[i * blockSize + 2],
+                        Integer.toString(data[i * blockSize]),
+                        Integer.toString(data[i * blockSize + 1])));
             }
 
             sb.append('\n');

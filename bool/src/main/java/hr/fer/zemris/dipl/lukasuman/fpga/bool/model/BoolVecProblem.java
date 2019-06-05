@@ -1,5 +1,6 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.model;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BoolVectorSolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.AbstractNameHandler;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BlockConfiguration;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
@@ -311,7 +312,7 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         return clbController;
     }
 
-    public static BlockConfiguration bruteSolve(BooleanFunction func, int numCLBInputs) {
+    public static BoolVectorSolution bruteSolve(BooleanFunction func, int numCLBInputs) {
         Utility.checkNull(func, "boolean function");
         Utility.checkLimit(Constants.NUM_CLB_INPUTS_LIMIT, numCLBInputs);
 
@@ -346,7 +347,15 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
 
         recursiveFill(clbController, multiplexerData, RNG.getRNG(), func.getTruthTable(), data, 0, depth, 1, numCLBRatio);
 
-        return new BlockConfiguration(numCLBInputs, numCLB, data, Collections.singletonList(numCLB - 1));
+        return new BoolVectorSolution(new BooleanVector(func),
+                new BlockConfiguration(numCLBInputs, numCLB, data, Collections.singletonList(clbController.getNumInputs() + numCLB - 1)));
+    }
+
+    public static List<BoolVectorSolution> bruteSolve(BooleanVector vector, int numCLBInputs) {
+        Utility.checkNull(vector, "boolean vector");
+        List<BoolVectorSolution> perFuncResults = new ArrayList<>();
+        vector.getBoolFunctions().forEach(f -> perFuncResults.add(bruteSolve(f, numCLBInputs)));
+        return perFuncResults;
     }
 
     private static void recursiveFill(CLBController clbController, MultiplexerData multiplexerData, IRNG random,
@@ -425,7 +434,7 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         }
     }
 
-    private static BlockConfiguration bruteSolveForTwoInputs(BooleanFunction func) {
+    private static BoolVectorSolution bruteSolveForTwoInputs(BooleanFunction func) {
         BitSet truthTable = func.getTruthTable();
         int numFuncInputs = func.getNumInputs();
         int maxDepth = numFuncInputs - 2;
@@ -453,7 +462,8 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         CLBController clbController = new CLBController(numFuncInputs, 2, numCLB);
         recursiveTwoInputFill(clbController, data, 0, maxDepth, 1, numCLB - 1);
 
-        return new BlockConfiguration(2, numCLB, data, Collections.singletonList(numCLB - 1));
+        return new BoolVectorSolution(new BooleanVector(func),
+                new BlockConfiguration(2, numCLB, data, Collections.singletonList(clbController.getNumInputs() + numCLB - 1)));
     }
 
     private static void recursiveTwoInputFill(CLBController clbController, int[] data,

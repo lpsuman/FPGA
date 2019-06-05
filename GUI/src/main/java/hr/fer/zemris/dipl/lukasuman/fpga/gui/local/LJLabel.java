@@ -4,6 +4,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIConstants;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
 
 import javax.swing.*;
+import java.util.MissingResourceException;
 
 /**
  * This class represents a {@linkplain JLabel} which supports localization.
@@ -30,5 +31,10 @@ public class LJLabel extends JLabel {
 
 	private void updateText() {
 		setText(localizationHandler.getString());
+		try {
+			setToolTipText(localizationHandler.getLp().getString(localizationHandler.getKey() + LocalizationKeys.SHORT_DESC_SUFFIX_KEY));
+		} catch (MissingResourceException exc) {
+			setToolTipText(localizationHandler.getString());
+		}
 	}
 }

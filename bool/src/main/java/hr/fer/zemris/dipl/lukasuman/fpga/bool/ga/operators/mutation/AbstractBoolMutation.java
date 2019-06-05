@@ -29,7 +29,7 @@ public abstract class AbstractBoolMutation extends AbstractOperator implements M
     protected abstract void mutateData(int[] data, IRNG random);
 
     protected int calcNumMutations() {
-        if (Constants.OPERATOR_CHANCE_MULTIPLIER == 0.0) {
+        if (mutationChance == 0.0) {
             return 1;
         }
         return (int) Math.max(1, mutationChance * clbController.getNumCLB());

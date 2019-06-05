@@ -66,6 +66,12 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
                 Constants.DEFAULT_POPULATION_SIZE, Constants.DEFAULT_MAX_NUM_GENERATIONS);
     }
 
+    public ParallelGA(Supplier<Solution<T>> candidateSupplier, Evaluator<T> evaluator, GAThreadPool<T> threadPool,
+                      ParallelGAConfig config) {
+        this(candidateSupplier, evaluator, threadPool, config.getPopulationSize(), config.getMaxGenerations(),
+                config.getElitismSize(), config.getFitnessThreshold(), config.getTimeToStop());
+    }
+
     @Override
     public Solution<T> run() {
         threadPool.runThreads();

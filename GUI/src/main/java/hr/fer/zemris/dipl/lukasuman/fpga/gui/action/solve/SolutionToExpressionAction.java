@@ -24,6 +24,13 @@ public class SolutionToExpressionAction extends AbstractAppAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         SolverController solverController = jfpga.getCurrentSession().getSolverController();
+
+        if (solverController.getIndexSelectedItem() == -1) {
+            jfpga.showWarningMsg(String.format(jfpga.getFlp().getString(LocalizationKeys.SELECT_S_FROM_THE_TABLE_MSG_KEY),
+                    jfpga.getFlp().getString(LocalizationKeys.ONE_OR_MORE_SOLUTIONS_KEY)));
+            return;
+        }
+
         BoolVectorSolution selectedSolution = solverController.getSelectedItem();
         FuncToExpressionConverter.setMapping(solverController.getMappingTypesJComboBox().getItemAt(
                 solverController.getMappingTypesJComboBox().getSelectedIndex()));

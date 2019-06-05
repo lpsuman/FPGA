@@ -4,6 +4,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BlockConfiguration;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFuncController;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BoolVectorSolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.IntArraySolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
@@ -78,9 +79,9 @@ public class BoolVecProblemTests {
 //        BooleanFunction controllers = BoolFuncController.generateFromMask(0b1011001000111010, 4);
 //        BooleanFunction controllers = BoolFuncController.generateFromMask(0b00010010111011011011111101101100, 5);
         BooleanFunction func = BoolFuncController.generateRandomFunction(numFuncInputs);
-        BlockConfiguration blockConfiguration = BoolVecProblem.bruteSolve(func, numCLBInputs);
+        BoolVectorSolution blockConfiguration = BoolVecProblem.bruteSolve(func, numCLBInputs);
         assertNotNull(blockConfiguration);
-        Solution<int[]> solution = blockConfiguration.getAsFlatArray();
+        Solution<int[]> solution = blockConfiguration.getBlockConfiguration().getAsFlatArray();
 
         BoolVecProblem problem = new BoolVecProblem(new BooleanVector(Collections.singletonList(func), false), numCLBInputs);
         CLBController clbController = problem.getClbController();

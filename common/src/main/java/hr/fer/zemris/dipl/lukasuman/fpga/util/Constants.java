@@ -23,6 +23,7 @@ public class Constants {
     public static final int DEFAULT_MAX_NUM_BELOW_THRESHOLD_ATTEMPTS = (int)(DEFAULT_MAX_NUM_FAILS * 0.4);
     public static final double DEFAULT_SKIP_INCREASE_NUM_CLB_FITNESS_THRESHOLD = 0.98;
     public static final double DEFAULT_SKIP_INCREASE_NUM_CLB_AMOUNT = 0.5;
+    public static final double SINGLE_CLB_MAX_NON_IMPROVING_MODIFIER = 0.05;
 
     public static final boolean STOP_AFTER_MERGING = true;
 
@@ -56,6 +57,22 @@ public class Constants {
 
     public static final ArgumentLimit<Double> DOUBLE_RATIO_LIMIT =
             new ArgumentIntervalLimit<>("ratio limit", 0.0, 1.0);
+
+    public static final ArgumentLimit<Integer> POPULATION_SIZE_LIMIT =
+            new ArgumentIntervalLimit<>("population size", 2, 10000);
+
+    public static final ArgumentLimit<Integer> MAX_GENERATIONS_LIMIT =
+            new ArgumentIntervalLimit<>("population size", 1, 100000);
+
+    public static final ArgumentLimit<Integer> ELITISM_SIZE_LIMIT =
+            new ArgumentIntervalLimit<>("elitism size", 1, POPULATION_SIZE_LIMIT.getUpperLimit());
+
+    public static final ArgumentLimit<Integer> NUM_THREADS_LIMIT =
+            new ArgumentIntervalLimit<>("elitism size", 1, 64);
+
+    public static final boolean DEFAULT_PRINT_ONLY_BEST_SOLUTION = true;
+    public static final boolean DEFAULT_USE_STATISTICS = true;
+    public static final boolean DEFAULT_PRINT_ONLY_GLOBAL_STATISTICS = true;
 
     public static final int MAXIMUM_INPUT_ID_LENGTH = 10;
     public static final int MAXIMUM_NAME_LENGTH = 30;

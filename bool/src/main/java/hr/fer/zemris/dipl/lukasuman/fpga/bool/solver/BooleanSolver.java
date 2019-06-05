@@ -11,9 +11,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecEvaluator;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecProblem;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.CLBChangeListener;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.CLBController;
-import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.AnnealedThreadPool;
-import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.GAThreadPool;
-import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.ParallelGA;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.crossover.RandomizeCrossover;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.mutation.RandomizeMutation;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.evaluator.AbstractEvaluator;
@@ -65,6 +63,9 @@ public class BooleanSolver implements Resetable, Serializable {
     private double skipIncreaseNumCLBAmount;
 
     private ParallelGA<int[]> algorithm;
+    private ParallelGAConfig algorithmConfig;
+    private AnnealedThreadPoolConfig threadPoolConfig;
+    private double mutationChance;
     private boolean shouldStop;
     private Solution<int[]> bestSolutionWithCurrentNumCLB;
 
@@ -85,6 +86,8 @@ public class BooleanSolver implements Resetable, Serializable {
         this.maxNumBelowThresholdAttempts = maxNumBelowThresholdAttempts;
         this.skipIncreaseNumCLBFitnessThreshold = skipIncreaseNumCLBFitnessThreshold;
         this.skipIncreaseNumCLBAmount = skipIncreaseNumCLBAmount;
+
+        this.mutationChance = Constants.OPERATOR_CHANCE_MULTIPLIER;
     }
 
     public BooleanSolver(SolverMode solverMode, Consumer<BoolVectorSolution> solutionConsumer,
@@ -97,7 +100,23 @@ public class BooleanSolver implements Resetable, Serializable {
     }
 
     public BooleanSolver(SolverMode solverMode, Consumer<BoolVectorSolution> solutionConsumer) {
-        this(solverMode, solutionConsumer, false, true, true);
+        this(solverMode, solutionConsumer, true, true, true);
+    }
+
+    public BooleanSolver(SolverMode solverMode, Consumer<BoolVectorSolution> solutionConsumer, BooleanSolverConfig config) {
+        this(solverMode, solutionConsumer, config.isPrintOnlyBestSolution(), config.isUseStatistics(), config.isPrintOnlyGlobalStatistics());
+    }
+
+    public void setAlgorithmConfig(ParallelGAConfig algorithmConfig) {
+        this.algorithmConfig = algorithmConfig;
+    }
+
+    public void setThreadPoolConfig(AnnealedThreadPoolConfig threadPoolConfig) {
+        this.threadPoolConfig = threadPoolConfig;
+    }
+
+    public void setMutationChance(double mutationChance) {
+        this.mutationChance = mutationChance;
     }
 
     public BoolVectorSolution solve(BoolVecProblem problem) {
@@ -119,9 +138,9 @@ public class BooleanSolver implements Resetable, Serializable {
         if (solverMode == SolverMode.BRUTE || shouldStop) {
             System.out.println("Returning brute solution as the result.");
             if (perFunctionBestSolutions.size() == 1) {
-                return solverIsDone(perFunctionBestSolutions.get(0));
+                return solverIsDone(perFunctionBestSolutions.get(0), problem);
             } else {
-                return solverIsDone(BoolVectorSolution.mergeSolutions(perFunctionBestSolutions));
+                return solverIsDone(BoolVectorSolution.mergeSolutions(perFunctionBestSolutions), problem);
             }
         }
 
@@ -155,7 +174,7 @@ public class BooleanSolver implements Resetable, Serializable {
 
         if (numFunctions == 1) {
             System.out.println("A vector with a single function was given, it's solution is the result.");
-            return solverIsDone(solution);
+            return solverIsDone(solution, problem);
         }
 
         List<BoolVectorSolution> perFuncSolutions = perFuncResults.stream()
@@ -165,7 +184,7 @@ public class BooleanSolver implements Resetable, Serializable {
 
         if (Constants.STOP_AFTER_MERGING || solverMode == SolverMode.FAST || shouldStop) {
             System.out.println("Returning the merge of individual functions' solutions.");
-            return solverIsDone(solution);
+            return solverIsDone(solution, problem);
         }
 
         int numCLBEstimation = perFuncResults.stream()
@@ -178,9 +197,9 @@ public class BooleanSolver implements Resetable, Serializable {
 
         if (mergedRunResult == null || mergedRunResult.result == null) {
             System.out.println("Couldn't find a better solution than the merge of individual function's solutions.");
-            return solverIsDone(solution);
+            return solverIsDone(solution, problem);
         } else {
-            return solverIsDone(mergedRunResult.result);
+            return solverIsDone(mergedRunResult.result, problem);
         }
     }
 
@@ -195,8 +214,7 @@ public class BooleanSolver implements Resetable, Serializable {
 
         List<BoolVectorSolution> perFunctionBestSolutions = new ArrayList<>();
         for (BooleanFunction function : functions) {
-            BlockConfiguration bruteSolution = BoolVecProblem.bruteSolve(function, numCLBInputs);
-            perFunctionBestSolutions.add(new BoolVectorSolution(new BooleanVector(function), bruteSolution));
+            perFunctionBestSolutions.add(BoolVecProblem.bruteSolve(function, numCLBInputs));
 
             if (shouldStop) {
                 break;
@@ -264,7 +282,8 @@ public class BooleanSolver implements Resetable, Serializable {
         return perFuncResults;
     }
 
-    private BoolVectorSolution solverIsDone(BoolVectorSolution solution) {
+    private BoolVectorSolution solverIsDone(BoolVectorSolution solution, BoolVecProblem problem) {
+        solution.setName(problem.getBoolVector().getName());
         if (solutionConsumer != null) {
 //            System.out.println("Notifying solution consumer.");
             solutionConsumer.accept(solution);
@@ -277,7 +296,7 @@ public class BooleanSolver implements Resetable, Serializable {
     private RunResults doARun(BoolVecProblem problem, boolean canDecreaseNumCLB, boolean canIncreaseNumCLB, long timeLimit) {
         CLBController controller = problem.getClbController();
         RandomizeCrossover<int[]> randomCrossovers = generateRandomizeCrossover(controller, useStatistics);
-        RandomizeMutation<int[]> randomMutations = generateRandomizeMutation(controller, useStatistics);
+        RandomizeMutation<int[]> randomMutations = generateRandomizeMutation(controller, mutationChance, useStatistics);
 
         List<BoolVecEvaluator> evaluators = new ArrayList<>();
 
@@ -295,8 +314,18 @@ public class BooleanSolver implements Resetable, Serializable {
 
         BoolVecEvaluator evaluator = new BoolVecEvaluator(problem);
 
-        GAThreadPool<int[]> threadPool = new AnnealedThreadPool<>(randomCrossovers, randomMutations, evaluatorSupplier);
-        algorithm = new ParallelGA<>(problem, evaluator, threadPool);
+        GAThreadPool<int[]> threadPool;
+        if (threadPoolConfig != null) {
+            threadPool = new AnnealedThreadPool<>(randomCrossovers, randomMutations, evaluatorSupplier, threadPoolConfig);
+        } else {
+            threadPool = new AnnealedThreadPool<>(randomCrossovers, randomMutations, evaluatorSupplier);
+        }
+
+        if (algorithmConfig != null) {
+            algorithm = new ParallelGA<>(problem, evaluator, threadPool, algorithmConfig);
+        } else {
+            algorithm = new ParallelGA<>(problem, evaluator, threadPool);
+        }
 
         if (useStatistics) {
             algorithm.addFitnessListener(randomCrossovers);
@@ -341,8 +370,10 @@ public class BooleanSolver implements Resetable, Serializable {
             if (bestSolutionWithCurrentNumCLB != null) {
                 problem.setNextToSupply(bestSolutionWithCurrentNumCLB);
             }
+            double currMaxNonImprovingGenerationsRatio = algorithm.getMaxNonImprovingGenerationsRatio();
             if (controller.getNumCLB() == 1) {
-                algorithm.setMaxNonImprovingGenerationsRatio(algorithm.getMaxNonImprovingGenerationsRatio() / 10.0);
+                algorithm.setMaxNonImprovingGenerationsRatio(currMaxNonImprovingGenerationsRatio
+                        * Constants.SINGLE_CLB_MAX_NON_IMPROVING_MODIFIER);
             }
             if (useTime) {
                 long remainingTime = timer.getRemainingTime();
@@ -351,6 +382,9 @@ public class BooleanSolver implements Resetable, Serializable {
 
             solution = algorithm.run();
 
+            if (controller.getNumCLB() == 1) {
+                algorithm.setMaxNonImprovingGenerationsRatio(currMaxNonImprovingGenerationsRatio);
+            }
             if (useTime) {
                 if (timer.isTimeLimitReached()) {
                     break;
@@ -529,13 +563,15 @@ public class BooleanSolver implements Resetable, Serializable {
         return new RandomizeCrossover<>(crossoverList, useStatistics);
     }
 
-    private static RandomizeMutation<int[]> generateRandomizeMutation(CLBController controller, boolean useStatistics) {
+    private static RandomizeMutation<int[]> generateRandomizeMutation(CLBController controller,
+                                                                      double mutationChance, boolean useStatistics) {
+
         List<AbstractBoolMutation> mutationList = new ArrayList<>();
-        mutationList.add(new InputFullMutation(controller));
-        mutationList.add(new InputSingleMutation(controller));
-        mutationList.add(new TableCopyMutation(controller));
-        mutationList.add(new TableFullMutation(controller));
-        mutationList.add(new TableSingleMutation(controller));
+        mutationList.add(new InputFullMutation(controller, mutationChance));
+        mutationList.add(new InputSingleMutation(controller, mutationChance));
+        mutationList.add(new TableCopyMutation(controller, mutationChance));
+        mutationList.add(new TableFullMutation(controller, mutationChance));
+        mutationList.add(new TableSingleMutation(controller, mutationChance));
         return new RandomizeMutation<>(mutationList, useStatistics);
     }
 

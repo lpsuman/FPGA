@@ -4,6 +4,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecProblem;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BoolVectorSolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BooleanSolver;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BooleanSolverConfig;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.SolverMode;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIConstants;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
@@ -15,6 +16,8 @@ import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.BooleanFunctionControll
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.BooleanVectorController;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.SolverController;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationProvider;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.AnnealedThreadPoolConfig;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.ParallelGAConfig;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import javax.swing.*;
@@ -106,11 +109,29 @@ public class SessionController {
     }
 
     public void runBooleanSolver(BoolVecProblem problem, SolverMode solverMode) {
+        BooleanSolverConfig booleanSolverConfig = new BooleanSolverConfig()
+                .printOnlyBestSolution(solverController.getPrintOnlyBestCheckBox().isSelected())
+                .useStatistics(solverController.getUseStatisticsCheckBox().isSelected())
+                .printOnlyGlobalStatistics(solverController.getPrintOnlyGlobalStatisticsCheckBox().isSelected());
+
         solver = new BooleanSolver(solverMode, solution -> {
             if (solution != null) {
                 getSolverController().addItem(solution);
             }
-        });
+        }, booleanSolverConfig);
+
+        ParallelGAConfig parallelGAConfig = new ParallelGAConfig()
+                .populationSize((Integer) solverController.getPopulationSizeFTF().getValue())
+                .maxGenerations((Integer) solverController.getMaxGenerationsFTF().getValue())
+                .elitismSize((Integer) solverController.getElitismSizeFTF().getValue());
+        solver.setAlgorithmConfig(parallelGAConfig);
+
+        AnnealedThreadPoolConfig threadPoolConfig = new AnnealedThreadPoolConfig()
+                .numThreads((Integer) solverController.getNumThreadsFTF().getValue())
+                .annealingThreshold((Double) solverController.getAnnealingThresholdFTF().getValue());
+        solver.setThreadPoolConfig(threadPoolConfig);
+
+        solver.setMutationChance((Double) solverController.getMutationChanceFTF().getValue());
 
         SwingWorker<BoolVectorSolution, Void> worker = new SwingWorker<>() {
             @Override
@@ -142,8 +163,10 @@ public class SessionController {
     }
 
     public void stopBooleanSolver() {
-        solver.stop();
-        booleanSolverStopped();
+        if (solver != null) {
+            solver.stop();
+            booleanSolverStopped();
+        }
     }
 
     private void booleanSolverStopped() {

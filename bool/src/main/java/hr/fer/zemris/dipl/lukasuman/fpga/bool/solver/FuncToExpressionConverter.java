@@ -217,6 +217,16 @@ public class FuncToExpressionConverter {
         return getMapping(truthTable).formatString.charAt(0) == '(';
     }
 
+    public static String getUnenclosedString(int truthTable, String strA, String strB) {
+        String result = getString(truthTable, strA, strB);
+
+        if (isEnclosedInParentheses(truthTable)) {
+            result = result.substring(1, result.length() - 1);
+        }
+
+        return result;
+    }
+
     private static FuncToString getMapping(int truthTable) {
         Utility.checkRange(truthTable, 0, 15);
         return FUNC_TO_STRING_MAPPINGS.get(CURRENT_MAPPING_TYPE.index)[truthTable];

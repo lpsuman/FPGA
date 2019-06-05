@@ -1,11 +1,9 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LJLabel;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationProvider;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.table.MyAbstractTableModel;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.ArgumentLimit;
-import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import javax.swing.*;
@@ -14,7 +12,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import javax.swing.text.NumberFormatter;
 import java.awt.*;
+import java.text.NumberFormat;
 
 public class GUIUtility {
 
@@ -123,17 +123,22 @@ public class GUIUtility {
         return comboBox;
     }
 
+    public static void getDescriptionPanel(LocalizationProvider lp, String labelLocKey, Component comp, double compWidthRatio, JPanel mainPanel, int y) {
+        GridBagConstraints gbc = GUIUtility.getGBC(0, y, 1.0 - compWidthRatio, 0.5);
+        mainPanel.add(GUIUtility.putIntoPanelWithBorder(new LJLabel(labelLocKey, lp, SwingConstants.CENTER)), gbc);
+
+        gbc = GUIUtility.getGBC(1, y, compWidthRatio, 0.5);
+        mainPanel.add(GUIUtility.putIntoPanelWithBorder(comp), gbc);
+    }
+
+    public static JPanel getDescriptionPanel(LocalizationProvider lp, String labelLocKey, Component comp, double compWidthRatio) {
+        JPanel mainPanel = GUIUtility.getPanel(new GridBagLayout());
+        getDescriptionPanel(lp, labelLocKey, comp, compWidthRatio, mainPanel, 0);
+        return mainPanel;
+    }
+
     public static JPanel getComboBoxPanel(JComboBox comboBox, LocalizationProvider locProvider, String labelLocKey) {
-        JPanel comboBoxPanel = GUIUtility.getPanelWithBorder(new GridBagLayout());
-
-        GridBagConstraints gbc = GUIUtility.getGBC(0, 0, 1.0 - GUIConstants.COMBO_BOX_WIDTH_WEIGHT, 1.0);
-        comboBoxPanel.add(GUIUtility.putIntoPanelWithBorder(
-                new LJLabel(labelLocKey, locProvider, SwingConstants.CENTER)), gbc);
-
-        gbc = GUIUtility.getGBC(1, 0, GUIConstants.COMBO_BOX_WIDTH_WEIGHT, 1.0);
-        comboBoxPanel.add(GUIUtility.putIntoPanelWithBorder(comboBox), gbc);
-
-        return comboBoxPanel;
+        return getDescriptionPanel(locProvider, labelLocKey, comboBox, GUIConstants.COMBO_BOX_WIDTH_WEIGHT);
     }
 
     public static <T> T getSelectedComboBoxValue(JComboBox<T> comboBox) {
@@ -151,8 +156,50 @@ public class GUIUtility {
 
         controlPanel.add(putIntoPanelWithBorder(clearButton));
         clearButton.addActionListener((e) -> textArea.setText(""));
-        controlPanel.add(putIntoPanelWithBorder(clearToggleButton));
+//        controlPanel.add(putIntoPanelWithBorder(clearToggleButton));
 
         return mainPanel;
+    }
+
+    public static JFormattedTextField getFormattedTextFieldFromLimit(ArgumentLimit<Integer> limit, Integer defaultValue) {
+        NumberFormatter numberFormatter = new NumberFormatter();
+        numberFormatter.setMinimum(limit.getLowerLimit());
+        numberFormatter.setMaximum(limit.getUpperLimit());
+
+        JFormattedTextField formattedTextField = new JFormattedTextField(numberFormatter);
+        formattedTextField.setValue(defaultValue);
+        formattedTextField.setColumns(6);
+
+        return formattedTextField;
+    }
+
+    public static JFormattedTextField getFormattedTextFieldFromLimit(ArgumentLimit<Double> limit, Double defaultValue) {
+        NumberFormat percentFormat = NumberFormat.getNumberInstance();
+        percentFormat.setMinimumFractionDigits(2);
+        NumberFormatter numberFormatter = new NumberFormatter(percentFormat);
+        numberFormatter.setMinimum(limit.getLowerLimit());
+        numberFormatter.setMaximum(limit.getUpperLimit());
+
+        JFormattedTextField formattedTextField = new JFormattedTextField(numberFormatter);
+        formattedTextField.setValue(defaultValue);
+        formattedTextField.setColumns(6);
+
+        return formattedTextField;
+    }
+
+    public static void addFTFPanel(JFormattedTextField formattedTextField, LocalizationProvider locProvider,
+                                     String labelLocKey, JPanel mainPanel, int y) {
+        getDescriptionPanel(locProvider, labelLocKey, formattedTextField,
+                GUIConstants.FORMATTED_TEXT_FIELD_WIDTH_WEIGHT, mainPanel, y);
+    }
+
+    public static JPanel getFTFPanel(JFormattedTextField formattedTextField, LocalizationProvider locProvider, String labelLocKey) {
+        return getDescriptionPanel(locProvider, labelLocKey, formattedTextField,GUIConstants.FORMATTED_TEXT_FIELD_WIDTH_WEIGHT);
+    }
+
+    public static void addcheckBoxPanel(JCheckBox checkBox, LocalizationProvider locProvider,
+                                        String labelLocKey, JPanel mainPanel, int y) {
+        getDescriptionPanel(locProvider, labelLocKey, checkBox,
+                GUIConstants.CHECK_BOX_WIDTH_WEIGHT, mainPanel, y);
     }
 }

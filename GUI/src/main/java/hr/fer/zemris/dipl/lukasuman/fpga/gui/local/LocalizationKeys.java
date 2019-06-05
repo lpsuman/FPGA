@@ -57,7 +57,7 @@ public class LocalizationKeys {
     public static final String NAME_KEY = "name";
     public static final String NOTHING_TO_DUPLICATE_MSG_KEY = "nothing_to_duplicate_msg";
     public static final String NOTHING_TO_REMOVE_MSG_KEY = "nothing_to_remove_msg";
-    public static final String SELECT__S_FROM_THE_TABLE_MSG_KEY = "select_s_from_the_table_msg";
+    public static final String SELECT_S_FROM_THE_TABLE_MSG_KEY = "select_s_from_the_table_msg";
     public static final String ONE_OR_MORE_FUNCTIONS_KEY = "one_or_more_functions";
     public static final String ONE_OR_MORE_VECTORS_KEY = "one_or_more_vectors";
     public static final String ONE_OR_MORE_SOLUTIONS_KEY = "one_or_more_solutions";
@@ -97,8 +97,20 @@ public class LocalizationKeys {
     public static final String NORMAL_SOLVE_MODE_KEY = "normal";
     public static final String FULL_SOLVE_MODE_KEY = "full";
 
+    public static final String POPULATION_SIZE_KEY = "population_size";
+    public static final String NUMBER_OF_GENERATIONS_KEY = "num_of_generations";
+    public static final String SIZE_OF_ELITISM_KEY = "size_of_elitism";
+    public static final String NUMBER_OF_THREADS_KEY = "number_of_threads";
+    public static final String ANNEALING_THRESHOLD_KEY = "annealing_threshold";
+    public static final String MUTATION_CHANCE_KEY = "mutation_chance";
+
+    public static final String PRINT_ONLY_BEST_SOLUTIONS_KEY = "print_only_best_solutions";
+    public static final String USE_STATISTICS_KEY = "use_statistics";
+    public static final String PRINT_ONLY_GLOBAL_STATISTICS_KEY = "print_only_global_statistics";
+
     public static final String SOLUTIONS_KEY = "solutions";
     public static final String BLOCKS_KEY = "blocks";
     public static final String GENERATE_EXPRESSION_KEY = "generate_br_expression";
+    public static final String PRINT_SOLUTION_KEY = "print_solution";
     public static final String REMOVE_SOLUTION_KEY = "remove_solution";
 }

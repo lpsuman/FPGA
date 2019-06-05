@@ -186,6 +186,11 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
         this(crossover, mutation, evaluatorSupplier, Constants.DEFAULT_ANNEALING_THRESHOLD);
     }
 
+    public AnnealedThreadPool(Crossover<T> crossover, Mutation<T> mutation, Supplier<Evaluator<T>> evaluatorSupplier,
+                              AnnealedThreadPoolConfig config) {
+        this(crossover, mutation, evaluatorSupplier, config.getAnnealingThreshold(), config.getNumThreads());
+    }
+
     @Override
     public synchronized void runThreads() {
         while (isRunning || !isShutDown || isShuttingDown) {

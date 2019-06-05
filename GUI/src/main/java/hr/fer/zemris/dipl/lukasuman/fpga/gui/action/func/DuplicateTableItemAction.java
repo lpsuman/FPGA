@@ -22,7 +22,7 @@ public class DuplicateTableItemAction<T extends Duplicateable & Nameable> extend
     protected void doAction(AbstractGUIController<T> controller) {
         if (controller.getIndexSelectedItem() < 0) {
             LocalizationProvider locProv = jfpga.getFlp();
-            jfpga.showWarningMsg(String.format("%s " + locProv.getString(LocalizationKeys.SELECT__S_FROM_THE_TABLE_MSG_KEY),
+            jfpga.showWarningMsg(String.format("%s " + locProv.getString(LocalizationKeys.SELECT_S_FROM_THE_TABLE_MSG_KEY),
                     locProv.getString(LocalizationKeys.NOTHING_TO_DUPLICATE_MSG_KEY),
                     locProv.getString(targetLocalizationKey)));
             return;

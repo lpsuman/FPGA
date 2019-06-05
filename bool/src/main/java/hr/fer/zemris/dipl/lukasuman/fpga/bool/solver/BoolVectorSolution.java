@@ -1,5 +1,7 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.solver;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecEvaluator;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecProblem;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.AbstractNameHandler;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BlockConfiguration;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
@@ -25,10 +27,19 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
         super(name);
         this.boolVector = Utility.checkNull(boolVector, "boolean vector");
         this.blockConfiguration = Utility.checkNull(blockConfiguration, BLOCK_CONFIG_MSG);
+
+        List<BitSet> fullCLBOutputs = getFullCLBOutputs();
+        BitSet[] vectorTruthTable = boolVector.getTruthTable();
+
+        for (int i = 0; i < boolVector.getNumFunctions(); i++) {
+            if (!fullCLBOutputs.get(blockConfiguration.getOutputIndices().get(i) - boolVector.getNumInputs()).equals(vectorTruthTable[i])) {
+                throw new IllegalArgumentException("Invalid data, can't create solution.");
+            }
+        }
     }
 
     public BoolVectorSolution(BooleanVector boolVector, BlockConfiguration blockConfiguration) {
-        this(boolVector, blockConfiguration, DEFAULT_NAME);
+        this(boolVector, blockConfiguration, boolVector.getName());
     }
 
     public BoolVectorSolution(BoolVectorSolution other) {
@@ -105,6 +116,15 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
         return FuncToExpressionConverter.getString(truthTable, leftString, rightString);
     }
 
+    public List<BitSet> getFullCLBOutputs() {
+        BoolVecProblem problem = new BoolVecProblem(boolVector, blockConfiguration.getNumCLBInputs());
+        problem.getClbController().setNumCLB(blockConfiguration.getNumCLB());
+        BoolVecEvaluator evaluator = new BoolVecEvaluator(problem);
+        evaluator.setSaveCLBOutputs(true);
+        evaluator.evaluateSolution(blockConfiguration.getAsFlatArray(), false);
+        return Arrays.asList(evaluator.getPerCLBFullOutputs());
+    }
+
     public static BoolVectorSolution mergeSolutions(List<BoolVectorSolution> solutions) {
         if (!checkIfCompatible(solutions)) {
             throw new IllegalArgumentException("Can't merge incompatible solutions.");
@@ -141,7 +161,6 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
         int[] currIndicesInSolutions = new int[numSolutions];
         int currentTier = 0;
         int numCLBInputs = solutions.get(0).blockConfiguration.getNumCLBInputs();
-
 
         while (!remainingSolutions.isEmpty()) {
             Iterator<Integer> remainingSolutionsIterator = remainingSolutions.iterator();
@@ -214,7 +233,8 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
             int deltaNumInputs = mergedInputIDs.size() - currSolution.boolVector.getNumInputs();
 
             for (Integer outputIndex : outputIndices) {
-                mergedOutputIndices.add(indexBlockInMerged.get(i)[outputIndex + deltaNumInputs - numMergedInputs]);
+                int newOutputIndex = indexBlockInMerged.get(i)[outputIndex + deltaNumInputs - numMergedInputs];
+                mergedOutputIndices.add(newOutputIndex + numMergedInputs);
             }
         }
 
@@ -275,5 +295,20 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
     @Override
     public BoolVectorSolution getDuplicate() {
         return new BoolVectorSolution(this);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("Solution name={%s}:\n", getName()));
+        sb.append(boolVector.toString()).append("\n");
+        sb.append(blockConfiguration.toString());
+
+        BoolVecProblem problem = new BoolVecProblem(boolVector, blockConfiguration.getNumCLBInputs());
+        problem.getClbController().setNumCLB(blockConfiguration.getNumCLB());
+        BoolVecEvaluator evaluator = new BoolVecEvaluator(problem);
+        sb.append(problem.getSolutionTestResults(blockConfiguration.getAsFlatArray(), evaluator));
+
+        return sb.toString();
     }
 }
