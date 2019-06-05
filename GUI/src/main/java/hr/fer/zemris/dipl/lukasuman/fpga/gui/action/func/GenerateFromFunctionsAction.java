@@ -27,6 +27,8 @@ public class GenerateFromFunctionsAction extends AbstractAppAction {
             jfpga.showWarningMsg(jfpga.getFlp().getString(LocalizationKeys.NO_FUNCTIONS_SELECTED_MSG_KEY));
             return;
         }
-        jfpga.getCurrentSession().getBooleanVectorController().addItem(new BooleanVector(functions));
+        BooleanVector newVector = new BooleanVector(functions);
+        newVector.setName(functions.get(0).getName());
+        jfpga.getCurrentSession().getBooleanVectorController().addItem(newVector);
     }
 }

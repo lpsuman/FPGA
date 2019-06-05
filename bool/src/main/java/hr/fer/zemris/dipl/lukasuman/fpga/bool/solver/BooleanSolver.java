@@ -182,7 +182,7 @@ public class BooleanSolver implements Resetable, Serializable {
                 .collect(Collectors.toList());
         solution = BoolVectorSolution.mergeSolutions(perFuncSolutions);
 
-        if (Constants.STOP_AFTER_MERGING || solverMode == SolverMode.FAST || shouldStop) {
+        if (Constants.STOP_AFTER_MERGING || shouldStop) {
             System.out.println("Returning the merge of individual functions' solutions.");
             return solverIsDone(solution, problem);
         }
@@ -453,7 +453,7 @@ public class BooleanSolver implements Resetable, Serializable {
             numCLBOfBest = controller.getNumCLB();
 //            algorithm.setDoFullRuns(true);
             if (!printOnlyBestSolution) {
-                System.out.println(problem.getSolutionTestResults(bestSolution, evaluator));
+                System.out.println(problem.getSolutionTestResults(bestSolution, evaluator, true));
             }
             int numUnusedBlocks = evaluator.getUnusedCLBBlocks().cardinality();
 
@@ -515,7 +515,7 @@ public class BooleanSolver implements Resetable, Serializable {
         evaluator.setLogging(false);
         System.out.println(evaluator.getLog());
         System.out.println(problem.solutionToString(bestSolution, evaluator.getBlockUsage()));
-        System.out.println(bestSolution.getFitness());
+//        System.out.println(bestSolution.getFitness());
 
         return new RunResults(new BoolVectorSolution(problem.getBoolVector(), problem.generateBlockConfiguration(bestSolution)),
                 randomCrossovers, randomMutations, numEvaluations, elapsedTime);

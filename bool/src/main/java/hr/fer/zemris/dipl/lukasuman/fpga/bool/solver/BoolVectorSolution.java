@@ -2,6 +2,7 @@ package hr.fer.zemris.dipl.lukasuman.fpga.bool.solver;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecEvaluator;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecProblem;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.AbstractNameHandler;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BlockConfiguration;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
@@ -238,8 +239,66 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
             }
         }
 
-        return new BoolVectorSolution(mergedVector,
-                new BlockConfiguration(numCLBInputs, numCLBMerged, mergedData, mergedOutputIndices));
+        return removeRedundantCLBs(new BoolVectorSolution(mergedVector,
+                new BlockConfiguration(numCLBInputs, numCLBMerged, mergedData, mergedOutputIndices)));
+    }
+
+    public static BoolVectorSolution removeRedundantCLBs(BoolVectorSolution originalSolution) {
+        List<BitSet> perCLBFullOutputs = originalSolution.getFullCLBOutputs();
+        int numInputs = originalSolution.boolVector.getNumInputs();
+        int numCLB = originalSolution.blockConfiguration.getNumCLB();
+        int[] toBeReplacedWith = new int[numInputs + numCLB];
+        BitSet isUnusedBlock = new BitSet(numInputs + numCLB);
+
+        for (int i = 0; i < numCLB; i++) {
+            for (int j = i + 1; j < numCLB; j++) {
+                if (toBeReplacedWith[numInputs + j] == 0 && perCLBFullOutputs.get(i).equals(perCLBFullOutputs.get(j))) {
+                    toBeReplacedWith[numInputs + j] = numInputs + i;
+                    isUnusedBlock.set(numInputs + j, true);
+                }
+            }
+        }
+
+        if (isUnusedBlock.cardinality() == 0) {
+            return new BoolVectorSolution(originalSolution);
+        }
+
+        int numCLBInputs = originalSolution.blockConfiguration.getNumCLBInputs();
+        int blockSize = originalSolution.blockConfiguration.getBlockSize();
+        int[] data = originalSolution.blockConfiguration.getData();
+        BoolVectorSolution solution = new BoolVectorSolution(originalSolution);
+        int[] newData = solution.blockConfiguration.getData();
+
+        for (int i = 0; i < numCLB; i++) {
+            if (isUnusedBlock.get(numInputs + i)) {
+                continue;
+            }
+
+            for (int j = 0; j < numCLBInputs; j++) {
+                int inputOffset = i * blockSize + j;
+                int input = data[inputOffset];
+
+                if (input >= numInputs && isUnusedBlock.get(input)) {
+                    newData[inputOffset] = toBeReplacedWith[input];
+                }
+            }
+        }
+
+        List<Integer> newOutputIndices = solution.blockConfiguration.getOutputIndices();
+        for (int i = 0; i < newOutputIndices.size(); i++) {
+            int outputIndex = newOutputIndices.get(i);
+
+            if (outputIndex >= numInputs && isUnusedBlock.get(outputIndex)) {
+                newOutputIndices.set(i, toBeReplacedWith[outputIndex]);
+            }
+        }
+
+        BoolVecProblem problem = new BoolVecProblem(solution.boolVector, numCLBInputs);
+        problem.getClbController().setNumCLB(solution.blockConfiguration.getNumCLB());
+        Solution<int[]> trimmedSolution = problem.trimmedBoolSolution(solution.blockConfiguration.getAsFlatArray(), isUnusedBlock);
+        problem.getClbController().setNumCLB(numCLB - isUnusedBlock.cardinality());
+        BlockConfiguration newConfiguration = problem.generateBlockConfiguration(trimmedSolution);
+        return new BoolVectorSolution(originalSolution.boolVector, newConfiguration);
     }
 
     private static List<int[]> mapCLBInputsToMerged(List<BoolVectorSolution> solutions, List<String> mergedInputIDs) {
@@ -307,7 +366,7 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
         BoolVecProblem problem = new BoolVecProblem(boolVector, blockConfiguration.getNumCLBInputs());
         problem.getClbController().setNumCLB(blockConfiguration.getNumCLB());
         BoolVecEvaluator evaluator = new BoolVecEvaluator(problem);
-        sb.append(problem.getSolutionTestResults(blockConfiguration.getAsFlatArray(), evaluator));
+        sb.append(problem.getSolutionTestResults(blockConfiguration.getAsFlatArray(), evaluator, false));
 
         return sb.toString();
     }

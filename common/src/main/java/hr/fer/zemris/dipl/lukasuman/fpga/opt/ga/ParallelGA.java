@@ -189,14 +189,13 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
             }
         } finally {
             if (threadPool.isRunning()) {
-                System.out.println("Threadpool forced to shutdown.");
+//                System.out.println("Threadpool forced to shutdown.");
                 threadPool.shutdown();
             }
             notifyTerminationListeners();
-            System.out.println("GA is finished.");
         }
+        System.out.println("GA is finished with best fitness: " + best.getFitness());
 
-        System.out.println("Best fitness: " + best.getFitness());
         return best;
     }
 

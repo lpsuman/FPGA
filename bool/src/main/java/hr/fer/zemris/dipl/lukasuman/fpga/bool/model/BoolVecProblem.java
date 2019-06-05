@@ -206,7 +206,7 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         return sb.toString();
     }
 
-    public String getSolutionTestResults(Solution<int[]> solution, BoolVecEvaluator evaluator) {
+    public String getSolutionTestResults(Solution<int[]> solution, BoolVecEvaluator evaluator, boolean printUnused) {
         StringBuilder sb = new StringBuilder();
 
         evaluator.setLogging(true);
@@ -214,12 +214,13 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         sb.append(evaluator.getLog()).append('\n');
         evaluator.resetLog();
         evaluator.setLogging(false);
-//        sb.append(solutionToString(solution, evaluator.getBlockUsage())).append('\n');
-
         appendSolution(sb, solution, evaluator.getBlockUsage());
 
-        int numUnusedBlocks = evaluator.getUnusedCLBBlocks().cardinality();
-        sb.append(String.format("\nThere were %d unused blocks.\n", numUnusedBlocks)).append('\n');
+        if (printUnused) {
+            int numUnusedBlocks = evaluator.getUnusedCLBBlocks().cardinality();
+            sb.append(String.format("\nThere were %d unused blocks.\n", numUnusedBlocks));
+        }
+        sb.append('\n');
 
         return sb.toString();
     }
