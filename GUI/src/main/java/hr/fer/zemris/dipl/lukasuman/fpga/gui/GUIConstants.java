@@ -45,7 +45,7 @@ public class GUIConstants {
     public static final double FORMATTED_TEXT_FIELD_WIDTH_WEIGHT = 0.00;
     public static final double CHECK_BOX_WIDTH_WEIGHT = 0.00;
 
-    public static final int DEFAULT_NUM_CLB_INPUTS_COMBOBOX_INDEX = 1;
+    public static final int DEFAULT_NUM_CLB_INPUTS_COMBOBOX_INDEX = 0;
     public static final int DEFAULT_SOLVE_MODE_COMBOBOX_INDEX = 1;
 
     public static final String DUPLICATE_NAME_SUFFIX = "_copy";

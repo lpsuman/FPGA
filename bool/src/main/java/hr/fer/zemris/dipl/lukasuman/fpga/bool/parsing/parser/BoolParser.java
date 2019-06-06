@@ -82,7 +82,7 @@ public class BoolParser implements Parser<BoolToken, BoolExpression> {
         for (BoolToken token : tokens) {
             switch (token.getType()) {
                 case WORD:
-                    parseWord(token.getValue().toLowerCase());
+                    parseWord(token.getValue());
                     break;
                 case PARENTHESIS_LEFT:
                     openParenthesis();

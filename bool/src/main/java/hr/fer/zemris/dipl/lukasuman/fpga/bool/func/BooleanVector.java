@@ -8,6 +8,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This class represents a vector of boolean functions. Multiple boolean functions are joined in the following way:
@@ -76,9 +77,20 @@ public class BooleanVector extends AbstractNameHandler implements Serializable, 
         }
 
         checkedFunctions.forEach(f -> inputIDSet.addAll(f.getInputIDs()));
+        List<String> functionNames = boolFunctions.stream().map(AbstractNameHandler::getName).collect(Collectors.toList());
+        List<String> symbolicLinkedFunctions = new ArrayList<>();
+        Iterator<String> iter = inputIDSet.iterator();
+
+        while (iter.hasNext()) {
+            String inputID = iter.next();
+            if (functionNames.contains(inputID)) {
+                iter.remove();
+                symbolicLinkedFunctions.add(inputID);
+            }
+        }
+
         sortedInputIDs = new ArrayList<>(inputIDSet);
         Collections.sort(sortedInputIDs);
-
         int numInputs = getNumInputs();
         numInputCombinations = (int) Math.pow(2, numInputs);
         truthTable = Utility.newBitSetArray(boolFunctions.size(), numInputCombinations);
@@ -87,6 +99,9 @@ public class BooleanVector extends AbstractNameHandler implements Serializable, 
             for (int j = 0; j < getNumFunctions(); ++j) {
                 BooleanFunction boolFunc = checkedFunctions.get(j);
                 List<String> inputIDs = boolFunc.getInputIDs();
+
+                //TODO add symbolic function linking
+
                 int[] inputIndexes = new int[inputIDs.size()];
 
                 for (int i = 0, n = inputIndexes.length; i < n; i++) {
