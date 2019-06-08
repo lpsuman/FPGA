@@ -1,10 +1,14 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.session;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecProblem;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BooleanSolver;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BoolVectorSolution;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.MyTypeAdapters;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -76,13 +80,20 @@ public class SessionData implements Serializable {
             result = (SessionData) in.readObject();
         }
 
+        List<String> jsonFileLines = Utility.readTextFile(filePath + ".json");
+        if (jsonFileLines != null) {
+            result = MyTypeAdapters.getGson().fromJson(String.join("\n", jsonFileLines), SessionData.class);
+            System.out.println("loaded json");
+        }
+
         return result;
     }
 
     public static void serializeToFile(SessionData sessionData, String filePath) throws IOException {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath))) {
             out.writeObject(sessionData);
-//            System.out.println("Session data is saved in: " + filePath);
+
+            Utility.saveTextFile(filePath + ".json", MyTypeAdapters.getGson().toJson(sessionData));
         }
     }
 }

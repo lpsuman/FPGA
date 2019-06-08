@@ -61,12 +61,14 @@ public class JFPGA extends JFrame {
     private Action generateRandomFunctionAction;
     private Action duplicateSelectedFunctionAction;
     private Action removeSelectedFunctionAction;
+    private Action undoRemoveFunctionAction;
     private Action displayAllFunctionsAction;
 
     private Action generateFromFunctionsAction;
     private Action generateRandomVectorAction;
     private Action duplicateSelectedVectorAction;
     private Action removeSelectedVectorAction;
+    private Action undoRemoveVectorAction;
     private Action displayAllVectorsAction;
 
     private Action runSolverAction;
@@ -76,6 +78,7 @@ public class JFPGA extends JFrame {
     private Action solutionToExpressionAction;
     private Action printSolutionAction;
     private Action removeSelectedSolutionAction;
+    private Action undoRemoveSolutionAction;
 
     /**Map used to link tab closing buttons to their respective tabs.*/
     private Map<JButton, Component> mapCloseButtonToComp;
@@ -92,11 +95,13 @@ public class JFPGA extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-//                int exitDecision = JOptionPane.showConfirmDialog(
-//                        JFPGA.this, "Are you serious?", "Confirm", JOptionPane.YES_NO_OPTION);
-//                if (exitDecision != JOptionPane.YES_OPTION) {
-//                    return;
-//                }
+                if (GUIConstants.SHOW_CONFIRM_EXIT_DIALOG) {
+                    int exitDecision = JOptionPane.showConfirmDialog(
+                            JFPGA.this, "Are you serious?", "Confirm", JOptionPane.YES_NO_OPTION);
+                    if (exitDecision != JOptionPane.YES_OPTION) {
+                        return;
+                    }
+                }
 
                 if (checkForChanges()) {
                     if (!sessions.isEmpty()) {
@@ -175,6 +180,9 @@ public class JFPGA extends JFrame {
                 () -> getCurrentSession().getBooleanFunctionController(),
                 LocalizationKeys.REMOVE_FUNCTION_KEY,
                 LocalizationKeys.ONE_OR_MORE_FUNCTIONS_KEY);
+        undoRemoveFunctionAction = new UndoRemoveTableItemAction<>(this,
+                () -> getCurrentSession().getBooleanFunctionController(),
+                LocalizationKeys.UNDO_REMOVE_FUNCTION_KEY);
         displayAllFunctionsAction = new DisplayAllTableItemAction<>(this,
                 () -> getCurrentSession().getBooleanFunctionController(),
                 LocalizationKeys.DISPLAY_ALL_FUNCTIONS_KEY);
@@ -197,6 +205,9 @@ public class JFPGA extends JFrame {
                 () -> getCurrentSession().getBooleanVectorController(),
                 LocalizationKeys.REMOVE_VECTOR_KEY,
                 LocalizationKeys.ONE_OR_MORE_VECTORS_KEY);
+        undoRemoveVectorAction = new UndoRemoveTableItemAction<>(this,
+                () -> getCurrentSession().getBooleanVectorController(),
+                LocalizationKeys.UNDO_REMOVE_VECTOR_KEY);
         displayAllVectorsAction = new DisplayAllTableItemAction<>(this,
                 () -> getCurrentSession().getBooleanVectorController(),
                 LocalizationKeys.DISPLAY_ALL_VECTORS_KEY);
@@ -224,6 +235,9 @@ public class JFPGA extends JFrame {
                 () -> getCurrentSession().getSolverController(),
                 LocalizationKeys.REMOVE_SOLUTION_KEY,
                 LocalizationKeys.ONE_OR_MORE_SOLUTIONS_KEY);
+        undoRemoveSolutionAction = new UndoRemoveTableItemAction<>(this,
+                () -> getCurrentSession().getSolverController(),
+                LocalizationKeys.UNDO_REMOVE_SOLUTION_KEY);
     }
 
     private void createMenus() {
@@ -242,14 +256,17 @@ public class JFPGA extends JFrame {
                 saveTextAction,
                 duplicateSelectedFunctionAction,
                 removeSelectedFunctionAction,
+                undoRemoveFunctionAction,
                 displayAllFunctionsAction));
         menuBar.add(createMenu(LocalizationKeys.VECTORS_KEY, Collections.singletonList(0),
                 generateFromFunctionsAction,
                 duplicateSelectedVectorAction,
                 removeSelectedVectorAction,
+                undoRemoveVectorAction,
                 displayAllVectorsAction));
         menuBar.add(createMenu(LocalizationKeys.SOLUTIONS_KEY, null,
-                removeSelectedSolutionAction));
+                removeSelectedSolutionAction,
+                undoRemoveSolutionAction));
 
         JMenu languageMenu = new JMenu("Languages/Jezici");
         menuBar.add(languageMenu);
@@ -572,6 +589,10 @@ public class JFPGA extends JFrame {
         return removeSelectedFunctionAction;
     }
 
+    public Action getUndoRemoveFunctionAction() {
+        return undoRemoveFunctionAction;
+    }
+
     public Action getDisplayAllFunctionsAction() {
         return displayAllFunctionsAction;
     }
@@ -590,6 +611,10 @@ public class JFPGA extends JFrame {
 
     public Action getRemoveSelectedVectorAction() {
         return removeSelectedVectorAction;
+    }
+
+    public Action getUndoRemoveVectorAction() {
+        return undoRemoveVectorAction;
     }
 
     public Action getDisplayAllVectorsAction() {
@@ -618,5 +643,9 @@ public class JFPGA extends JFrame {
 
     public Action getRemoveSelectedSolutionAction() {
         return removeSelectedSolutionAction;
+    }
+
+    public Action getUndoRemoveSolutionAction() {
+        return undoRemoveSolutionAction;
     }
 }

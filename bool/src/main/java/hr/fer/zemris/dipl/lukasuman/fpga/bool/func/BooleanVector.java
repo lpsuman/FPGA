@@ -30,10 +30,15 @@ public class BooleanVector extends AbstractNameHandler implements Serializable, 
     private BitSet[] truthTable;
     private List<String> sortedInputIDs;
 
-    public BooleanVector(List<BooleanFunction> boolFunctions, boolean removeRedundantInputs, String name) {
+    public BooleanVector(List<BooleanFunction> boolFunctions, List<BooleanFunction> linkableFunctions,
+                         boolean removeRedundantInputs, String name) {
         super(name);
         this.boolFunctions = Utility.checkIfValidCollection(boolFunctions, "boolean functions for vector");
-        updateTable(removeRedundantInputs);
+        updateTable(linkableFunctions, removeRedundantInputs);
+    }
+
+    public BooleanVector(List<BooleanFunction> boolFunctions, boolean removeRedundantInputs, String name) {
+        this(boolFunctions, null, removeRedundantInputs, name);
     }
 
     public BooleanVector(List<BooleanFunction> boolFunctions, boolean removeRedundantInputs) {
@@ -65,28 +70,38 @@ public class BooleanVector extends AbstractNameHandler implements Serializable, 
         sortedInputIDs = new ArrayList<>(other.sortedInputIDs);
     }
 
-    public void updateTable(boolean removeRedundantInputs) {
+    public void updateTable(List<BooleanFunction> linkableFunctions, boolean removeRedundantInputs) {
         Utility.checkLimit(Constants.NUM_FUNCTIONS_LIMIT, boolFunctions.size());
-        Set<String> inputIDSet = new HashSet<>();
         List<BooleanFunction> checkedFunctions = new ArrayList<>(boolFunctions.size());
-
         if (removeRedundantInputs) {
             boolFunctions.forEach(f -> checkedFunctions.add(BoolFuncController.removeRedundantInputsIfAble(f)));
         } else {
             checkedFunctions.addAll(boolFunctions);
         }
-
+        Set<String> inputIDSet = new HashSet<>();
         checkedFunctions.forEach(f -> inputIDSet.addAll(f.getInputIDs()));
-        List<String> functionNames = boolFunctions.stream().map(AbstractNameHandler::getName).collect(Collectors.toList());
-        List<String> symbolicLinkedFunctions = new ArrayList<>();
-        Iterator<String> iter = inputIDSet.iterator();
 
-        while (iter.hasNext()) {
-            String inputID = iter.next();
-            if (functionNames.contains(inputID)) {
-                iter.remove();
-                symbolicLinkedFunctions.add(inputID);
+        Map<String, BooleanFunction> linkableNameToFunctionMapping = new HashMap<>();
+        if (linkableFunctions != null) {
+            List<String> linkableFunctionNames = linkableFunctions.stream()
+                    .map(AbstractNameHandler::getName)
+                    .collect(Collectors.toList());
+
+            Iterator<String> iter = inputIDSet.iterator();
+            while (iter.hasNext()) {
+                String inputID = iter.next();
+                if (linkableFunctionNames.contains(inputID)) {
+                    iter.remove();
+
+                    if (linkableFunctionNames.contains(inputID)) {
+                        throw new BooleanVectorException(String.format("Input ID %s is ambiguous, multiple boolean functions have the same name.", inputID));
+                    }
+
+                    linkableNameToFunctionMapping.put(inputID, linkableFunctions.get(linkableFunctionNames.indexOf(inputID)));
+                }
             }
+
+            linkableNameToFunctionMapping.forEach((k, v) -> inputIDSet.addAll(v.getInputIDs()));
         }
 
         sortedInputIDs = new ArrayList<>(inputIDSet);
@@ -96,23 +111,45 @@ public class BooleanVector extends AbstractNameHandler implements Serializable, 
         truthTable = Utility.newBitSetArray(boolFunctions.size(), numInputCombinations);
 
         for (int inputCombination = 0; inputCombination < numInputCombinations; inputCombination++) {
+            Map<String, Boolean> linkableNameToOutputMapping = new HashMap<>();
+
+            for (int j = 0; j < getNumInputs(); j++) {
+                boolean outputOfInputVariable = Utility.testBitFromRight(inputCombination, getNumInputs() - 1 - j);
+                linkableNameToOutputMapping.put(sortedInputIDs.get(j), outputOfInputVariable);
+            }
+
             for (int j = 0; j < getNumFunctions(); ++j) {
-                BooleanFunction boolFunc = checkedFunctions.get(j);
-                List<String> inputIDs = boolFunc.getInputIDs();
-
-                //TODO add symbolic function linking
-
-                int[] inputIndexes = new int[inputIDs.size()];
-
-                for (int i = 0, n = inputIndexes.length; i < n; i++) {
-                    inputIndexes[i] = sortedInputIDs.indexOf(inputIDs.get(i));
-                }
-
-                int extendedIndex = CLBController.calcExtendedIndex(inputCombination, numInputs, inputIndexes);
-
-                truthTable[j].set(inputCombination, boolFunc.getTruthTable().get(extendedIndex));
+                truthTable[j].set(inputCombination, calcFuncOutput(checkedFunctions.get(j),
+                        linkableNameToOutputMapping, linkableNameToFunctionMapping));
             }
         }
+    }
+
+    private boolean calcFuncOutput(BooleanFunction func,
+                                   Map<String, Boolean> linkableNameToOutputMapping,
+                                   Map<String, BooleanFunction> linkableNameToFunctionMapping) {
+
+        List<String> inputIDs = func.getInputIDs();
+        int indexInTable = 0;
+
+        for (String inputID : inputIDs) {
+            indexInTable <<= 1;
+            boolean inputValue;
+
+            if (linkableNameToOutputMapping.containsKey(inputID)) {
+                inputValue = linkableNameToOutputMapping.get(inputID);
+            } else {
+                BooleanFunction linkedFunction = linkableNameToFunctionMapping.get(inputID);
+                inputValue = calcFuncOutput(linkedFunction, linkableNameToOutputMapping, linkableNameToFunctionMapping);
+                linkableNameToOutputMapping.put(linkedFunction.getName(), inputValue);
+            }
+
+            if (inputValue) {
+                indexInTable++;
+            }
+        }
+
+        return func.getTruthTable().get(indexInTable);
     }
 
     public List<BooleanFunction> getBoolFunctions() {

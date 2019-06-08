@@ -27,8 +27,6 @@ public class RemoveTableItemAction<T extends Duplicateable & Nameable> extends A
         }
 
         int[] selectedIndices = controller.getIndicesSelectedItems();
-        for (int i = selectedIndices.length - 1; i >= 0; i--) {
-            controller.removeItem(selectedIndices[i]);
-        }
+        controller.removeItems(selectedIndices);
     }
 }

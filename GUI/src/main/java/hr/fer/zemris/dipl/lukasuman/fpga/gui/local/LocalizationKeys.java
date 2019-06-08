@@ -74,6 +74,7 @@ public class LocalizationKeys {
     public static final String GENERATE_RANDOM_FUNCTION_KEY = "generate_br_random_function";
     public static final String DUPLICATE_FUNCTION_KEY = "duplicate_function";
     public static final String REMOVE_FUNCTION_KEY = "remove_function";
+    public static final String UNDO_REMOVE_FUNCTION_KEY = "undo_remove_function";
     public static final String DISPLAY_ALL_FUNCTIONS_KEY = "display_all_functions";
 
     public static final String VECTORS_KEY = "vectors";
@@ -83,6 +84,7 @@ public class LocalizationKeys {
     public static final String GENERATE_RANDOM_VECTOR_KEY = "generate_br_random_vector";
     public static final String DUPLICATE_VECTOR_KEY = "duplicate_vector";
     public static final String REMOVE_VECTOR_KEY = "remove_vector";
+    public static final String UNDO_REMOVE_VECTOR_KEY = "undo_remove_vector";
     public static final String DISPLAY_ALL_VECTORS_KEY = "display_all_vectors";
 
     public static final String NUMBER_OF_CLB_INPUTS_KEY = "number_of_br_clb_inputs";
@@ -114,4 +116,5 @@ public class LocalizationKeys {
     public static final String GENERATE_EXPRESSION_KEY = "generate_br_expression";
     public static final String PRINT_SOLUTION_KEY = "print_solution";
     public static final String REMOVE_SOLUTION_KEY = "remove_solution";
+    public static final String UNDO_REMOVE_SOLUTION_KEY = "undo_remove_solution";
 }

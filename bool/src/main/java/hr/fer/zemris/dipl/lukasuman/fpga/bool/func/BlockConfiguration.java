@@ -188,7 +188,7 @@ public class BlockConfiguration implements Serializable, Duplicateable<BlockConf
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(String.format("Block Configuration of %d CLBs with %d inputs:\n", numCLB, numCLBInputs));
+        sb.append(String.format("Block Configuration of %d CLBs with %d inputs per CLB:\n", numCLB, numCLBInputs));
 
         //TODO
 

@@ -20,11 +20,11 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import javax.swing.*;
 import java.awt.*;
 import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 public class SolverController extends AbstractGUIController<BoolVectorSolution> {
+
+    private Set<TableItemListener<BoolVectorSolution>> solutionListeners;
 
     private JComboBox<Integer> numCLBInputsComboBox;
     private JComboBox<SolverMode> solverModeComboBox;
@@ -176,7 +176,9 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
         mappingTypesJComboBox = new JComboBox<>(FuncToExpressionConverter.FuncToStringMappingTypes.values());
         upperPanel.add(GUIUtility.putIntoPanelWithBorder(mappingTypesJComboBox));
         upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getPrintSolutionAction())));
-        upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getRemoveSelectedSolutionAction())));
+        if (GUIConstants.SHOW_REMOVE_BUTTONS) {
+            upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getRemoveSelectedSolutionAction())));
+        }
 
         lowerPanel.add(new LJLabel(LocalizationKeys.SOLUTIONS_KEY, getLocProv(), SwingConstants.CENTER), BorderLayout.NORTH);
         lowerPanel.add(new JScrollPane(itemTable), BorderLayout.CENTER);
@@ -186,6 +188,7 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
     @Override
     public void updateActionsAreEnabled() {
         getJfpga().getRemoveSelectedSolutionAction().setEnabled(areItemsEditable());
+        getJfpga().getUndoRemoveSolutionAction().setEnabled(getRemoveCount() > 0);
     }
 
     @Override
@@ -255,5 +258,18 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
 
     public JComboBox<FuncToExpressionConverter.FuncToStringMappingTypes> getMappingTypesJComboBox() {
         return mappingTypesJComboBox;
+    }
+
+    public void addSolutionListener(TableItemListener<BoolVectorSolution> listener) {
+        if (solutionListeners == null) {
+            solutionListeners = new HashSet<>();
+        }
+        solutionListeners.add(listener);
+    }
+
+    public void removeSolutionListener(TableItemListener<BoolVectorSolution> listener) {
+        if (solutionListeners != null) {
+            solutionListeners.remove(listener);
+        }
     }
 }

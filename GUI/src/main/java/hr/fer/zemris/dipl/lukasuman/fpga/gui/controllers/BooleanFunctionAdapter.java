@@ -1,27 +1,12 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.table.TableItemAdapter;
 
 import java.util.BitSet;
 import java.util.List;
 
-public abstract class BooleanFunctionAdapter implements BooleanFunctionListener {
-
-    @Override
-    public void itemAdded(BooleanFunction item, int indexInTable) {
-    }
-
-    @Override
-    public void itemRemoved(BooleanFunction item, int indexInTable) {
-    }
-
-    @Override
-    public void itemRenamed(BooleanFunction item, int indexInTable, String oldName) {
-    }
-
-    @Override
-    public void itemListChanged() {
-    }
+public abstract class BooleanFunctionAdapter extends TableItemAdapter<BooleanFunction> implements BooleanFunctionListener {
 
     @Override
     public void booleanFunctionInputsEdited(BooleanFunction booleanFunction, int index, List<String> oldInputs) {

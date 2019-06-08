@@ -22,25 +22,6 @@
         <junit.jupiter.version>5.4.2</junit.jupiter.version>
     </properties>
 
-    <dependencies>
-        <!--<dependency>-->
-            <!--<groupId>org.junit.jupiter</groupId>-->
-            <!--<artifactId>junit-jupiter</artifactId>-->
-            <!--<version>${junit.jupiter.version}</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>hr.fer.zemris.dipl</groupId>-->
-            <!--<artifactId>bool</artifactId>-->
-            <!--<version>1.0-SNAPSHOT</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>hr.fer.zemris.dipl</groupId>-->
-            <!--<artifactId>common</artifactId>-->
-            <!--<version>1.0-SNAPSHOT</version>-->
-        <!--</dependency>-->
-    </dependencies>
-
     <build>
         <plugins>
             <plugin>

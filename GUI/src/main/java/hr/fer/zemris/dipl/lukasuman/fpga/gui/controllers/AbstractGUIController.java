@@ -23,6 +23,7 @@ public abstract class AbstractGUIController<T extends Nameable> {
     protected SessionController parentSession;
     private List<T> allItems;
     private List<T> items;
+    private List<List<T>> removedItems;
     private boolean areItemsEditable;
     protected JPanel mainPanel;
 
@@ -33,6 +34,7 @@ public abstract class AbstractGUIController<T extends Nameable> {
         this.parentSession = Utility.checkNull(parentSession, "parent session");
         this.items = Utility.checkNull(items, "list of items");
         allItems = items;
+        removedItems = new ArrayList<>();
         areItemsEditable = true;
 
         loadData();
@@ -167,26 +169,47 @@ public abstract class AbstractGUIController<T extends Nameable> {
         addItem(newItem, getNumItems());
     }
 
-    public void removeItem(int index) {
-        Utility.checkRange(index, 0, getNumItems() - 1);
-        boolean selectPrevious = index > 0;
-        boolean selectNext = index < getNumItems() - 1;
-        T removed = getItems().remove(index);
-        itemTableModel.fireTableRowsDeleted(index, index);
+    public void removeItems(int[] indices) {
+        List<T> removedItems = new ArrayList<>();
 
-        if (getTableItemListeners() != null) {
-            getTableItemListeners().forEach(l -> l.itemRemoved(removed, index));
+        for (int i = indices.length - 1; i >= 0; i--) {
+            int index = indices[i];
+            Utility.checkRange(index, 0, getNumItems() - 1);
+            boolean selectPrevious = index > 0;
+            boolean selectNext = index < getNumItems() - 1;
+            T removed = getItems().remove(index);
+            removedItems.add(removed);
+            itemTableModel.fireTableRowsDeleted(index, index);
+
+            if (getTableItemListeners() != null) {
+                getTableItemListeners().forEach(l -> l.itemRemoved(removed, index));
+            }
+
+            if (selectNext) {
+                itemTable.changeSelection(index, 0, false, false);
+                //            itemTable.setRowSelectionInterval(index, index);
+            } else if (selectPrevious) {
+                itemTable.changeSelection(index - 1, 0, false, false);
+                //            itemTable.setRowSelectionInterval(index - 1, index - 1);
+            }
         }
 
-        if (selectNext) {
-            itemTable.changeSelection(index, 0, false, false);
-//            itemTable.setRowSelectionInterval(index, index);
-        } else if (selectPrevious) {
-            itemTable.changeSelection(index - 1, 0, false, false);
-//            itemTable.setRowSelectionInterval(index - 1, index - 1);
+        if (!removedItems.isEmpty()) {
+            this.removedItems.add(removedItems);
         }
 
         parentSession.setEdited(true);
+    }
+
+    public int getRemoveCount() {
+        return removedItems.size();
+    }
+
+    public void undoRemove() {
+        if (!removedItems.isEmpty()) {
+            allItems.addAll(removedItems.remove(removedItems.size() - 1));
+            itemTableModel.fireTableDataChanged();
+        }
     }
 
     public void changeItemName(int index, String newName) {

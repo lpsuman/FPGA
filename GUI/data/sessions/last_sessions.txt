@@ -1,1 +1,2 @@
 C:\FER\Diplomski\FPGA\GUI\data\sessions\new.ser
+C:\FER\Diplomski\FPGA\GUI\data\sessions\custom_func.ser

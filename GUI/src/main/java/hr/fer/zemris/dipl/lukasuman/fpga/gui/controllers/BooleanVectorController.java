@@ -1,6 +1,8 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIConstants;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JPanelPair;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LJLabel;
@@ -15,6 +17,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class BooleanVectorController extends AbstractGUIController<BooleanVector> {
@@ -69,8 +72,12 @@ public class BooleanVectorController extends AbstractGUIController<BooleanVector
         numFunctionsComboBox.setSelectedIndex(2);
         upperPanel.add(GUIUtility.getComboBoxPanel(numFunctionsComboBox, getLocProv(), LocalizationKeys.FUNCTIONS_KEY));
 
-        upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getDuplicateSelectedVectorAction())));
-        upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getRemoveSelectedVectorAction())));
+        if (GUIConstants.SHOW_DUPLICATE_BUTTONS) {
+            upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getDuplicateSelectedVectorAction())));
+        }
+        if (GUIConstants.SHOW_REMOVE_BUTTONS) {
+            upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getRemoveSelectedVectorAction())));
+        }
         upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getDisplayAllVectorsAction())));
 
         lowerPanel.add(new LJLabel(LocalizationKeys.BOOLEAN_VECTORS_KEY, getLocProv(), SwingConstants.CENTER), BorderLayout.NORTH);
@@ -84,6 +91,7 @@ public class BooleanVectorController extends AbstractGUIController<BooleanVector
         getJfpga().getGenerateRandomVectorAction().setEnabled(areItemsEditable());
         getJfpga().getDuplicateSelectedVectorAction().setEnabled(areItemsEditable());
         getJfpga().getRemoveSelectedVectorAction().setEnabled(areItemsEditable());
+        getJfpga().getUndoRemoveVectorAction().setEnabled(getRemoveCount() > 0);
     }
 
     public JComboBox<Integer> getNumInputsComboBox() {
@@ -94,9 +102,9 @@ public class BooleanVectorController extends AbstractGUIController<BooleanVector
         return numFunctionsComboBox;
     }
 
-    public void updateVectorBeingEdited() {
+    public void updateVectorBeingEdited(List<BooleanFunction> allFunctions) {
         if (indexVectorBeingEdited != -1) {
-            getItems().get(indexVectorBeingEdited).updateTable(false);
+            getItems().get(indexVectorBeingEdited).updateTable(allFunctions, false);
             itemTableModel.fireTableRowsUpdated(indexVectorBeingEdited, indexVectorBeingEdited);
         }
     }

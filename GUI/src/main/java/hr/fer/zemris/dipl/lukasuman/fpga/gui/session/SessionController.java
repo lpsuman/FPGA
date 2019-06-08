@@ -1,6 +1,7 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.session;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecProblem;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BoolVectorSolution;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BooleanSolver;
@@ -11,11 +12,9 @@ import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JPanelPair;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.solve.RunSolverAction;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.BooleanFunctionAdapter;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.BooleanFunctionController;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.BooleanVectorController;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.SolverController;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationProvider;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.table.TableItemAdapter;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.AnnealedThreadPoolConfig;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.ParallelGAConfig;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
@@ -23,6 +22,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 import javax.swing.*;
 import java.awt.*;
 import java.util.BitSet;
+import java.util.HashSet;
 import java.util.List;
 
 public class SessionController {
@@ -78,11 +78,32 @@ public class SessionController {
                 updateVectorBeingEdited();
             }
         });
+
+        booleanFunctionController.addBooleanFunctionListener(new BooleanFunctionAdapter() {
+            @Override
+            public void itemRemoved(BooleanFunction item, int indexInTable) {
+                jfpga.getUndoRemoveFunctionAction().setEnabled(true);
+            }
+        });
+
+        booleanVectorController.addBooleanVectorListener(new BooleanVectorAdapter() {
+            @Override
+            public void itemRemoved(BooleanVector item, int indexInTable) {
+                jfpga.getUndoRemoveVectorAction().setEnabled(true);
+            }
+        });
+
+        solverController.addSolutionListener(new TableItemAdapter<>() {
+            @Override
+            public void itemRemoved(BoolVectorSolution item, int indexInTable) {
+                jfpga.getUndoRemoveSolutionAction().setEnabled(true);
+            }
+        });
     }
 
     private void updateVectorBeingEdited() {
         if (booleanFunctionController.getItems() != booleanFunctionController.getAllItems()) {
-            booleanVectorController.updateVectorBeingEdited();
+            booleanVectorController.updateVectorBeingEdited(booleanFunctionController.getAllItems());
         }
     }
 

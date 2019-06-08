@@ -115,6 +115,27 @@ public class Utility {
         return result;
     }
 
+    public static BitSet bitSetFromMask(String mask) {
+        checkNull(mask, "mask");
+        BitSet result = new BitSet(mask.length());
+        for (int i = 0; i < mask.length(); i++) {
+            result.set(i, mask.charAt(i) == 1);
+        }
+        return result;
+    }
+
+    public static String bitSetToString(BitSet bitSet) {
+        checkNull(bitSet, "bitset");
+        int length = bitSet.length();
+        StringBuilder sb = new StringBuilder(length);
+
+        for (int i = 0; i < length; i++) {
+            sb.append(bitSet.get(i) ? '1' : '0');
+        }
+
+        return sb.toString();
+    }
+
     public static void appendBitSet(StringBuilder sb, BitSet bitSet, int length) {
         Utility.checkNull(bitSet, "bitset");
 

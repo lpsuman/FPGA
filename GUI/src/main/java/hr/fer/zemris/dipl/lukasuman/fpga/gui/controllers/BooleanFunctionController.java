@@ -121,8 +121,12 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
         numInputsComboBox.setSelectedIndex(1);
         upperPanel.add(GUIUtility.getComboBoxPanel(numInputsComboBox, getLocProv(), LocalizationKeys.INPUTS_KEY));
 
-        upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getDuplicateSelectedFunctionAction())));
-        upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getRemoveSelectedFunctionAction())));
+        if (GUIConstants.SHOW_DUPLICATE_BUTTONS) {
+            upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getDuplicateSelectedFunctionAction())));
+        }
+        if (GUIConstants.SHOW_REMOVE_BUTTONS) {
+            upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getRemoveSelectedFunctionAction())));
+        }
         upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getDisplayAllFunctionsAction())));
 
         lowerPanel.add(new LJLabel(LocalizationKeys.BOOLEAN_FUNCTIONS_KEY, getLocProv(), SwingConstants.CENTER), BorderLayout.NORTH);
@@ -144,6 +148,7 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
         getJfpga().getGenerateRandomFunctionAction().setEnabled(areItemsEditable());
         getJfpga().getDuplicateSelectedFunctionAction().setEnabled(areItemsEditable());
         getJfpga().getRemoveSelectedFunctionAction().setEnabled(areItemsEditable());
+        getJfpga().getUndoRemoveFunctionAction().setEnabled(getRemoveCount() > 0);
     }
 
     @Override
