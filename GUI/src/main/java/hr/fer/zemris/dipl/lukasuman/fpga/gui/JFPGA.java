@@ -1,5 +1,7 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui;
 
+import com.google.gson.JsonParseException;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.parser.BoolParser;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.LoadTextAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.SaveTextAction;
@@ -19,8 +21,10 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
@@ -440,14 +444,24 @@ public class JFPGA extends JFrame {
                 .filter(Objects::nonNull)
                 .map(Path::toString)
                 .collect(Collectors.toList());
-        Utility.saveTextFile(GUIConstants.getLastSessionsFilePath(), sessionPaths);
+
+        try {
+            Utility.saveTextFile(GUIConstants.getLastSessionsFilePath(), sessionPaths);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Couldn't save session paths.");
+        }
     }
 
     private void loadPreviousSessions() {
-        List<String> sessionPaths = Utility.readTextFile(GUIConstants.getLastSessionsFilePath());
-
-        if (sessionPaths == null) {
+        List<String> sessionPaths;
+        try {
+            sessionPaths = Utility.readTextFileByLines(GUIConstants.getLastSessionsFilePath());
+        } catch (FileNotFoundException e) {
             System.err.println("No file of previous sessions found.");
+            return;
+        } catch (IOException e) {
+            e.printStackTrace();
             return;
         }
 
@@ -455,14 +469,19 @@ public class JFPGA extends JFrame {
             SessionData sessionData;
 
             try {
-                sessionData = SessionData.deserializeFromFile(sessionPath);
-            } catch (IOException e) {
-                System.err.println("Couldn't load a previous session. IO error.");
+                sessionData = MyGson.readFromJson(sessionPath, SessionData.class);
+                sessionData.setFilePath(Paths.get(sessionPath));
+            } catch (FileNotFoundException e) {
                 e.printStackTrace();
+                System.out.println("Couldn't load a previous session. File not found: " + sessionPath);
                 return;
-            } catch (ClassNotFoundException e) {
-                System.err.println("Couldn't load a previous session. Invalid class.");
+            } catch (IOException e) {
                 e.printStackTrace();
+                System.err.println("Couldn't load a previous session. IO error.");
+                return;
+            } catch (JsonParseException e) {
+                e.printStackTrace();
+                System.err.println("Couldn't load a previous session. Invalid JSON format.");
                 return;
             }
 
@@ -471,13 +490,18 @@ public class JFPGA extends JFrame {
     }
 
     private void saveLanguage() {
-        Utility.saveTextFile(GUIConstants.getLastLanguageFilePath(), LocalizationProviderHTML.getInstance().getLanguage());
+        try {
+            Utility.saveTextFile(GUIConstants.getLastLanguageFilePath(), LocalizationProviderHTML.getInstance().getLanguage());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadLanguage() {
-        List<String> lines = Utility.readTextFile(GUIConstants.getLastLanguageFilePath());
-
-        if (lines == null) {
+        List<String> lines;
+        try {
+            lines = Utility.readTextFileByLines(GUIConstants.getLastLanguageFilePath());
+        } catch (IOException e) {
             return;
         }
 

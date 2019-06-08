@@ -21,7 +21,7 @@ import java.nio.file.Paths;
  */
 public abstract class AbstractAppAction extends LocalizableAction {
 
-	protected static FileNameExtensionFilter sessionFileFilter = new FileNameExtensionFilter(".ser (Java Serializable)", "ser");
+	protected static FileNameExtensionFilter sessionFileFilter = new FileNameExtensionFilter(".json (JSON file format)", "json");
 	protected static FileNameExtensionFilter textFileFilter = new FileNameExtensionFilter(".txt (Text File)", "txt");
 
 	/**The parent application.*/

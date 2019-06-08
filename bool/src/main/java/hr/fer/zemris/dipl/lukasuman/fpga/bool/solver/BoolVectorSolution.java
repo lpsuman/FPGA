@@ -18,7 +18,6 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
 
     private static final long serialVersionUID = 2274732589717742103L;
 
-    private static final String DEFAULT_NAME = "VectorSolution";
     private static final String BLOCK_CONFIG_MSG = "block configuration";
 
     private BooleanVector boolVector;

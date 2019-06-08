@@ -1,6 +1,8 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.action.session;
 
+import com.google.gson.JsonParseException;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.MyGson;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.AbstractAppAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionData;
@@ -39,14 +41,15 @@ public class OpenSessionAction extends AbstractAppAction {
             }
 
             try {
-                sessionData = SessionData.deserializeFromFile(filePath.toString());
+                sessionData = MyGson.readFromJson(filePath.toString(), SessionData.class);
+                sessionData.setFilePath(filePath);
             } catch (IOException exc) {
                 exc.printStackTrace();
                 warnCouldNotOpen(filePath, LocalizationKeys.IO_EXCEPTION_OCCURRED_KEY);
                 return;
-            } catch (ClassNotFoundException exc) {
+            } catch (JsonParseException exc) {
                 exc.printStackTrace();
-                warnCouldNotOpen(filePath, LocalizationKeys.INVALID_DATA_FORMAT_KEY);
+                warnCouldNotOpen(filePath, String.format(LocalizationKeys.INVALID_DATA_FORMAT_KEY + "\n%s", exc.getMessage()));
                 return;
             }
 

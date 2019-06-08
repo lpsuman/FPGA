@@ -5,6 +5,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.function.Supplier;
 
@@ -25,7 +26,10 @@ public class SaveTextAction extends AbstractAppAction {
             return;
         }
 
-        if (!Utility.saveTextFile(filePath.toString(), textSupplier.get())) {
+        try {
+            Utility.saveTextFile(filePath.toString(), textSupplier.get());
+        } catch (IOException e1) {
+            e1.printStackTrace();
             warnCouldNotSave(filePath, LocalizationKeys.IO_EXCEPTION_OCCURRED_KEY);
         }
     }

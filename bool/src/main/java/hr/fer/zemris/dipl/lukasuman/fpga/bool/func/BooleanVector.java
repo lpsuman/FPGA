@@ -25,10 +25,10 @@ public class BooleanVector extends AbstractNameHandler implements Serializable, 
 
     private static final String DEFAULT_NAME = "BooleanVector";
 
+    private List<String> sortedInputIDs;
     private List<BooleanFunction> boolFunctions;
     private int numInputCombinations;
     private BitSet[] truthTable;
-    private List<String> sortedInputIDs;
 
     public BooleanVector(List<BooleanFunction> boolFunctions, List<BooleanFunction> linkableFunctions,
                          boolean removeRedundantInputs, String name) {

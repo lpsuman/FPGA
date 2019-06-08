@@ -117,16 +117,8 @@ public class BlockConfiguration implements Serializable, Duplicateable<BlockConf
 //            sb.append('\n');
 //            sb.append(String.format(Constants.SOLUTION_PRINT_FORMAT, i + boolVector.getNumInputs()));
             sb.append(String.format("%" + Constants.BOOL_VECTOR_PRINT_CELL_SIZE + "s", ""));
-            int sizeOfLUT = blockSize - numCLBInputs;
 
-            for (int j = 0; j < sizeOfLUT; ++j) {
-                int intValue = data[i * blockSize + numCLBInputs + j];
-                int numUsedBits = 32;
-                if (j == 0) {
-                    numUsedBits = (int) Math.pow(2, numCLBInputs) - 32 * (sizeOfLUT - 1);
-                }
-                sb.append(Utility.toBinaryString(intValue, numUsedBits));
-            }
+            appendLUT(sb, data, i, numCLBInputs, blockSize);
 
             if (numCLBInputs == 2) {
                 sb.append(String.format("%" + Constants.BOOL_VECTOR_PRINT_CELL_SIZE + "s", ""));
@@ -137,6 +129,19 @@ public class BlockConfiguration implements Serializable, Duplicateable<BlockConf
             }
 
             sb.append('\n');
+        }
+    }
+
+    private static void appendLUT(StringBuilder sb, int[] data, int indexCLB, int numCLBInputs, int blockSize) {
+        int sizeOfLUT = blockSize - numCLBInputs;
+
+        for (int j = 0; j < sizeOfLUT; ++j) {
+            int intValue = data[indexCLB * blockSize + numCLBInputs + j];
+            int numUsedBits = 32;
+            if (j == 0) {
+                numUsedBits = (int) Math.pow(2, numCLBInputs) - 32 * (sizeOfLUT - 1);
+            }
+            sb.append(Utility.toBinaryString(intValue, numUsedBits));
         }
     }
 

@@ -1,6 +1,7 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.action.session;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.MyGson;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.AbstractAppAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
@@ -48,7 +49,7 @@ public class SaveSessionAction extends AbstractAppAction {
         }
 
         try {
-            SessionData.serializeToFile(sessionData, destinationFilePath.toString());
+            MyGson.writeToJson(destinationFilePath.toString(), sessionData, SessionData.class);
         } catch (IOException exc) {
             exc.printStackTrace();
             warnCouldNotSave(destinationFilePath, LocalizationKeys.IO_EXCEPTION_OCCURRED_KEY);

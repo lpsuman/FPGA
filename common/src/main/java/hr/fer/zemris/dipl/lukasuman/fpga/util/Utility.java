@@ -119,7 +119,7 @@ public class Utility {
         checkNull(mask, "mask");
         BitSet result = new BitSet(mask.length());
         for (int i = 0; i < mask.length(); i++) {
-            result.set(i, mask.charAt(i) == 1);
+            result.set(i, mask.charAt(i) != '0');
         }
         return result;
     }
@@ -296,7 +296,7 @@ public class Utility {
         return IntStream.range(fromIndex, toIndex).boxed().toArray(Integer[]::new);
     }
 
-    public static List<String> readTextFile(String filePath) {
+    public static List<String> readTextFileByLines(String filePath) throws IOException {
         checkIfValidString(filePath, "file path");
         List<String> result = new ArrayList<>();
 
@@ -310,21 +310,20 @@ public class Utility {
                     result.add(line);
                 }
             }
-        } catch (FileNotFoundException e) {
-            return null;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
         }
 
         return result;
     }
 
-    public static boolean saveTextFile(String filePath, String text) {
-        return saveTextFile(filePath, Arrays.asList(text.split("\\r?\\n")));
+    public static String readTextFile(String filePath) throws IOException {
+        return String.join("\n", readTextFileByLines(filePath));
     }
 
-    public static boolean saveTextFile(String filePath, List<String> lines) {
+    public static void saveTextFile(String filePath, String text) throws IOException {
+        saveTextFile(filePath, Arrays.asList(text.split("\\r?\\n")));
+    }
+
+    public static void saveTextFile(String filePath, List<String> lines) throws IOException {
         checkIfValidString(filePath, "file path");
         checkIfValidCollection(lines, "list of lines");
 
@@ -337,12 +336,7 @@ public class Utility {
                     writer.newLine();
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
         }
-
-        return true;
     }
 
     public static List<String> breakIntoWords(List<String> lines) {
