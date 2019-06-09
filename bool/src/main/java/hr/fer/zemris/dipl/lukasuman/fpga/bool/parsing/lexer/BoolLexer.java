@@ -3,6 +3,8 @@ package hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.lexer;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class represents a lexicographical analyzer of boolean expressions. {@link StreamTokenizer} is used on the
@@ -11,8 +13,8 @@ import java.io.*;
  */
 public class BoolLexer implements Lexer<BoolToken> {
 
-    private static final char[] LEFT_PARENTHESIS_CHARS = new char[]{'(', '[', '{'};
-    private static final char[] RIGHT_PARENTHESIS_CHARS = new char[]{')', ']', '}'};
+    public static final List<Character> LEFT_PARENTHESIS_CHARS = Arrays.asList('(', '[', '{');
+    public static final List<Character> RIGHT_PARENTHESIS_CHARS = Arrays.asList(')', ']', '}');
 
     private StreamTokenizer tokenizer;
 
@@ -44,11 +46,10 @@ public class BoolLexer implements Lexer<BoolToken> {
 
     @Override
     public BoolToken nextToken() {
-        BoolTokenType type = null;
+        BoolTokenType type;
         String value = null;
         try {
             int token;
-            loop:
             switch (token = tokenizer.nextToken()) {
                 case StreamTokenizer.TT_EOL:
                     type = BoolTokenType.EOL;
@@ -61,18 +62,14 @@ public class BoolLexer implements Lexer<BoolToken> {
                     value = tokenizer.sval;
                     break;
                 default:
-                    for (char leftParenthesisChar : LEFT_PARENTHESIS_CHARS) {
-                        if (token == leftParenthesisChar) {
-                            type = BoolTokenType.PARENTHESIS_LEFT;
-                            break loop;
-                        }
+                    if (LEFT_PARENTHESIS_CHARS.contains((char)token)) {
+                        type = BoolTokenType.PARENTHESIS_LEFT;
+                        break;
                     }
 
-                    for (char rightParenthesisChar : RIGHT_PARENTHESIS_CHARS) {
-                        if (token == rightParenthesisChar) {
-                            type = BoolTokenType.PARENTHESIS_RIGHT;
-                            break loop;
-                        }
+                    if (RIGHT_PARENTHESIS_CHARS.contains((char)token)) {
+                        type = BoolTokenType.PARENTHESIS_RIGHT;
+                        break;
                     }
 
                     throw new BoolLexerException("Invalid character in expression: " + (char)token);

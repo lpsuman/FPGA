@@ -1,8 +1,10 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.solver;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.lexer.BoolLexer;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -56,8 +58,14 @@ public class FuncToExpressionConverter {
 
         public FuncToString(String formatString, boolean usesFirstVariable, boolean usesSecondVariable, boolean isDNF) {
             Utility.checkNull(formatString, "format string");
-            int leftParenthesisCount = countChars(formatString, '(');
-            int rightParenthesisCount = countChars(formatString, ')');
+            int leftParenthesisCount = 0;
+            for (char leftParenthesis : BoolLexer.LEFT_PARENTHESIS_CHARS) {
+                leftParenthesisCount += countChars(formatString, leftParenthesis);
+            }
+            int rightParenthesisCount = 0;
+            for (char rightParenthesis : BoolLexer.RIGHT_PARENTHESIS_CHARS) {
+                rightParenthesisCount += countChars(formatString, rightParenthesis);
+            }
 
             if (leftParenthesisCount != rightParenthesisCount) {
                 throw new IllegalArgumentException("Invalid number of parentheses in string format: " + formatString);
@@ -214,7 +222,7 @@ public class FuncToExpressionConverter {
      * @return Returns {@code true} if the string format for the given function has parentheses at its ends.
      */
     public static boolean isEnclosedInParentheses(int truthTable) {
-        return getMapping(truthTable).formatString.charAt(0) == '(';
+        return BoolLexer.LEFT_PARENTHESIS_CHARS.contains(getMapping(truthTable).formatString.charAt(0));
     }
 
     public static String getUnenclosedString(int truthTable, String strA, String strB) {

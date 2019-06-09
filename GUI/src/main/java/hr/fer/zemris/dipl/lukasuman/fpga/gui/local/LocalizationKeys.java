@@ -47,6 +47,10 @@ public class LocalizationKeys {
     public static final String FILE_S_COULD_NOT_BE_OPENED_KEY = "file_s_could_not_be_opened_msg";
     public static final String IO_EXCEPTION_OCCURRED_KEY = "io_exception_occurred_msg";
     public static final String INVALID_DATA_FORMAT_KEY = "invalid_data_format_msg";
+    public static final String SELECTED_FUNCTIONS_HAVE_TOO_MANY_INPUTS_KEY = "selected_functions_have_too_many_inputs_msg";
+    public static final String NO_SELECTED_FUNCTIONS_KEY = "no_selected_functions";
+    public static final String NO_EXPRESSION_KEY = "no_expression";
+    public static final String S_INVALID_INPUT_IS_OPERATOR_KEY = "s_is_an_invalid_input_name_because_it_is_used_as_an_operator_msg";
 
 //    public static final String INDEX_KEY = "index";
     public static final String INDEX_KEY = "sign_#";
@@ -69,6 +73,7 @@ public class LocalizationKeys {
     public static final String LOAD_TEXT_KEY = "load_text";
     public static final String SAVE_TEXT_KEY = "save_text";
     public static final String LOAD_EXPRESSION_KEY = "load_expression";
+    public static final String GENERATING_EXPRESSIONS_KEY = "generating_expressions";
     public static final String FUNCTIONS_KEY = "functions";
     public static final String BOOLEAN_FUNCTIONS_KEY = "boolean_functions";
     public static final String GENERATE_RANDOM_FUNCTION_KEY = "generate_br_random_function";

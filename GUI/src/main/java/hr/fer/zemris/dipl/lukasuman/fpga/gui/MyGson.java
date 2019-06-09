@@ -38,6 +38,7 @@ public class MyGson {
 
         private static final String CLASS_NAME = "boolean function";
         private static final String NAME = "name";
+        private static final String EXPRESSION = "expression";
         private static final String INPUTS = "inputs";
         private static final String TRUTHTABLE = "truthTable";
 
@@ -45,6 +46,9 @@ public class MyGson {
         public void write(JsonWriter jsonWriter, BooleanFunction booleanFunction) throws IOException {
             jsonWriter.beginObject();
             jsonWriter.name(NAME).value(booleanFunction.getName());
+            if (booleanFunction.getExpressionGeneratedFrom() != null) {
+                jsonWriter.name(EXPRESSION).value(booleanFunction.getExpressionGeneratedFrom());
+            }
             jsonWriter.name(INPUTS);
             getGson().getAdapter(List.class).write(jsonWriter, booleanFunction.getInputIDs());
             jsonWriter.name(TRUTHTABLE);
@@ -55,6 +59,7 @@ public class MyGson {
         @Override
         public BooleanFunction read(JsonReader jsonReader) throws IOException {
             String name = null;
+            String expression = null;
             List<String> inputIDs = null;
             BitSet truthTable = null;
             jsonReader.beginObject();
@@ -63,6 +68,9 @@ public class MyGson {
                 switch (fieldName) {
                     case NAME:
                         name = jsonReader.nextString();
+                        break;
+                    case EXPRESSION:
+                        expression = jsonReader.nextString();
                         break;
                     case INPUTS:
                         inputIDs = (List<String>) getGson().getAdapter(List.class).read(jsonReader);
@@ -77,15 +85,19 @@ public class MyGson {
             }
             jsonReader.endObject();
 
+            BooleanFunction func;
             if (inputIDs == null) {
                 throw new JsonParseException(String.format(MISSING_FIELD_ERROR_MSG, INPUTS, CLASS_NAME));
             } else if (truthTable == null) {
                 throw new JsonParseException(String.format(MISSING_FIELD_ERROR_MSG, TRUTHTABLE, CLASS_NAME));
             } else if (name == null) {
-                return new BooleanFunction(inputIDs, truthTable);
+                func = new BooleanFunction(inputIDs, truthTable);
             } else {
-                return new BooleanFunction(inputIDs, truthTable, name);
+                func = new BooleanFunction(inputIDs, truthTable, name);
             }
+
+            func.setExpressionGeneratedFrom(expression);
+            return func;
         }
     };
 

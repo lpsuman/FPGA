@@ -156,10 +156,20 @@ public class BoolFuncController {
         return new BooleanFunction(boolExpression.getInputIDs(), boolExpression.getTruthTable());
     }
 
-    public static BooleanFunction generateFromText(List<String> text) {
-        Utility.checkIfValidCollection(text, "text");
-        List<String> words = Utility.breakIntoWords(text);
-        if (words == null) {
+    public static BooleanFunction generateFromText(String text) {
+        Utility.checkIfValidString(text, "text");
+        String funcName = null;
+        List<String> words;
+
+        int equalsSignIndex = text.indexOf('=');
+        if (equalsSignIndex != -1) {
+            funcName = text.substring(0, equalsSignIndex).trim();
+            words = Utility.breakIntoWords(text.substring(equalsSignIndex + 1).trim());
+        } else {
+            words = Utility.breakIntoWords(text);
+        }
+
+        if (words.isEmpty()) {
             throw new IllegalArgumentException("Input text is empty.");
         }
 
@@ -259,7 +269,11 @@ public class BoolFuncController {
             throw new IllegalArgumentException("Invalid truth table format.");
         }
 
-        return new BooleanFunction(inputIDs, bitSet);
+        if (funcName != null) {
+            return new BooleanFunction(inputIDs, bitSet, funcName);
+        } else {
+            return new BooleanFunction(inputIDs, bitSet);
+        }
     }
 
     public static int[] bitSetToArray(BitSet bitSet, int startIndex, int endIndex, int repeat) {

@@ -49,7 +49,7 @@
       "truthTable": "001"
     },
     {
-      "name": "S1",
+      "name": "S1_old",
       "inputs": [
         "a0",
         "a1",
@@ -60,7 +60,7 @@
       "truthTable": "00110110110010010110110010010011"
     },
     {
-      "name": "C0",
+      "name": "C0_old",
       "inputs": [
         "a0",
         "b0",
@@ -69,7 +69,7 @@
       "truthTable": "00010111"
     },
     {
-      "name": "S0",
+      "name": "S0_old",
       "inputs": [
         "a0",
         "b0",
@@ -78,7 +78,7 @@
       "truthTable": "01101001"
     },
     {
-      "name": "C1",
+      "name": "C1_old",
       "inputs": [
         "a0",
         "a1",
@@ -87,6 +87,46 @@
         "cin"
       ],
       "truthTable": "00000001001101110001001101111111"
+    },
+    {
+      "name": "S0",
+      "expression": " A0 XOR B0 XOR CIN",
+      "inputs": [
+        "A0",
+        "B0",
+        "CIN"
+      ],
+      "truthTable": "01101001"
+    },
+    {
+      "name": "C0",
+      "expression": " A0 AND B0 OR CIN AND (A0 OR B0)",
+      "inputs": [
+        "A0",
+        "B0",
+        "CIN"
+      ],
+      "truthTable": "00010111"
+    },
+    {
+      "name": "S1",
+      "expression": " A1 XOR B1 XOR C0",
+      "inputs": [
+        "A1",
+        "B1",
+        "C0"
+      ],
+      "truthTable": "01101001"
+    },
+    {
+      "name": "C1",
+      "expression": " A1 AND B1 OR C0 AND (A1 OR B1)",
+      "inputs": [
+        "A1",
+        "B1",
+        "C0"
+      ],
+      "truthTable": "00010111"
     }
   ],
   "boolVectors": [

@@ -2,6 +2,7 @@ package hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.parser.BoolOperatorFactory;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIConstants;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JPanelPair;
@@ -27,6 +28,7 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
     private MyJTable truthTable;
 
     private JTextArea expressionTextArea;
+    private JTextArea showExpressionTextArea;
     private JComboBox<Integer> numInputsComboBox;
 
     public BooleanFunctionController(SessionController parentSession) {
@@ -48,22 +50,29 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
 
         itemTable.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                int[] selectedIndices = itemTable.getSelectedRows();
-                List<BooleanFunction> selectedFunctions = new ArrayList<>(selectedIndices.length);
+                List<BooleanFunction> selectedFunctions = getSelectedItems();
 
-                for (int selectedIndex : selectedIndices) {
-                    selectedFunctions.add(itemTableModel.getItems().get(selectedIndex));
-                }
-
-                if (selectedFunctions.size() == 1) {
+                if (selectedFunctions.isEmpty()) {
+                    truthTableModel.loadDefaultItems();
+                    inputTableModel.loadDefaultItems();
+                } else if (selectedFunctions.size() == 1) {
                     BooleanFunction selectedFunction = selectedFunctions.get(0);
                     truthTableModel.setData(selectedFunction);
                     inputTableModel.setItems(selectedFunction.getInputIDs());
-                } else if (selectedFunctions.size() > 1) {
-                    BooleanVector selectionVector = new BooleanVector(selectedFunctions);
-                    truthTableModel.setData(selectionVector);
-                    inputTableModel.setItems(selectionVector.getSortedInputIDs());
+                } else {
+                    try {
+                        BooleanVector selectionVector = new BooleanVector(selectedFunctions);
+                        truthTableModel.setData(selectionVector);
+                        inputTableModel.setItems(selectionVector.getSortedInputIDs());
+                    } catch (IllegalArgumentException exc) {
+                        getJfpga().showErrorMsg(String.format(
+                                getLocProv().getString(LocalizationKeys.SELECTED_FUNCTIONS_HAVE_TOO_MANY_INPUTS_KEY),
+                                Constants.NUM_FUNCTION_INPUTS_LIMIT.getUpperLimit()));
+                        itemTable.clearSelection();
+                    }
                 }
+
+                showExpressions();
             }
         });
 
@@ -104,6 +113,13 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
         buttonsPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getGenerateFromTextAction())));
         buttonsPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getLoadTextAction())));
         buttonsPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getSaveTextAction())));
+
+        upperPanel.add(new LJLabel(LocalizationKeys.GENERATING_EXPRESSIONS_KEY, getLocProv(), SwingConstants.CENTER));
+        showExpressionTextArea = new JTextArea(getLocProv().getString(LocalizationKeys.NO_SELECTED_FUNCTIONS_KEY));
+        showExpressionTextArea.setEditable(false);
+        showExpressionTextArea.setRows(GUIConstants. SHOW_EXPRESSION_TEXT_AREA_ROWS);
+        getLocProv().addLocalizationListener(this::showExpressions);
+        upperPanel.add(GUIUtility.putIntoPanelWithBorder(new JScrollPane(showExpressionTextArea)));
 
         lowerPanel.add(new LJLabel(LocalizationKeys.TRUTH_TABLE_KEY, getLocProv(), SwingConstants.CENTER), BorderLayout.NORTH);
         lowerPanel.add(new JScrollPane(truthTable), BorderLayout.CENTER);
@@ -156,10 +172,16 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
         super.changeItemName(index, newName);
         truthTableModel.setData(getItem(index));
         truthTableModel.fireTableStructureChanged();
+        showExpressions();
     }
 
     public void changeFunctionInput(int inputIndex, String newInputID) {
         Utility.checkIfValidString(newInputID, "new boolean function's input");
+
+        if (BoolOperatorFactory.getGenericFactory().isMappingPresent(newInputID)) {
+            getJfpga().showErrorMsg(String.format(getLocProv().getString(LocalizationKeys.S_INVALID_INPUT_IS_OPERATOR_KEY), newInputID));
+            return;
+        }
 
         int[] selectedIndices = getIndicesSelectedItems();
 
@@ -170,6 +192,7 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
             Utility.checkRange(inputIndex, 0, func.getNumInputs() - 1);
             List<String> oldInputs = new ArrayList<>(func.getInputIDs());
             func.getInputIDs().set(inputIndex, newInputID);
+            func.updateInputsInExpression(oldInputs.get(inputIndex), newInputID);
 
             if (booleanFunctionListeners != null) {
                 booleanFunctionListeners.forEach(l -> l.booleanFunctionInputsEdited(func, getIndexSelectedItem(), oldInputs));
@@ -185,6 +208,7 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
                 if (index != -1) {
                     List<String> oldInputs = new ArrayList<>(selectedFunction.getInputIDs());
                     inputIDs.set(index, newInputID);
+                    selectedFunction.updateInputsInExpression(oldInputs.get(index), newInputID);
 
                     if (booleanFunctionListeners != null) {
                         booleanFunctionListeners.forEach(l -> l.booleanFunctionInputsEdited(selectedFunction, selectedIndex, oldInputs));
@@ -199,20 +223,49 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
 
         inputTableModel.fireTableDataChanged();
         truthTableModel.fireTableStructureChanged();
+        showExpressions();
         parentSession.setEdited(true);
     }
 
-    public void tableDataChanged(int index, BitSet oldTable) {
+    public void tableDataChanged(int indexFuncInSelected, int index, BitSet oldTable) {
+        BooleanFunction func = getItem(getIndicesSelectedItems()[indexFuncInSelected]);
+        func.setExpressionGeneratedFrom(null);
+
         if (booleanFunctionListeners != null) {
             if (getIndexSelectedItem() < 0) {
                 return;
             }
-            booleanFunctionListeners.forEach(l -> l.booleanFunctionTableEdited(getSelectedItem(), index, oldTable));
+            booleanFunctionListeners.forEach(l -> l.booleanFunctionTableEdited(func, index, oldTable));
+        }
+    }
+
+    private void showExpressions() {
+        List<BooleanFunction> functions = getSelectedItems();
+        if (functions == null || functions.isEmpty()) {
+            showExpressionTextArea.setText(getLocProv().getString(LocalizationKeys.NO_SELECTED_FUNCTIONS_KEY));
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (BooleanFunction function : functions) {
+                sb.append(function.getName()).append(" = ");
+                String expression = function.getExpressionGeneratedFrom();
+                if (expression == null) {
+                    sb.append(getLocProv().getString(LocalizationKeys.NO_EXPRESSION_KEY));
+                } else {
+                    sb.append(expression);
+                }
+                sb.append('\n');
+            }
+            sb.setLength(sb.length() - 1);
+            showExpressionTextArea.setText(sb.toString());
         }
     }
 
     public JTextArea getExpressionTextArea() {
         return expressionTextArea;
+    }
+
+    public JTextArea getShowExpressionTextArea() {
+        return showExpressionTextArea;
     }
 
     public JComboBox<Integer> getNumInputsComboBox() {

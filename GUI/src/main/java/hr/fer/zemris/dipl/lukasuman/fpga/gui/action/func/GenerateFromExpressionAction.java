@@ -24,6 +24,12 @@ public class GenerateFromExpressionAction extends AbstractGenerateFromTextAction
 
     @Override
     protected void doAction(String text) {
+        String funcName = null;
+        int equalsSignIndex = text.indexOf('=');
+        if (equalsSignIndex != -1) {
+            funcName = text.substring(0, equalsSignIndex).trim();
+            text = text.substring(equalsSignIndex + 1);
+        }
         BoolParser parser = jfpga.getParser();
         BoolExpression boolExpression;
 
@@ -35,6 +41,10 @@ public class GenerateFromExpressionAction extends AbstractGenerateFromTextAction
         }
 
         BooleanFunction newFunc = BoolFuncController.generateFromExpression(boolExpression);
+        newFunc.setExpressionGeneratedFrom(text);
+        if (funcName != null) {
+            newFunc.setName(funcName);
+        }
         jfpga.getCurrentSession().getBooleanFunctionController().addItem(newFunc);
     }
 }

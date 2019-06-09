@@ -157,7 +157,7 @@ public class TruthTableModel extends MyAbstractTableModel {
         if (value != oldValue) {
             BitSet oldTable = (BitSet) truthTables[indexTruthTable].clone();
             truthTables[indexTruthTable].set(rowIndex, value);
-            parentSession.getBooleanFunctionController().tableDataChanged(rowIndex, oldTable);
+            parentSession.getBooleanFunctionController().tableDataChanged(indexTruthTable, rowIndex, oldTable);
             fireTableCellUpdated(rowIndex, columnIndex);
         }
     }

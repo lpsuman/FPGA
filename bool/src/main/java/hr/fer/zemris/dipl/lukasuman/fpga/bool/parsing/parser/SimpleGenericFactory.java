@@ -41,12 +41,12 @@ public class SimpleGenericFactory<T> implements GenericFactory<T> {
 
     @Override
     public boolean isMappingPresent(String name) {
-        return nameToClassMap.get(name) != null;
+        return nameToClassMap.get(name.toLowerCase()) != null;
     }
 
     @Override
     public T getForName(String name, Object... arguments) {
-        Class<? extends T> clazz = nameToClassMap.get(name);
+        Class<? extends T> clazz = nameToClassMap.get(name.toLowerCase());
 
         if (clazz == null) {
             if (defaultClass == null) {

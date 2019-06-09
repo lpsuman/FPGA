@@ -339,6 +339,10 @@ public class Utility {
         }
     }
 
+    public static List<String> breakIntoWords(String text) {
+        return Arrays.asList(text.split("\\s+"));
+    }
+
     public static List<String> breakIntoWords(List<String> lines) {
         checkIfValidCollection(lines, "list of lines");
         List<String> words = new ArrayList<>();
