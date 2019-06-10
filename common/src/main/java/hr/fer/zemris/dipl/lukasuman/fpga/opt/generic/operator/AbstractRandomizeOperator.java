@@ -23,7 +23,7 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
         }
     }
 
-    private boolean useStatistics;
+    protected boolean useStatistics;
     private List<OperatorStatistics> statsList;
     private List<OperatorStatistics> cumulativeStatsList;
     private List<OperatorStatistics> globalStatsList;

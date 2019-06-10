@@ -1,6 +1,5 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.solver;
 
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BlockConfiguration;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.ga.operators.crossover.AbstractBoolCrossover;
@@ -24,8 +23,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Timer;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -67,7 +65,10 @@ public class BooleanSolver implements Resetable, Serializable {
     private AnnealedThreadPoolConfig threadPoolConfig;
     private double mutationChance;
     private boolean shouldStop;
+    private Solution<int[]> bestSolution;
+    private int numCLBOfBest;
     private Solution<int[]> bestSolutionWithCurrentNumCLB;
+    private int highestNumCLBFailed;
 
     public BooleanSolver(SolverMode solverMode, Consumer<BoolVectorSolution> solutionConsumer,
                          boolean printOnlyBestSolution, boolean useStatistics, boolean printOnlyGlobalStatistics,
@@ -120,12 +121,14 @@ public class BooleanSolver implements Resetable, Serializable {
     }
 
     public BoolVectorSolution solve(BoolVecProblem problem) {
+        Timer timer = new Timer();
+        timer.start();
         shouldStop = false;
-        List<BoolVectorSolution> perFunctionBestSolutions = doBruteSolve(problem);
+        List<BoolVectorSolution> bruteSolutions = doBruteSolve(problem);
         int numFunctions = problem.getBoolVector().getNumFunctions();
 
         if (shouldStop) {
-            if (perFunctionBestSolutions.size() == numFunctions) {
+            if (bruteSolutions.size() == numFunctions) {
                 System.out.println("Warning, solver was forcibly stopped so the result might not be the best.");
             } else {
                 System.out.println("Solver was forcibly stopped with no solution found.");
@@ -137,20 +140,29 @@ public class BooleanSolver implements Resetable, Serializable {
 
         if (solverMode == SolverMode.BRUTE || shouldStop) {
             System.out.println("Returning brute solution as the result.");
-            if (perFunctionBestSolutions.size() == 1) {
-                return solverIsDone(perFunctionBestSolutions.get(0), problem);
+            if (bruteSolutions.size() == 1) {
+                return solverIsDone(bruteSolutions.get(0), problem);
             } else {
-                return solverIsDone(BoolVectorSolution.mergeSolutions(perFunctionBestSolutions), problem);
+                return solverIsDone(BoolVectorSolution.mergeSolutions(bruteSolutions), problem);
             }
         }
 
-        List<RunResults> perFuncResults = solveIndividually(problem);
+        List<RunResults> perFuncResults = solveIndividually(problem, bruteSolutions);
+        printPerFuncResults(perFuncResults);
+
+        int avgNumCLBForSolvedFuncs = -1;
+        OptionalDouble optionalAvg = perFuncResults.stream()
+                .filter(r -> r.result != null)
+                .mapToInt(r -> r.result.getBlockConfiguration().getNumCLB()).average();
+        if (optionalAvg.isPresent()) {
+            avgNumCLBForSolvedFuncs = (int) Math.ceil(optionalAvg.getAsDouble());
+        }
 
         for (int i = 0; i < perFuncResults.size(); i++) {
             if (perFuncResults.get(i).result == null) {
                 System.out.println(String.format("No solution found for function %s, substituting with the brute solution.",
                         problem.getBoolVector().getBoolFunctions().get(i).getName()));
-                perFuncResults.get(i).result = perFunctionBestSolutions.get(i);
+                perFuncResults.get(i).result = bruteSolutions.get(i);
             }
         }
 
@@ -187,13 +199,16 @@ public class BooleanSolver implements Resetable, Serializable {
             return solverIsDone(solution, problem);
         }
 
-        int numCLBEstimation = perFuncResults.stream()
-                .mapToInt(result -> result.result.getBlockConfiguration().getNumCLB())
-                .sum() - 1;
-
-        problem.getClbController().setNumCLB(numCLBEstimation);
-        RunResults mergedRunResult = doARun(problem, true, false,
+        int numCLBInMerged = solution.getBlockConfiguration().getNumCLB();
+        timer.lap();
+        RunResults mergedRunResult = doARun(problem,
+                numCLBInMerged - 1, avgNumCLBForSolvedFuncs * numFunctions,
                 solverMode.getMaxRunningTimeMilliseconds() * numFunctions);
+        timer.lap();
+
+        printPerFuncResults(perFuncResults);
+        System.out.println(String.format("Running timer for the merged solution is %.3f seconds.", timer.getLastLapDuration() / 1000.0));
+        System.out.println(String.format("Total running time is %.3f seconds.", timer.getElapsedTime() / 1000.0));
 
         if (mergedRunResult.result == null) {
             System.out.println("Couldn't find a better solution than the merge of individual function's solutions.");
@@ -225,17 +240,21 @@ public class BooleanSolver implements Resetable, Serializable {
         return perFunctionBestSolutions;
     }
 
-    private List<RunResults> solveIndividually(BoolVecProblem problem) {
+    private List<RunResults> solveIndividually(BoolVecProblem problem, List<BoolVectorSolution> bruteSolutions) {
         int numCLBInputs = problem.getClbController().getNumCLBInputs();
         List<BooleanFunction> functions = problem.getBoolVector().getBoolFunctions();
         List<RunResults> perFuncResults = new ArrayList<>();
 
-        for (BooleanFunction function : functions) {
-            BoolVecProblem singleFuncProblem = new BoolVecProblem(new BooleanVector(function), numCLBInputs);
-            RunResults runResults = doARun(singleFuncProblem, true, true, solverMode.getMaxRunningTimeMilliseconds());
+        for (int i = 0; i < functions.size(); i++) {
+            BooleanFunction func = functions.get(i);
+            BoolVecProblem singleFuncProblem = new BoolVecProblem(new BooleanVector(func), numCLBInputs);
+            int numCLBBrute = bruteSolutions.get(i).getBlockConfiguration().getNumCLB();
+            RunResults runResults = doARun(
+                    singleFuncProblem,
+                    numCLBBrute - 1, (int) Math.ceil((double) func.getNumInputs() / numCLBInputs),
+                    solverMode.getMaxRunningTimeMilliseconds());
 
             perFuncResults.add(runResults);
-
             if (shouldStop) {
                 break;
             }
@@ -258,6 +277,10 @@ public class BooleanSolver implements Resetable, Serializable {
                     perFuncResults.get(0).randomizeMutation, mutationOperatorStatistics);
         }
 
+        return perFuncResults;
+    }
+
+    private void printPerFuncResults(List<RunResults> perFuncResults) {
         int numEvaluations = perFuncResults.stream()
                 .mapToInt(result -> result.numEvaluations)
                 .sum();
@@ -279,8 +302,6 @@ public class BooleanSolver implements Resetable, Serializable {
         for (int i = 0; i < elapsedTimes.size(); i++) {
             System.out.println(String.format("%4d   %4d   %10.3f", i, numberOfCLBs.get(i), elapsedTimes.get(i) / 1000.0));
         }
-
-        return perFuncResults;
     }
 
     private BoolVectorSolution solverIsDone(BoolVectorSolution solution, BoolVecProblem problem) {
@@ -294,8 +315,9 @@ public class BooleanSolver implements Resetable, Serializable {
         return solution;
     }
 
-    private RunResults doARun(BoolVecProblem problem, boolean canDecreaseNumCLB, boolean canIncreaseNumCLB, long timeLimit) {
+    private RunResults doARun(BoolVecProblem problem, int maxNumCLBs, int estimatedNumCLBs, long timeLimit) {
         CLBController controller = problem.getClbController();
+        controller.setNumCLB(Math.min(Math.max(1, maxNumCLBs), Math.max(1, estimatedNumCLBs)));
         RandomizeCrossover<int[]> randomCrossovers = generateRandomizeCrossover(controller, useStatistics);
         RandomizeMutation<int[]> randomMutations = generateRandomizeMutation(controller, mutationChance, useStatistics);
 
@@ -336,17 +358,13 @@ public class BooleanSolver implements Resetable, Serializable {
         }
 
         boolean useTime = timeLimit > 0;
-        Timer timer = null;
-        if (useTime) {
-            timer = new Timer(timeLimit);
-            timer.start();
-        } else if (!canIncreaseNumCLB) {
-            algorithm.setDoFullRuns(true);
-        }
+        Timer timer = new Timer(timeLimit);
+        timer.start();
 
-        Solution<int[]> bestSolution = null;
+        bestSolution = null;
         Solution<int[]> solution;
         Solution<int[]> bestButNotSolvedSolution = null;
+        highestNumCLBFailed = 0;
 
         controller.addCLBChangeListener(new CLBChangeListener() {
             @Override
@@ -360,7 +378,7 @@ public class BooleanSolver implements Resetable, Serializable {
             }
         });
 
-        int numCLBOfBest = -1;
+        numCLBOfBest = -1;
         int numFailed = 0;
         int numConsecutiveBestFitnessBelowThreshold = 0;
 
@@ -409,8 +427,7 @@ public class BooleanSolver implements Resetable, Serializable {
                 if (numFailed >= maxNumFails) {
                     System.out.print("Failed to find a solution after maximum number of tries, ");
 
-                    if (checkShouldBreak(bestSolution, bestButNotSolvedSolution.getFitness(),
-                            controller, canIncreaseNumCLB)) {
+                    if (checkShouldBreak(bestSolution, maxNumCLBs, controller)) {
                         break;
                     } else {
                         numFailed = 0;
@@ -432,8 +449,7 @@ public class BooleanSolver implements Resetable, Serializable {
                                 "Fitness of the best solution was below %.4f for %d consecutive attempts, ",
                                 stopTryingThreshold, maxNumBelowThresholdAttempts));
 
-                        if (checkShouldBreak(bestSolution, bestButNotSolvedSolution.getFitness(),
-                                controller, canIncreaseNumCLB)) {
+                        if (checkShouldBreak(bestSolution, maxNumCLBs, controller)) {
                             break;
                         } else {
                             numFailed = 0;
@@ -449,26 +465,25 @@ public class BooleanSolver implements Resetable, Serializable {
                 continue;
             }
 
-            bestSolution = solution;
-            numCLBOfBest = controller.getNumCLB();
-//            algorithm.setDoFullRuns(true);
+            String testResults = problem.getSolutionTestResults(solution, evaluator, true);
             if (!printOnlyBestSolution) {
-                System.out.println(problem.getSolutionTestResults(bestSolution, evaluator, true));
+                System.out.println(testResults);
             }
+            bestSolution = problem.trimmedBoolSolution(solution, evaluator.getUnusedCLBBlocks());
             int numUnusedBlocks = evaluator.getUnusedCLBBlocks().cardinality();
-
-            if (!canDecreaseNumCLB) {
-                System.out.println("Not allowed to decrease num of CLB, stopping.");
-                break;
-            }
-
-            int newNumCLB = controller.getNumCLB() - numUnusedBlocks - 1;
-            if (newNumCLB < 1) {
+            numCLBOfBest = controller.getNumCLB() - numUnusedBlocks;
+            if (numCLBOfBest == 1) {
                 System.out.println("A solution with a single CLB was found, stopping");
                 break;
+            } else {
+                System.out.println(String.format("CLBs in solution: %d (%d were unused)", numCLBOfBest, numUnusedBlocks));
             }
 
-            controller.setNumCLB(controller.getNumCLB() - numUnusedBlocks - 1);
+            if (numCLBOfBest <= highestNumCLBFailed + 1) {
+                break;
+            }
+
+            controller.setNumCLB(highestNumCLBFailed + (numCLBOfBest - highestNumCLBFailed) / 2);
             numFailed = 0;
             numConsecutiveBestFitnessBelowThreshold = 0;
         }
@@ -521,29 +536,28 @@ public class BooleanSolver implements Resetable, Serializable {
                 randomCrossovers, randomMutations, numEvaluations, elapsedTime);
     }
 
-    private boolean checkShouldBreak(Solution<int[]> bestSolution, double bestFitness,
-                                            CLBController controller, boolean canIncreaseNumCLB) {
-
+    private boolean checkShouldBreak(Solution<int[]> bestSolution, int maxNumCLBs, CLBController controller) {
+        int currentNumCLB = controller.getNumCLB();
+        highestNumCLBFailed = currentNumCLB;
         if (bestSolution == null) {
-            if (canIncreaseNumCLB) {
-                int numCLBIncreaseAmount = 1;
-
-                if (bestFitness < skipIncreaseNumCLBFitnessThreshold) {
-                    System.out.print("doing a skip, ");
-                    numCLBIncreaseAmount = Math.max(1,
-                            (int)(controller.getNumCLB() * skipIncreaseNumCLBAmount));
-                }
-
-                System.out.println(String.format("increasing number of CLBs by %d.", numCLBIncreaseAmount));
-                controller.setNumCLB(controller.getNumCLB() + numCLBIncreaseAmount);
-                return false;
+            if (currentNumCLB == maxNumCLBs) {
+                System.out.println("aborting.");
+                return true;
             } else {
-                System.out.println("not allowed to increase the number of CLBs, ");
+                controller.setNumCLB(Math.min(currentNumCLB * 2, maxNumCLBs));
+                System.out.println("doubling CLBs.");
+                return false;
+            }
+        } else {
+            if (currentNumCLB == numCLBOfBest - 1) {
+                System.out.println("aborting.");
+                return true;
+            } else {
+                controller.setNumCLB(currentNumCLB + (numCLBOfBest - currentNumCLB) / 2);
+                System.out.println("increasing CLBs.");
+                return false;
             }
         }
-
-        System.out.println("aborting.");
-        return true;
     }
 
     private static void printStats(RandomizeCrossover<int[]> randomizeCrossover, List<OperatorStatistics> crossoverStats,

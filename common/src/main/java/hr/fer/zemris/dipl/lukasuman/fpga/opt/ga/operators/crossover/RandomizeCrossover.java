@@ -19,11 +19,14 @@ public class RandomizeCrossover<T> extends AbstractRandomizeOperator implements 
     @Override
     public void crossover(Solution<T> firstParent, Solution<T> secondParent) {
         int indexOperator = calcRandomOperatorIndex();
-        crossovers.get(indexOperator).crossover(firstParent, secondParent);
         double betterFitness = Math.max(firstParent.getFitness(), secondParent.getFitness());
 
-        addWaitingSolution(firstParent, betterFitness, indexOperator);
-        addWaitingSolution(secondParent, betterFitness, indexOperator);
+        if (useStatistics) {
+            addWaitingSolution(firstParent, betterFitness, indexOperator);
+            addWaitingSolution(secondParent, betterFitness, indexOperator);
+        }
+
+        crossovers.get(indexOperator).crossover(firstParent, secondParent);
     }
 
     @Override

@@ -89,7 +89,7 @@ public class Utility {
     }
 
     public static BitSet[] newBitSetArray(int arraySize, int bitSetSize) {
-        Utility.checkLimit(Constants.NUM_FUNCTIONS_LIMIT, arraySize);
+        Utility.checkLimit(Constants.NUM_CLB_LIMIT, arraySize);
         Utility.checkLimit(Constants.BITSET_SIZE_LIMIT, bitSetSize);
         BitSet[] result = new BitSet[arraySize];
 

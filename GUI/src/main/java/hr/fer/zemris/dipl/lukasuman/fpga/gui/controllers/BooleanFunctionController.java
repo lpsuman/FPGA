@@ -68,7 +68,9 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
                         getJfpga().showErrorMsg(String.format(
                                 getLocProv().getString(LocalizationKeys.SELECTED_FUNCTIONS_HAVE_TOO_MANY_INPUTS_KEY),
                                 Constants.NUM_FUNCTION_INPUTS_LIMIT.getUpperLimit()));
-                        itemTable.clearSelection();
+                        truthTableModel.loadDefaultItems();
+                        inputTableModel.loadDefaultItems();
+//                        itemTable.clearSelection();
                     }
                 }
 

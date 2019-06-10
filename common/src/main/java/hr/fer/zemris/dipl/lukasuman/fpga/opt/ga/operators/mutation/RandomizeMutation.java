@@ -19,7 +19,11 @@ public class RandomizeMutation<T> extends AbstractRandomizeOperator implements M
     @Override
     public void mutate(Solution<T> candidate) {
         int indexOperator = calcRandomOperatorIndex();
-        addWaitingSolution(candidate, candidate.getFitness(), indexOperator);
+
+        if (useStatistics) {
+            addWaitingSolution(candidate, candidate.getFitness(), indexOperator);
+        }
+
         mutations.get(indexOperator).mutate(candidate);
     }
 

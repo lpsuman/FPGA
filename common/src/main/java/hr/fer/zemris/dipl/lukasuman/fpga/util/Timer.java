@@ -23,6 +23,7 @@ public class Timer {
 
     public void start() {
         startTime = System.currentTimeMillis();
+        lastLapTime = startTime;
     }
 
     public int lap() {
