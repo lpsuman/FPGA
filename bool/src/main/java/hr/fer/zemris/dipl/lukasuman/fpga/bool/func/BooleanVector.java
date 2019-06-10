@@ -78,30 +78,19 @@ public class BooleanVector extends AbstractNameHandler implements Serializable, 
         } else {
             checkedFunctions.addAll(boolFunctions);
         }
-        Set<String> inputIDSet = new HashSet<>();
+        Set<String> inputIDSet = new LinkedHashSet<>();
         checkedFunctions.forEach(f -> inputIDSet.addAll(f.getInputIDs()));
 
         Map<String, BooleanFunction> linkableNameToFunctionMapping = new HashMap<>();
+        Set<String> linkedFunctionNames = null;
         if (linkableFunctions != null) {
+            linkedFunctionNames = calcLinkedInputs(inputIDSet, linkableFunctions);
             List<String> linkableFunctionNames = linkableFunctions.stream()
                     .map(AbstractNameHandler::getName)
                     .collect(Collectors.toList());
-
-            Iterator<String> iter = inputIDSet.iterator();
-            while (iter.hasNext()) {
-                String inputID = iter.next();
-                if (linkableFunctionNames.contains(inputID)) {
-                    iter.remove();
-
-                    if (linkableFunctionNames.contains(inputID)) {
-                        throw new BooleanVectorException(String.format("Input ID %s is ambiguous, multiple boolean functions have the same name.", inputID));
-                    }
-
-                    linkableNameToFunctionMapping.put(inputID, linkableFunctions.get(linkableFunctionNames.indexOf(inputID)));
-                }
+            for (String linkedFuncName : linkedFunctionNames) {
+                linkableNameToFunctionMapping.put(linkedFuncName, linkableFunctions.get(linkableFunctionNames.indexOf(linkedFuncName)));
             }
-
-            linkableNameToFunctionMapping.forEach((k, v) -> inputIDSet.addAll(v.getInputIDs()));
         }
 
         sortedInputIDs = new ArrayList<>(inputIDSet);
@@ -123,6 +112,75 @@ public class BooleanVector extends AbstractNameHandler implements Serializable, 
                         linkableNameToOutputMapping, linkableNameToFunctionMapping));
             }
         }
+
+        if (linkableFunctions != null && linkedFunctionNames != null && !linkedFunctionNames.isEmpty()) {
+            List<Set<String>> perFuncLinkedInputsSets = new ArrayList<>(getNumFunctions());
+            boolFunctions.forEach(f -> perFuncLinkedInputsSets.add(new HashSet<>(f.getInputIDs())));
+            perFuncLinkedInputsSets.forEach(inputs -> calcLinkedInputs(inputs, linkableFunctions));
+            List<List<String>> perFuncLinkedInputs = new ArrayList<>(getNumFunctions());
+            perFuncLinkedInputsSets.forEach(inputSet -> perFuncLinkedInputs.add(new ArrayList<>(inputSet)));
+            perFuncLinkedInputs.forEach(Collections::sort);
+
+            List<BitSet> perFuncTruthTable = new ArrayList<>(getNumFunctions());
+            for (int i = 0; i < getNumFunctions(); i++) {
+                List<String> inputs = perFuncLinkedInputs.get(i);
+                int numInputCombinations = (int) Math.pow(2, inputs.size());
+                perFuncTruthTable.add(new BitSet(numInputCombinations));
+
+                for (int inputCombination = 0; inputCombination < numInputCombinations; inputCombination++) {
+                    int indexInMainTable = 0;
+
+                    for (int j = 0; j < inputs.size(); j++) {
+                        int inputIndex = sortedInputIDs.indexOf(inputs.get(j));
+                        boolean inputValue = Utility.testBitFromRight(inputCombination, inputs.size() - 1 - j);
+
+                        indexInMainTable = Utility.setBitFromRight(indexInMainTable, sortedInputIDs.size() - 1 - inputIndex, inputValue);
+                    }
+
+                    perFuncTruthTable.get(i).set(inputCombination, truthTable[i].get(indexInMainTable));
+                }
+            }
+
+            List<BooleanFunction> linkedBooleanFunctions = new ArrayList<>();
+            for (int i = 0; i < getNumFunctions(); i++) {
+                linkedBooleanFunctions.add(new BooleanFunction(perFuncLinkedInputs.get(i), perFuncTruthTable.get(i), boolFunctions.get(i).getName()));
+            }
+            this.boolFunctions = linkedBooleanFunctions;
+        }
+    }
+
+    private Set<String> calcLinkedInputs(Set<String> inputs, List<BooleanFunction> linkableFunctions) {
+        List<String> linkableFunctionNames = linkableFunctions.stream()
+                .map(AbstractNameHandler::getName)
+                .collect(Collectors.toList());
+        Set<String> linkedFunctionNames = new LinkedHashSet<>();
+
+        while (true) {
+            List<String> remainderLinkableFunctionNames = new ArrayList<>(linkableFunctionNames);
+            Iterator<String> iter = inputs.iterator();
+            while (iter.hasNext()) {
+                String inputID = iter.next();
+                if (linkableFunctionNames.contains(inputID)) {
+                    iter.remove();
+                    linkedFunctionNames.add(inputID);
+
+                    remainderLinkableFunctionNames.remove(inputID);
+                    if (remainderLinkableFunctionNames.contains(inputID)) {
+                        throw new BooleanVectorException(String.format("Input ID %s is ambiguous, multiple boolean functions have the same name.", inputID), inputID);
+                    }
+                }
+            }
+
+            int prevNumInputs = inputs.size();
+            linkedFunctionNames.forEach(fname -> inputs.addAll(linkableFunctions.get(linkableFunctionNames.indexOf(fname)).getInputIDs().stream()
+                    .filter(id -> !linkedFunctionNames.contains(id))
+                    .collect(Collectors.toList())));
+            if (inputs.size() == prevNumInputs) {
+                break;
+            }
+        }
+
+        return linkedFunctionNames;
     }
 
     private boolean calcFuncOutput(BooleanFunction func,

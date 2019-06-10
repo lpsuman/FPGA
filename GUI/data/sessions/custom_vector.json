@@ -127,6 +127,26 @@
         "C0"
       ],
       "truthTable": "00010111"
+    },
+    {
+      "name": "S2",
+      "expression": " A2 XOR B2 XOR C1",
+      "inputs": [
+        "A2",
+        "B2",
+        "C1"
+      ],
+      "truthTable": "01101001"
+    },
+    {
+      "name": "C2",
+      "expression": " A2 AND B2 OR C1 AND (A2 OR B2)",
+      "inputs": [
+        "A2",
+        "B2",
+        "C1"
+      ],
+      "truthTable": "00010111"
     }
   ],
   "boolVectors": [

@@ -159,14 +159,14 @@ public class BoolFuncController {
     public static BooleanFunction generateFromText(String text) {
         Utility.checkIfValidString(text, "text");
         String funcName = null;
-        List<String> words;
+        List<String> words = new ArrayList<>();
 
         int equalsSignIndex = text.indexOf('=');
         if (equalsSignIndex != -1) {
             funcName = text.substring(0, equalsSignIndex).trim();
-            words = Utility.breakIntoWords(text.substring(equalsSignIndex + 1).trim());
+            words.addAll(Utility.breakIntoWords(text.substring(equalsSignIndex + 1).trim()));
         } else {
-            words = Utility.breakIntoWords(text);
+            words.addAll(Utility.breakIntoWords(text));
         }
 
         if (words.isEmpty()) {

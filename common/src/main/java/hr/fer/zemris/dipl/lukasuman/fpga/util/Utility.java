@@ -226,6 +226,17 @@ public class Utility {
         return (target & (1 << index)) != 0;
     }
 
+    public static int setBitFromRight(int target, int index, boolean value) {
+        if (index < 0 || index > 31) {
+            throw new IllegalArgumentException("Invalid index for setting integer bit: " + index);
+        }
+        if (value) {
+            return target | (1 << index);
+        } else {
+            return target & ~(1 << index);
+        }
+    }
+
     public static InputStream getInputStreamFromString(String str) {
         return new ByteArrayInputStream(str.getBytes(Charset.forName("UTF-8")));
     }

@@ -51,6 +51,7 @@ public class LocalizationKeys {
     public static final String NO_SELECTED_FUNCTIONS_KEY = "no_selected_functions";
     public static final String NO_EXPRESSION_KEY = "no_expression";
     public static final String S_INVALID_INPUT_IS_OPERATOR_KEY = "s_is_an_invalid_input_name_because_it_is_used_as_an_operator_msg";
+    public static final String INPUT_S_IS_AMBIGUOUS_KEY = "input_s_is_ambiguous";
 
 //    public static final String INDEX_KEY = "index";
     public static final String INDEX_KEY = "sign_#";

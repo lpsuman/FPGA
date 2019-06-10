@@ -197,7 +197,8 @@ public class JFPGA extends JFrame {
 
     private void initVectorActions() {
         generateFromFunctionsAction = new GenerateFromFunctionsAction(this,
-                () -> getCurrentSession().getBooleanFunctionController().getSelectedItems());
+                () -> getCurrentSession().getBooleanFunctionController().getSelectedItems(),
+                () -> getCurrentSession().getBooleanFunctionController().getAllItems());
         generateRandomVectorAction = new GenerateRandomVectorAction(this,
                 () -> GUIUtility.getSelectedComboBoxValue(getCurrentSession().getBooleanVectorController().getNumInputsComboBox()),
                 () -> GUIUtility.getSelectedComboBoxValue(getCurrentSession().getBooleanVectorController().getNumFunctionsComboBox()));
