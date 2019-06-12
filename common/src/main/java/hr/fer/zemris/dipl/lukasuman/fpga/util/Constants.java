@@ -9,8 +9,8 @@ public class Constants {
     public static final double STRUCTURE_FITNESS_SCALE = 0.9999;
     public static final boolean USE_STRUCTURE_FITNESS = false;
 
-    public static final int DEFAULT_MAX_NUM_GENERATIONS = 2000;
-    public static final int DEFAULT_POPULATION_SIZE = 300;
+    public static final int DEFAULT_MAX_NUM_GENERATIONS = 500;
+    public static final int DEFAULT_POPULATION_SIZE = 1000;
     public static final double OPERATOR_CHANCE_MULTIPLIER = 0.0;
 
     public static final double NUM_CLB_ESTIMATION_MULTIPLIER = 2.0;
@@ -21,8 +21,6 @@ public class Constants {
     public static final double DEFAULT_BEST_EXISTS_THRESHOLD_TO_STOP_TRYING = FITNESS_SCALE * 0.93;
     public static final double DEFAULT_NO_BEST_THRESHOLD_TO_STOP_TRYING = FITNESS_SCALE * 0.97;
     public static final int DEFAULT_MAX_NUM_BELOW_THRESHOLD_ATTEMPTS = (int)(DEFAULT_MAX_NUM_FAILS * 0.4);
-    public static final double DEFAULT_SKIP_INCREASE_NUM_CLB_FITNESS_THRESHOLD = 0.98;
-    public static final double DEFAULT_SKIP_INCREASE_NUM_CLB_AMOUNT = 0.5;
     public static final double SINGLE_CLB_MAX_NON_IMPROVING_MODIFIER = 0.05;
 
     public static final boolean STOP_AFTER_MERGING = false;

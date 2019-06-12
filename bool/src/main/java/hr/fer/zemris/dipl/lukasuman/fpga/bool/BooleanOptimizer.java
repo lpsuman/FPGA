@@ -12,6 +12,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.crossover.RandomizeCro
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.mutation.RandomizeMutation;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.operator.OperatorStatistics;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Timer;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.IOException;
@@ -37,17 +38,17 @@ public class BooleanOptimizer {
         }
     }
 
-//    private static final int[][] FIXED_PARAMETERS = new int[][]{
-//            {1, 10, 100}
-//    };
-
     private static final int[][] FIXED_PARAMETERS = new int[][]{
+            {1, 10, 100}
+    };
+
+//    private static final int[][] FIXED_PARAMETERS = new int[][]{
 //            {1, 50, 10000},
 //            {1, 200, 2000},
-            {1, 200, 10000},
+//            {1, 200, 10000},
 //            {10, 200, 400},
-            {10, 1000, 400}
-    };
+//            {10, 1000, 400}
+//    };
 
     private static final int[] MAX_NUM_FAILS = new int[]{1, 5, 10};
     private static final int[] POPULATION_SIZES = new int[]{50, 200, 1000};
@@ -64,11 +65,11 @@ public class BooleanOptimizer {
             return;
         }
 
-//        int numTests = 1;
-//        int[][] params = getGridParameters();
+        int numTests = 5;
+        int[][] params = getGridParameters();
 
-        int numTests = 15;
-        int[][] params = FIXED_PARAMETERS;
+//        int numTests = 1;
+//        int[][] params = FIXED_PARAMETERS;
 
         BooleanSolverConfig solverConfig = new BooleanSolverConfig()
                 .printOnlyBestSolution(true)
@@ -76,6 +77,9 @@ public class BooleanOptimizer {
                 .printOnlyGlobalStatistics(true);
         ArrayList<OptimizationRunResult> optimizationResults = new ArrayList<>();
         int totalNumSteps = params.length;
+
+        Timer timer = new Timer();
+        timer.start();
 
         for (int i = 0; i < totalNumSteps; i++) {
             int maxNumFails = params[i][0];
@@ -115,6 +119,8 @@ public class BooleanOptimizer {
 
         BoolVecProblem problem = new BoolVecProblem(adder3no, 3);
         showResults(problem, optimizationResults);
+
+        System.out.println("Total elapsed time: " + timer.getElapsedTime() / 1000.0);
     }
 
     private static int[][] getGridParameters() {

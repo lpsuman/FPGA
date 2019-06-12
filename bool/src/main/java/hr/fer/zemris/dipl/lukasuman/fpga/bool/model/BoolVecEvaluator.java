@@ -12,8 +12,9 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements CLBChangeListener {
-
-    private BoolVecProblem problem;
+    
+    private BooleanVector vector;
+    private CLBController controller;
     private boolean useStructureFitness;
     private boolean saveCLBOutputs;
 
@@ -25,10 +26,12 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
     private BitSet unusedBlocks;
 
     public BoolVecEvaluator(BoolVecProblem problem, boolean useStructureFitness) {
-        this.problem = Utility.checkNull(problem, "problem");
+        Utility.checkNull(problem, "problem");
+        this.vector = problem.getBoolVector();
+        this.controller = problem.getClbController();
         this.useStructureFitness = useStructureFitness;
-        getController().addCLBChangeListener(this);
-        bestMatchingCounts = new int[getVector().getNumFunctions()];
+        controller.addCLBChangeListener(this);
+        bestMatchingCounts = new int[vector.getNumFunctions()];
         updateDataStructures();
         saveCLBOutputs = false;
     }
@@ -38,13 +41,13 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
     }
 
     private void updateDataStructures() {
-        int numCLB = getController().getNumCLB();
+        int numCLB = controller.getNumCLB();
         perCLBCurrentOutput = new BitSet(numCLB);
 
-        int numFunctions = getVector().getNumFunctions();
+        int numFunctions = vector.getNumFunctions();
         numMatchingOutputs = new int[numCLB][numFunctions];
 
-        int numInputs = getController().getNumInputs();
+        int numInputs = controller.getNumInputs();
         blockUsage = Utility.newBitSetArray(numFunctions, numInputs + numCLB);
         unusedBlocks = new BitSet(numInputs + numCLB);
     }
@@ -56,11 +59,13 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
     @Override
     public double evaluateSolution(Solution<int[]> solution, boolean allowTermination) {
         int[] data = solution.getData();
-        int numFunctions = getVector().getNumFunctions();
-        int numCLB = getController().getNumCLB();
-        int numInputCombinations = getVector().getNumInputCombinations();
+        int numFunctions = vector.getNumFunctions();
+        int numCLB = controller.getNumCLB();
+        int numInputCombinations = vector.getNumInputCombinations();
+        int numInputs = controller.getNumInputs();
+        int numCLBInputs = controller.getNumCLBInputs();
 
-        calculateNumMatchingOutputs(data, numFunctions, numCLB, numInputCombinations);
+        calculateNumMatchingOutputs(data, numFunctions, numCLB, numInputCombinations, numInputs, numCLBInputs);
         int numPerfectMatching = calculateBestMatchingOutputs(data, numFunctions, numCLB, numInputCombinations);
 
         if (useStructureFitness || enableLogging) {
@@ -102,7 +107,7 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
         return fitness;
     }
 
-    private void calculateNumMatchingOutputs(int[] data, int numFunctions, int numCLB, int numInputCombinations) {
+    private void calculateNumMatchingOutputs(int[] data, int numFunctions, int numCLB, int numInputCombinations, int numInputs, int numCLBInputs) {
         if (saveCLBOutputs) {
             perCLBFullOutputs = Utility.newBitSetArray(numCLB, numInputCombinations);
         }
@@ -111,58 +116,64 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
             Arrays.fill(numMatchingOutputs[i], 0);
         }
 
-        for (int i = 0, n = getController().getNumInputs() + numCLB; i < n; i++) {
-            if (i == getController().getNumInputs()) {
-                logPadding();
+        if (enableLogging) {
+            for (int i = 0, n = numInputs + numCLB; i < n; i++) {
+                if (i == controller.getNumInputs()) {
+                    logPadding();
+                }
+
+                final int iFinal = i;
+                log(() -> Utility.paddedString(Integer.toString(iFinal), Constants.BOOL_VECTOR_PRINT_CELL_SIZE));
             }
 
-            final int iFinal = i;
-            log(() -> Utility.paddedString(Integer.toString(iFinal), Constants.BOOL_VECTOR_PRINT_CELL_SIZE));
-        }
-
-        logPadding();
-
-        for (int i = 0; i < numFunctions; i ++) {
-            final int iFinal = i;
-            log(() -> Utility.paddedString("F" + iFinal, Constants.BOOL_VECTOR_PRINT_CELL_SIZE));
-//            log(() -> Utility.paddedString(getVector().getBoolFunctions().get(iFinal).getName(), Constants.BOOL_VECTOR_PRINT_CELL_SIZE));
-        }
-
-        log(() -> "\n\n");
-
-        for (int inputCombination = 0; inputCombination < numInputCombinations; inputCombination++) {
-            final int inputCombinationFinal = inputCombination;
-
-            log(() -> Utility.toBinaryString(inputCombinationFinal, getVector().getNumInputs(),
-                    Constants.BOOL_VECTOR_PRINT_CELL_SIZE - 1));
             logPadding();
 
+            for (int i = 0; i < numFunctions; i++) {
+                final int iFinal = i;
+                log(() -> Utility.paddedString("F" + iFinal, Constants.BOOL_VECTOR_PRINT_CELL_SIZE));
+                //            log(() -> Utility.paddedString(vector.getBoolFunctions().get(iFinal).getName(), Constants.BOOL_VECTOR_PRINT_CELL_SIZE));
+            }
+
+            log(() -> "\n\n");
+        }
+
+        for (int inputCombination = 0; inputCombination < numInputCombinations; inputCombination++) {
+            if (enableLogging) {
+                final int inputCombinationFinal = inputCombination;
+                log(() -> Utility.toBinaryString(inputCombinationFinal, vector.getNumInputs(),
+                        Constants.BOOL_VECTOR_PRINT_CELL_SIZE - 1));
+                logPadding();
+            }
+            BitSet[] truthTables = vector.getTruthTable();
+
             for (int k = 0; k < numCLB; ++k) {
-                boolean outputCLB = calcCLBOutput(inputCombination, data, k);
+                boolean outputCLB = calcCLBOutput(inputCombination, data, k, numInputs, numCLBInputs);
                 perCLBCurrentOutput.set(k, outputCLB);
 
                 if (saveCLBOutputs) {
                     perCLBFullOutputs[k].set(inputCombination, outputCLB);
                 }
 
-                log(() -> Utility.paddedChar(outputCLB ? '1' : '0', Constants.BOOL_VECTOR_PRINT_CELL_SIZE));
+                if (enableLogging) log(() -> Utility.paddedChar(outputCLB ? '1' : '0', Constants.BOOL_VECTOR_PRINT_CELL_SIZE));
 
                 for (int j = 0; j < numFunctions; ++j) {
-                    if (outputCLB == getVector().getTruthTable()[j].get(inputCombination)) {
+                    if (outputCLB == truthTables[j].get(inputCombination)) {
                         numMatchingOutputs[k][j]++;
                     }
                 }
             }
 
-            logPadding();
+            if (enableLogging) {
+                logPadding();
+                for (int j = 0; j < numFunctions; ++j) {
+                    final int inputCombinationFinal = inputCombination;
+                    final int jFinal = j;
+                    log(() -> Utility.paddedChar(truthTables[jFinal].get(inputCombinationFinal) ? '1' : '0',
+                            Constants.BOOL_VECTOR_PRINT_CELL_SIZE));
+                }
 
-            for (int j = 0; j < numFunctions; ++j) {
-                final int jFinal = j;
-                log(() -> Utility.paddedChar(getVector().getTruthTable()[jFinal].get(inputCombinationFinal) ? '1' : '0',
-                        Constants.BOOL_VECTOR_PRINT_CELL_SIZE));
+                log(() -> "\n");
             }
-
-            log(() -> "\n");
         }
     }
 
@@ -180,7 +191,7 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
             for (int j = 0; j < numCLB; ++j) {
                 if (numMatchingOutputs[j][i] > bestMatchingCounts[i]) {
                     bestMatchingCounts[i] = numMatchingOutputs[j][i];
-                    indexBestMatchingOutput = j + getVector().getNumInputs();
+                    indexBestMatchingOutput = j + vector.getNumInputs();
                 }
             }
 
@@ -189,7 +200,7 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
             }
 
 
-            data[numCLB * getController().getIntsPerCLB() + i] = indexBestMatchingOutput;
+            data[numCLB * controller.getIntsPerCLB() + i] = indexBestMatchingOutput;
         }
 
         return numPerfectMatching;
@@ -218,7 +229,7 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
     }
 
     private void calcBlockUsage(int[] data, int numFunctions, int numCLB) {
-        int numInputs = getController().getNumInputs();
+        int numInputs = controller.getNumInputs();
         unusedBlocks.set(0, numInputs + numCLB);
 
 //        if (enableLogging) {
@@ -227,7 +238,7 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
 
         for (int i = 0; i < numFunctions; i++) {
             blockUsage[i].clear();
-            int indexBestMatchingOutput = data[numCLB * getController().getIntsPerCLB() + i];
+            int indexBestMatchingOutput = data[numCLB * controller.getIntsPerCLB() + i];
 
             Queue<Integer> queue = new LinkedList<>();
             queue.add(indexBestMatchingOutput);
@@ -244,13 +255,13 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
                     continue;
                 }
 
-                int offsetCLB = getController().calcCLBOffset(indexCLB - numInputs);
+                int offsetCLB = controller.calcCLBOffset(indexCLB - numInputs);
 
 //                if (enableLogging) {
 //                    System.out.println("CLB offset: " + offsetCLB);
 //                }
 
-                for (int j = 0, m = getController().getNumCLBInputs(); j < m; ++j) {
+                for (int j = 0, m = controller.getNumCLBInputs(); j < m; ++j) {
                     int input = data[offsetCLB + j];
 
 //                    if (enableLogging) {
@@ -282,12 +293,12 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
         }
     }
 
-    private boolean calcCLBOutput(int inputCombination, int[] data, int indexCLB) {
-        int offset = getController().calcCLBOffset(indexCLB);
+    private boolean calcCLBOutput(int inputCombination, int[] data, int indexCLB, int numInputs, int numCLBInputs) {
+        int offset = controller.calcCLBOffset(indexCLB);
         int extendedIndex = 0;
-        int numInputs = getVector().getNumInputs();
 
-        for (int i = 0; i < getController().getNumCLBInputs(); i++) {
+        for (int i = 0; i < numCLBInputs; i++) {
+            extendedIndex <<= 1;
             int inputID = data[offset + i];
 
             if (inputID >= numInputs) {
@@ -295,25 +306,14 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
                     extendedIndex++;
                 }
             } else {
-                if (CLBController.testInputBit(inputCombination, numInputs, inputID)) {
+//                if (CLBController.testInputBit(inputCombination, numInputs, inputID)) {
+                if ((inputCombination & (1 << (numInputs - 1 - inputID))) != 0) {
                     extendedIndex++;
                 }
             }
-
-            if (i < getController().getNumCLBInputs() - 1) {
-                extendedIndex <<= 1;
-            }
         }
 
-        return getController().readLUT(data, indexCLB, extendedIndex);
-    }
-
-    private CLBController getController() {
-        return problem.getClbController();
-    }
-
-    private BooleanVector getVector() {
-        return problem.getBoolVector();
+        return controller.readLUT(data, indexCLB, extendedIndex);
     }
 
     public BitSet[] getBlockUsage() {
@@ -327,7 +327,7 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
     public BitSet getUnusedCLBBlocks() {
         BitSet result = (BitSet) unusedBlocks.clone();
 
-        for (int i = 0; i < getController().getNumInputs(); i++) {
+        for (int i = 0; i < controller.getNumInputs(); i++) {
             result.set(i, false);
         }
 

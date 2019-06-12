@@ -85,10 +85,10 @@ public class CLBController implements Serializable {
     }
 
     public boolean readLUT(int[] data, int indexCLB, int extendedIndex) {
-        int offset = calcLUTOffset(indexCLB);
+        int offset = indexCLB * intsPerCLB + numCLBInputs;
         int bitOffset = extendedIndex + emptyBitsInFirstInt;
         offset += (bitOffset) / 32;
-        return Utility.testBitFromLeft(data[offset], bitOffset % 32);
+        return (data[offset] & (1 << (31 - (bitOffset % 32)))) != 0;
     }
 
     private int estimateMaxNumCLBForFunc(BooleanFunction boolFunc) {
