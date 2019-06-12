@@ -1,4 +1,4 @@
-package hr.fer.zemris.dipl.lukasuman.fpga.gui;
+package hr.fer.zemris.dipl.lukasuman.fpga.bool;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

@@ -88,7 +88,7 @@ public class Constants {
     public static final int BOOL_VECTOR_PRINT_CELL_SIZE = 4;
     public static final String BOOL_VECTOR_PRINT_SEPARATOR = "#";
 
-    public static final int DEFAULT_NUM_WORKERS = 4;
+    public static final int DEFAULT_NUM_WORKERS = 3;
     public static final int DEFAULT_MIN_ELITISM_SIZE = 2;
     public static final double DEFAULT_ELITISM_RATIO = 0.002;
     public static final int DEFAULT_TOURNAMENT_SIZE = 3;

@@ -1,7 +1,7 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui;
 
 import com.google.gson.JsonParseException;
-import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.MyGson;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.parser.BoolParser;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.LoadTextAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.SaveTextAction;

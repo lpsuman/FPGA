@@ -1,7 +1,7 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.action.session;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.MyGson;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.MyGson;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.AbstractAppAction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;

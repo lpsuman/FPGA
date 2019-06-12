@@ -30,6 +30,7 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
     private final Function<Runnable, Thread> threadFactory;
     private final List<Solution<T>> RED_PILL;
     private final Runnable runnable;
+    private boolean enablePrinting;
 
     private volatile boolean isRunning;
     private volatile boolean isShuttingDown;
@@ -68,6 +69,7 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
         numEvaluated = new AtomicInteger();
         copyOverIndex = new AtomicInteger();
 
+        enablePrinting = true;
         this.threads = new Thread[numThreads];
         this.threadFactory = threadFactory;
         RED_PILL = new ArrayList<>();
@@ -101,9 +103,11 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
                 Solution<T> secondChild = newPopulation.get(copyOverIndex.incrementAndGet());
                 secondParent.copyOver(secondChild);
 
-                AnnealedThreadPool.this.crossover.crossover(firstChild, secondChild);
-                threadLocalEvaluator.get().evaluateSolution(firstChild, false);
-                threadLocalEvaluator.get().evaluateSolution(secondChild, false);
+                if (generationProgress < AnnealedThreadPool.this.annealingThreshold) {
+                    AnnealedThreadPool.this.crossover.crossover(firstChild, secondChild);
+                    threadLocalEvaluator.get().evaluateSolution(firstChild, false);
+                    threadLocalEvaluator.get().evaluateSolution(secondChild, false);
+                }
 
                 boolean acceptyOnlyImproving = true;
                 if (generationProgress < AnnealedThreadPool.this.annealingThreshold
@@ -141,7 +145,7 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
                 if (shouldTerminate.get()) {
                     synchronized (AnnealedThreadPool.this) {
                         if (numRemainingTerminationAcknowledged.compareAndSet(-1, threads.length)) {
-//                            System.out.println("Terminate called.");
+//                            if (enablePrinting) System.out.println("Terminate called.");
                         }
 
                         if (numRemainingTerminationAcknowledged.decrementAndGet() == 0) {
@@ -157,7 +161,7 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
                                 }
                             }
                         }
-//                        System.out.println("Termination check complete.");
+//                        if (enablePrinting) System.out.println("Termination check complete.");
                     }
                 }
             }
@@ -211,7 +215,7 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
         shouldTerminate.set(false);
         numRemainingTerminationAcknowledged.set(-1);
 
-//        System.out.println(String.format("Threadpool starting with %d threads.", threads.length));
+//        if (enablePrinting) System.out.println(String.format("Threadpool starting with %d threads.", threads.length));
 
         for (int i = 0; i < threads.length; i++) {
             threads[i] = threadFactory.apply(runnable);
@@ -250,7 +254,7 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
         if (!isRunning || isShutDown || isShuttingDown) {
             return false;
         }
-//        System.out.println("Submitting.");
+//        if (enablePrinting) System.out.println("Submitting.");
         putInQueue(incoming, population);
         return true;
     }
@@ -263,9 +267,9 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
             }
             while (true) {
                 try {
-//                    System.out.println("Waiting for calculation.");
+//                    if (enablePrinting) System.out.println("Waiting for calculation.");
                     CALCULATION_SYNC_OBJECT.wait();
-//                    System.out.println("No longer wating for calculation");
+//                    if (enablePrinting) System.out.println("No longer wating for calculation");
                     return;
                 } catch (InterruptedException ignored) {
                 }
@@ -280,7 +284,7 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
         }
 
         isShuttingDown = true;
-//        System.out.println("Threadpool is shutting down.");
+//        if (enablePrinting) System.out.println("Threadpool is shutting down.");
 
         for (int i = 0; i < threads.length; i++) {
             putInQueue(incoming, RED_PILL);
@@ -294,11 +298,11 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
         isRunning = false;
 
         if (!incoming.isEmpty()) {
-            System.err.println(String.format(
+            if (enablePrinting) System.err.println(String.format(
                     "Threadpool was shutdown with %d elements in incoming.", incoming.size()));
         }
 
-//        System.out.println("Threadpool shutdown is complete.");
+//        if (enablePrinting) System.out.println("Threadpool shutdown is complete.");
         notifyAll();
 
         synchronized (CALCULATION_SYNC_OBJECT) {
@@ -326,5 +330,10 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
     @Override
     public void generationProgress(double generationProgress) {
         this.generationProgress = generationProgress;
+    }
+
+    @Override
+    public void setEnablePrinting(boolean enablePrinting) {
+        this.enablePrinting = enablePrinting;
     }
 }

@@ -13,4 +13,5 @@ public interface GAThreadPool<T> extends TerminationListener {
     void waitForCalculation();
     void shutdown();
     boolean isRunning();
+    void setEnablePrinting(boolean enablePrinting);
 }

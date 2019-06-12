@@ -6,7 +6,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 
 public class InputSingleMutation extends AbstractBoolMutation {
 
-    private static final double DEFAULT_OPERATOR_CHANCE = 10.0;
+    private static final double DEFAULT_OPERATOR_CHANCE = 2.0;
     public static final double DEFAULT_INPUT_SINGLE_MUTATION_CHANCE = Constants.OPERATOR_CHANCE_MULTIPLIER * 0.10;
 
     public InputSingleMutation(CLBController clbController, double mutationChance) {

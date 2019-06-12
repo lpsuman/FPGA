@@ -25,16 +25,16 @@ public class IntArraySolution extends AbstractSolution<int[]> {
         other.setFitness(fitness);
     }
 
-    @Override
-    public int hashCode() {
-        return Arrays.hashCode(data);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        IntArraySolution that = (IntArraySolution) obj;
-        return Arrays.equals(data, that.data);
-    }
+//    @Override
+//    public int hashCode() {
+//        return Arrays.hashCode(data);
+//    }
+//
+//    @Override
+//    public boolean equals(Object obj) {
+//        if (this == obj) return true;
+//        if (obj == null || getClass() != obj.getClass()) return false;
+//        IntArraySolution that = (IntArraySolution) obj;
+//        return Arrays.equals(data, that.data);
+//    }
 }

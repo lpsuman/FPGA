@@ -5,7 +5,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.rng.IRNG;
 
 public class IntervalBlockCrossover extends AbstractBoolCrossover {
 
-    private static final double DEFAULT_OPERATOR_CHANCE = 4.0;
+    private static final double DEFAULT_OPERATOR_CHANCE = 2.0;
 
     public IntervalBlockCrossover(CLBController clbController, boolean isAligned) {
         super(clbController, isAligned ? DEFAULT_OPERATOR_CHANCE * ALIGNED_CHANCE_MODIFIER : DEFAULT_OPERATOR_CHANCE);

@@ -6,7 +6,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 
 public class TableSingleMutation extends AbstractBoolMutation {
 
-    private static final double DEFAULT_OPERATOR_CHANCE = 3.0;
+    private static final double DEFAULT_OPERATOR_CHANCE = 5.0;
     public static final double DEFAULT_TABLE_SINGLE_MUTATION_CHANCE = Constants.OPERATOR_CHANCE_MULTIPLIER * 0.10;
 
     public TableSingleMutation(CLBController clbController, double mutationChance) {
