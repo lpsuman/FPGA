@@ -22,7 +22,7 @@ import java.util.List;
 
 public class BooleanOptimizer {
 
-    private static class OptimizationRunResult {
+    public static class OptimizationRunResult {
         private String setup;
         private List<BooleanSolver.RunResults> runResults;
         private List<OperatorStatistics> crossoverOperatorStatistics;
@@ -35,6 +35,22 @@ public class BooleanOptimizer {
             this.runResults = runResults;
             this.crossoverOperatorStatistics = crossoverOperatorStatistics;
             this.mutationOperatorStatistics = mutationOperatorStatistics;
+        }
+
+        public String getSetup() {
+            return setup;
+        }
+
+        public List<BooleanSolver.RunResults> getRunResults() {
+            return runResults;
+        }
+
+        public List<OperatorStatistics> getCrossoverOperatorStatistics() {
+            return crossoverOperatorStatistics;
+        }
+
+        public List<OperatorStatistics> getMutationOperatorStatistics() {
+            return mutationOperatorStatistics;
         }
     }
 
@@ -57,15 +73,7 @@ public class BooleanOptimizer {
     private static final int NUM_THREADS = 3;
 
     public static void main(String[] args) {
-        BooleanVector adder3no;
-        try {
-            adder3no = MyGson.readFromJson(getFolderPath() + "adder3no.json", BooleanVector.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        int numTests = 5;
+        int numTests = 10;
         int[][] params = getGridParameters();
 
 //        int numTests = 1;
@@ -73,7 +81,7 @@ public class BooleanOptimizer {
 
         BooleanSolverConfig solverConfig = new BooleanSolverConfig()
                 .printOnlyBestSolution(true)
-                .useStatistics(true)
+                .useStatistics(false)
                 .printOnlyGlobalStatistics(true);
         ArrayList<OptimizationRunResult> optimizationResults = new ArrayList<>();
         int totalNumSteps = params.length;
@@ -101,7 +109,7 @@ public class BooleanOptimizer {
                         .numThreads(NUM_THREADS);
                 solver.setThreadPoolConfig(tpConfig);
                 solver.setEnablePrinting(false);
-                solver.solve(new BoolVecProblem(adder3no, 3));
+                solver.solve(getTestProblem());
 
                 optimizationResults.add(new OptimizationRunResult(setup, solver.getRunResults(),
                         solver.getCrossoverOperatorStatistics(), solver.getMutationOperatorStatistics()));
@@ -111,14 +119,13 @@ public class BooleanOptimizer {
         LocalDateTime time = LocalDateTime.now();
         TypeToken<ArrayList<OptimizationRunResult>> listType = new TypeToken<>(){};
         try {
-            MyGson.writeToJson(getFolderPath() + "opt_" + time.toString().replace(':', '_') + ".json",
+            MyGson.writeToJson(getFolderPath() + "opt_" + time.toString().replace(':', '_') + "_" + numTests + ".json",
                     optimizationResults, listType.getRawType());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        BoolVecProblem problem = new BoolVecProblem(adder3no, 3);
-        showResults(problem, optimizationResults);
+        showResults(getTestProblem(), optimizationResults);
 
         System.out.println("Total elapsed time: " + timer.getElapsedTime() / 1000.0);
     }
@@ -142,7 +149,19 @@ public class BooleanOptimizer {
         return params;
     }
 
-    private static void showResults(BoolVecProblem problem, ArrayList<OptimizationRunResult> optimizationResults) {
+    public static BoolVecProblem getTestProblem() {
+        BooleanVector adder3no;
+        try {
+            adder3no = MyGson.readFromJson(getFolderPath() + "adder3no.json", BooleanVector.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return new BoolVecProblem(adder3no, 3);
+    }
+
+    public static void showResults(BoolVecProblem problem, List<OptimizationRunResult> optimizationResults) {
         System.out.println("Showing results:\n");
 
         RandomizeCrossover<int[]> randomizeCrossover = BooleanSolver.generateRandomizeCrossover(problem.getClbController(), true);
@@ -171,7 +190,7 @@ public class BooleanOptimizer {
                 randomizeMutation, superGlobalMutationStatistics);
     }
 
-    private static String getFolderPath() {
+    public static String getFolderPath() {
         return Utility.getWorkingDir() + "/data/sessions/";
     }
 }

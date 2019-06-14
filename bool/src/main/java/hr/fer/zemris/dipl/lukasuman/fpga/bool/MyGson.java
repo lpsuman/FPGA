@@ -1,14 +1,17 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParseException;
-import com.google.gson.TypeAdapter;
+import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.crossover.Crossover;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.crossover.RandomizeCrossover;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.mutation.Mutation;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.mutation.RandomizeMutation;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.operator.AtomicOperatorStatistics;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.operator.OperatorStatistics;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.FileWriter;
@@ -155,11 +158,40 @@ public class MyGson {
         }
     };
 
+    private static final class InterfaceSerializer<T> implements JsonSerializer<T>, JsonDeserializer<T> {
+
+        private final Class<T> implementationClass;
+
+        private InterfaceSerializer(final Class<T> implementationClass) {
+            this.implementationClass = implementationClass;
+        }
+
+        static <T> InterfaceSerializer<T> interfaceSerializer(final Class<T> implementationClass) {
+            return new InterfaceSerializer<>(implementationClass);
+        }
+
+        @Override
+        public JsonElement serialize(final T value, final Type type, final JsonSerializationContext context) {
+            final Type targetType = value != null
+                    ? value.getClass() // type can be an interface so Gson would not even try to traverse the fields, just pick the implementation class
+                    : type;            // if not, then delegate further
+            return context.serialize(value, targetType);
+        }
+
+        @Override
+        public T deserialize(final JsonElement jsonElement, final Type typeOfT, final JsonDeserializationContext context) {
+            return context.deserialize(jsonElement, implementationClass);
+        }
+    }
+
     private static final GsonBuilder GSON_BUILDER = new GsonBuilder()
             .setPrettyPrinting()
             .registerTypeAdapter(BitSet.class, BIT_SET_TYPE_ADAPTER)
             .registerTypeAdapter(BooleanFunction.class, BOOLEAN_FUNCTION_TYPE_ADAPTER)
-            .registerTypeAdapter(BooleanVector.class, MyGson.BOOLEAN_VECTOR_TYPE_ADAPTER);
+            .registerTypeAdapter(BooleanVector.class, BOOLEAN_VECTOR_TYPE_ADAPTER)
+            .registerTypeAdapter(Crossover.class, InterfaceSerializer.interfaceSerializer(RandomizeCrossover.class))
+            .registerTypeAdapter(Mutation.class, InterfaceSerializer.interfaceSerializer(RandomizeMutation.class))
+            .registerTypeAdapter(OperatorStatistics.class, InterfaceSerializer.interfaceSerializer(AtomicOperatorStatistics.class));
 
     public static void registerTypeAdapter(Type type, Object typeAdapter) {
         GSON_BUILDER.registerTypeAdapter(type, typeAdapter);

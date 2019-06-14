@@ -423,6 +423,6 @@ public class Utility {
     }
 
     public static String getWorkingDir() {
-        return System.getProperty("user.dir");
+        return System.getProperty("user.dir") + "/GUI";
     }
 }

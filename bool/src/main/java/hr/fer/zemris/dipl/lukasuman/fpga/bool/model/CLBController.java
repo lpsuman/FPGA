@@ -8,7 +8,9 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 public class CLBController implements Serializable {
 
@@ -24,7 +26,7 @@ public class CLBController implements Serializable {
     private int numCLBInputs;
     private int numCLB;
 
-    private HashSet<CLBChangeListener> clbChangeListeners;
+    private List<CLBChangeListener> clbChangeListeners;
 
     public CLBController(int numInputs, int numCLBInputs, int numCLB) {
         this(numInputs, numCLBInputs);
@@ -246,10 +248,6 @@ public class CLBController implements Serializable {
     public void setNumCLB(int numCLB) {
         Utility.checkLimit(Constants.NUM_CLB_LIMIT, numCLB);
 
-        if (numCLB == this.numCLB) {
-            return;
-        }
-
         int prevNumCLB = this.numCLB;
         this.numCLB = numCLB;
 
@@ -261,7 +259,7 @@ public class CLBController implements Serializable {
     public void addCLBChangeListener(CLBChangeListener clbChangeListener) {
         Utility.checkNull(clbChangeListener, "listener");
         if (clbChangeListeners == null) {
-            clbChangeListeners = new HashSet<>();
+            clbChangeListeners = new ArrayList<>();
         }
         clbChangeListeners.add(clbChangeListener);
     }

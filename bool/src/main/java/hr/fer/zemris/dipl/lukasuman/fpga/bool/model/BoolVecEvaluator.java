@@ -12,7 +12,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements CLBChangeListener {
-    
+
+    private BoolVecProblem problem;
     private BooleanVector vector;
     private CLBController controller;
     private boolean useStructureFitness;
@@ -26,7 +27,7 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
     private BitSet unusedBlocks;
 
     public BoolVecEvaluator(BoolVecProblem problem, boolean useStructureFitness) {
-        Utility.checkNull(problem, "problem");
+        this.problem = Utility.checkNull(problem, "problem");
         this.vector = problem.getBoolVector();
         this.controller = problem.getClbController();
         this.useStructureFitness = useStructureFitness;
@@ -110,6 +111,10 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
     private void calculateNumMatchingOutputs(int[] data, int numFunctions, int numCLB, int numInputCombinations, int numInputs, int numCLBInputs) {
         if (saveCLBOutputs) {
             perCLBFullOutputs = Utility.newBitSetArray(numCLB, numInputCombinations);
+        }
+
+        if (numMatchingOutputs.length != numCLB) {
+            updateDataStructures();
         }
 
         for (int i = 0; i < numCLB; i++) {

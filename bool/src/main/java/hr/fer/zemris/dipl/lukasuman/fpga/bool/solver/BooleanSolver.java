@@ -66,6 +66,7 @@ public class BooleanSolver implements Resetable, Serializable {
     private Solution<int[]> bestSolution;
     private int numCLBOfBest;
     private Solution<int[]> bestSolutionWithCurrentNumCLB;
+    private int numCLBCurrentSolution;
     private int highestNumCLBFailed;
 
     private boolean enablePrinting;
@@ -202,10 +203,12 @@ public class BooleanSolver implements Resetable, Serializable {
                 mergedRunResult.randomizeCrossover, mergedRunResult.randomizeMutation,
                 totalNumEvaluations, timer.getElapsedTime()));
 
-        OperatorStatistics.sumStatistics(crossoverOperatorStatistics, mergedRunResult.randomizeCrossover.getGlobalResults());
-        OperatorStatistics.sumStatistics(mutationOperatorStatistics, mergedRunResult.randomizeMutation.getGlobalResults());
-        if (enablePrinting && useStatistics) {
-            printGlobalOperatorStatistics(mergedRunResult.randomizeCrossover, mergedRunResult.randomizeMutation);
+        if (useStatistics) {
+            OperatorStatistics.sumStatistics(crossoverOperatorStatistics, mergedRunResult.randomizeCrossover.getGlobalResults());
+            OperatorStatistics.sumStatistics(mutationOperatorStatistics, mergedRunResult.randomizeMutation.getGlobalResults());
+            if (enablePrinting) {
+                printGlobalOperatorStatistics(mergedRunResult.randomizeCrossover, mergedRunResult.randomizeMutation);
+            }
         }
 
         if (enablePrinting) {
@@ -283,26 +286,40 @@ public class BooleanSolver implements Resetable, Serializable {
     }
 
     public static void printPerFuncResults(List<RunResults> perFuncResults) {
+        printPerFuncResultsMulti(Collections.singletonList(perFuncResults));
+    }
+
+    public static void printPerFuncResultsMulti(List<List<RunResults>> perFuncResults) {
+        int numTests = perFuncResults.size();
+        int numResults = perFuncResults.get(0).size();
+
         int numEvaluations = perFuncResults.stream()
+                .flatMap(List::stream)
                 .mapToInt(result -> result.numEvaluations)
-                .sum();
+                .sum() / numTests;
         printNumEvaluations(numEvaluations);
 
-        List<Integer> elapsedTimes = perFuncResults.stream()
-                .mapToInt(result -> result.elapsedTime)
-                .boxed()
-                .collect(Collectors.toList());
+        List<Double> elapsedTimes = new ArrayList<>();
+        List<Double> numberOfCLBs = new ArrayList<>();
 
-        List<Integer> numberOfCLBs = perFuncResults.stream()
-                .mapToInt(result -> result.result == null ? -1 : result.result.getBlockConfiguration().getNumCLB())
-                .boxed()
-                .collect(Collectors.toList());
+        for (int i = 0; i < numResults; i++) {
+            int elapsedTimesSum = 0;
+            int numCLBsSum = 0;
+            for (int j = 0; j < numTests; j++) {
+                elapsedTimesSum += perFuncResults.get(j).get(i).elapsedTime;
+                if (perFuncResults.get(j).get(i).result != null) {
+                    numCLBsSum += perFuncResults.get(j).get(i).result.getBlockConfiguration().getNumCLB();
+                }
+            }
+            elapsedTimes.add((double) elapsedTimesSum / numTests);
+            numberOfCLBs.add((double) numCLBsSum / numTests);
+        }
 
         System.out.println(String.format("Results for functions (index, number of CLBs, elapsed time), average time is %10.3f seconds):",
-                (double)(elapsedTimes.stream().mapToInt(i -> i).sum() / elapsedTimes.size()) / 1000.0));
+                (elapsedTimes.stream().mapToDouble(i -> i).sum() / elapsedTimes.size()) / 1000.0));
 
         for (int i = 0; i < elapsedTimes.size(); i++) {
-            System.out.println(String.format("%4d   %4d   %10.3f", i, numberOfCLBs.get(i), elapsedTimes.get(i) / 1000.0));
+            System.out.println(String.format("%4d   %4.2f   %10.3f", i, numberOfCLBs.get(i), elapsedTimes.get(i) / 1000.0));
         }
     }
 
@@ -317,7 +334,8 @@ public class BooleanSolver implements Resetable, Serializable {
         return solution;
     }
 
-    private RunResults doARun(BoolVecProblem problem, int maxNumCLBs, int estimatedNumCLBs, long timeLimit) {
+    private RunResults doARun(BoolVecProblem problem1, int maxNumCLBs, int estimatedNumCLBs, long timeLimit) {
+        final BoolVecProblem problem = new BoolVecProblem(problem1.getBoolVector(), problem1.getClbController().getNumCLBInputs());
         CLBController controller = problem.getClbController();
         controller.addCLBChangeListener(new CLBChangeListener() {
             @Override
@@ -329,10 +347,12 @@ public class BooleanSolver implements Resetable, Serializable {
                 bestSolutionWithCurrentNumCLB = null;
             }
         });
+        bestSolutionWithCurrentNumCLB = null;
         controller.setNumCLB(Math.min(Math.max(1, maxNumCLBs), Math.max(1, estimatedNumCLBs)));
         RandomizeCrossover<int[]> randomCrossovers = generateRandomizeCrossover(controller, useStatistics);
         RandomizeMutation<int[]> randomMutations = generateRandomizeMutation(controller, mutationChance, useStatistics);
 
+        int totalNumEvaluations = 0;
         List<BoolVecEvaluator> evaluators = new ArrayList<>();
 
         Supplier<Evaluator<int[]>> evaluatorSupplier = () -> {
@@ -377,7 +397,7 @@ public class BooleanSolver implements Resetable, Serializable {
 
         if (maxNumCLBs == 0) {
             return handleResults(null, -1, problem,
-                    randomCrossovers, randomMutations, evaluators, evaluator, timer);
+                    randomCrossovers, randomMutations, totalNumEvaluations, evaluator, timer);
         }
 
         bestSolution = null;
@@ -394,7 +414,11 @@ public class BooleanSolver implements Resetable, Serializable {
                     controller.getNumCLB(), numFailed + 1, maxNumFails));
 
             if (bestSolutionWithCurrentNumCLB != null) {
-                problem.setNextToSupply(bestSolutionWithCurrentNumCLB);
+                if (numCLBCurrentSolution == controller.getNumCLB()) {
+                    problem.setNextToSupply(bestSolutionWithCurrentNumCLB);
+                } else {
+                    bestSolutionWithCurrentNumCLB = null;
+                }
             }
             double currMaxNonImprovingGenerationsRatio = algorithm.getMaxNonImprovingGenerationsRatio();
             if (controller.getNumCLB() == 1) {
@@ -407,6 +431,11 @@ public class BooleanSolver implements Resetable, Serializable {
             }
 
             solution = algorithm.run();
+
+            for (BoolVecEvaluator eval : evaluators) {
+                totalNumEvaluations += eval.getNumEvaluations();
+            }
+            evaluators.clear();
 
             if (controller.getNumCLB() == 1) {
                 algorithm.setMaxNonImprovingGenerationsRatio(currMaxNonImprovingGenerationsRatio);
@@ -425,6 +454,7 @@ public class BooleanSolver implements Resetable, Serializable {
             if (bestSolutionWithCurrentNumCLB == null
                     || solution.getFitness() > bestSolutionWithCurrentNumCLB.getFitness()) {
                 bestSolutionWithCurrentNumCLB = solution;
+                numCLBCurrentSolution = controller.getNumCLB();
             }
 
             if (solution.getFitness() != Constants.FITNESS_SCALE) {
@@ -489,6 +519,7 @@ public class BooleanSolver implements Resetable, Serializable {
                 break;
             }
 
+            bestSolutionWithCurrentNumCLB = null;
             controller.setNumCLB(highestNumCLBFailed + (numCLBOfBest - highestNumCLBFailed) / 2);
             numFailed = 0;
             numConsecutiveBestFitnessBelowThreshold = 0;
@@ -497,22 +528,19 @@ public class BooleanSolver implements Resetable, Serializable {
         reset();
 
         return handleResults(bestSolution, numCLBOfBest, problem,
-                randomCrossovers, randomMutations, evaluators, evaluator, timer);
+                randomCrossovers, randomMutations, totalNumEvaluations, evaluator, timer);
     }
 
     private RunResults handleResults(Solution<int[]> bestSolution, int numCLBOfBest, BoolVecProblem problem,
                                       RandomizeCrossover<int[]> randomCrossovers,
                                       RandomizeMutation<int[]> randomMutations,
-                                      List<BoolVecEvaluator> evaluators, BoolVecEvaluator evaluator, Timer timer) {
+                                     int numEvaluations, BoolVecEvaluator evaluator, Timer timer) {
 
         if (enablePrinting && useStatistics && !printOnlyGlobalStatistics) {
             printStats(randomCrossovers, randomCrossovers.getCumulativeResults(),
                     randomMutations, randomMutations.getCumulativeResults());
         }
 
-        int numEvaluations = evaluators.stream()
-                .mapToInt(AbstractEvaluator::getNumEvaluations)
-                .sum();
         if (enablePrinting) printNumEvaluations(numEvaluations);
 
         int elapsedTime = timer.getElapsedTime();
@@ -521,6 +549,7 @@ public class BooleanSolver implements Resetable, Serializable {
             return new RunResults(null, randomCrossovers, randomMutations, numEvaluations, elapsedTime);
         }
 
+        bestSolutionWithCurrentNumCLB = null;
         problem.getClbController().setNumCLB(numCLBOfBest);
         evaluator.setLogging(true);
         evaluator.evaluateSolution(bestSolution, false);
@@ -551,6 +580,7 @@ public class BooleanSolver implements Resetable, Serializable {
                 if (enablePrinting) System.out.println("aborting.");
                 return true;
             } else {
+                bestSolutionWithCurrentNumCLB = null;
                 controller.setNumCLB(Math.min(currentNumCLB * 2, maxNumCLBs));
                 if (enablePrinting) System.out.println("doubling CLBs.");
                 return false;
@@ -560,6 +590,7 @@ public class BooleanSolver implements Resetable, Serializable {
                 if (enablePrinting) System.out.println("aborting.");
                 return true;
             } else {
+                bestSolutionWithCurrentNumCLB = null;
                 controller.setNumCLB(currentNumCLB + (numCLBOfBest - currentNumCLB) / 2);
                 if (enablePrinting) System.out.println("increasing CLBs.");
                 return false;
