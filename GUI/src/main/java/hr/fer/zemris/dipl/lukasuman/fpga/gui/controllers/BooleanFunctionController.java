@@ -163,10 +163,15 @@ public class BooleanFunctionController extends AbstractGUIController<BooleanFunc
     public void updateActionsAreEnabled() {
         getJfpga().getGenerateFromExpressionAction().setEnabled(areItemsEditable());
         getJfpga().getGenerateFromTextAction().setEnabled(areItemsEditable());
+        getJfpga().getSaveTextAction().setEnabled(true);
+        getJfpga().getLoadTextAction().setEnabled(true);
         getJfpga().getGenerateRandomFunctionAction().setEnabled(areItemsEditable());
         getJfpga().getDuplicateSelectedFunctionAction().setEnabled(areItemsEditable());
         getJfpga().getRemoveSelectedFunctionAction().setEnabled(areItemsEditable());
         getJfpga().getUndoRemoveFunctionAction().setEnabled(getRemoveCount() > 0);
+        getJfpga().getDisplayAllFunctionsAction().setEnabled(true);
+        getJfpga().getSaveFunctionsAction().setEnabled(true);
+        getJfpga().getLoadFunctionsAction().setEnabled(true);
     }
 
     @Override

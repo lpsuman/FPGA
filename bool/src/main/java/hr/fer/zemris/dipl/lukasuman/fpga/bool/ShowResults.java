@@ -5,7 +5,6 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BooleanSolver;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ShowResults {
@@ -16,9 +15,7 @@ public class ShowResults {
         List<BooleanOptimizer.OptimizationRunResult> optimizationResults;
 
         try {
-            Class<BooleanOptimizer.OptimizationRunResult[]> listType = BooleanOptimizer.OptimizationRunResult[].class;
-            BooleanOptimizer.OptimizationRunResult[] temp = MyGson.readFromJson(filePath, listType);
-            optimizationResults = Arrays.asList(temp);
+            optimizationResults = MyGson.readFromJsonAsList(filePath, BooleanOptimizer.OptimizationRunResult[].class);
         } catch (IOException e) {
             e.printStackTrace();
             return;

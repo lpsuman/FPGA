@@ -187,8 +187,11 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
 
     @Override
     public void updateActionsAreEnabled() {
+        getJfpga().getPrintSolutionAction().setEnabled(true);
         getJfpga().getRemoveSelectedSolutionAction().setEnabled(areItemsEditable());
         getJfpga().getUndoRemoveSolutionAction().setEnabled(getRemoveCount() > 0);
+        getJfpga().getSaveSolutionsAction().setEnabled(true);
+        getJfpga().getLoadSolutionsAction().setEnabled(true);
     }
 
     @Override

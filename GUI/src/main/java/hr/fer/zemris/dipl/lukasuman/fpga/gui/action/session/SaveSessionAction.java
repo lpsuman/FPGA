@@ -40,7 +40,7 @@ public class SaveSessionAction extends AbstractAppAction {
         if (destinationFilePath == null || (e != null && e.getActionCommand() != null &&
                 e.getActionCommand().equals(LocalizationKeys.SAVE_SESSION_AS_KEY))) {
 
-            destinationFilePath = askForSaveDestination(LocalizationKeys.SAVE_SESSION_KEY, sessionFileFilter);
+            destinationFilePath = askForSaveDestination(LocalizationKeys.SAVE_SESSION_KEY, JSON_FILE_FILTER);
             if (destinationFilePath == null) {
                 return;
             }

@@ -18,6 +18,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
@@ -209,5 +210,10 @@ public class MyGson {
         try (FileWriter fileWriter = new FileWriter(filePath)) {
             MyGson.getGson().toJson(data, classOfData, fileWriter);
         }
+    }
+
+    public static <T> List<T> readFromJsonAsList(String filePath, Class<T[]> clazz) throws IOException {
+        T[] array = readFromJson(filePath, clazz);
+        return Arrays.asList(array);
     }
 }

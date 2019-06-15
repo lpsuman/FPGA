@@ -66,6 +66,7 @@ public class LocalizationKeys {
     public static final String ONE_OR_MORE_FUNCTIONS_KEY = "one_or_more_functions";
     public static final String ONE_OR_MORE_VECTORS_KEY = "one_or_more_vectors";
     public static final String ONE_OR_MORE_SOLUTIONS_KEY = "one_or_more_solutions";
+    public static final String NOTHING_TO_SAVE_MSG_KEY = "nothing_to_save_msg";
 
     public static final String INSERT_EXPRESSION_KEY = "insert_expression";
     public static final String GENERATE_FROM_EXPRESSION_KEY = "generate_from_br_expression";
@@ -82,6 +83,8 @@ public class LocalizationKeys {
     public static final String REMOVE_FUNCTION_KEY = "remove_function";
     public static final String UNDO_REMOVE_FUNCTION_KEY = "undo_remove_function";
     public static final String DISPLAY_ALL_FUNCTIONS_KEY = "display_all_functions";
+    public static final String SAVE_FUNCTIONS_KEY = "save_functions";
+    public static final String LOAD_FUNCTIONS_KEY = "load_functions";
 
     public static final String VECTORS_KEY = "vectors";
     public static final String BOOLEAN_VECTORS_KEY = "boolean_vectors";
@@ -92,6 +95,10 @@ public class LocalizationKeys {
     public static final String REMOVE_VECTOR_KEY = "remove_vector";
     public static final String UNDO_REMOVE_VECTOR_KEY = "undo_remove_vector";
     public static final String DISPLAY_ALL_VECTORS_KEY = "display_all_vectors";
+    public static final String SAVE_VECTORS_KEY = "save_vectors";
+    public static final String LOAD_VECTORS_KEY = "load_vectors";
+    public static final String GENERATE_SOLVABLE_KEY = "generate_solvable";
+    public static final String INPUT_NUM_CLB_MSG_KEY = "input_num_clb_msg";
 
     public static final String NUMBER_OF_CLB_INPUTS_KEY = "number_of_br_clb_inputs";
     public static final String INVALID_NUM_CLB_INPUTS_MSG_KEY = "invalid_number_of_clb_inputs_msg";
@@ -123,4 +130,6 @@ public class LocalizationKeys {
     public static final String PRINT_SOLUTION_KEY = "print_solution";
     public static final String REMOVE_SOLUTION_KEY = "remove_solution";
     public static final String UNDO_REMOVE_SOLUTION_KEY = "undo_remove_solution";
+    public static final String SAVE_SOLUTIONS_KEY = "save_solutions";
+    public static final String LOAD_SOLUTIONS_KEY = "load_solutions";
 }

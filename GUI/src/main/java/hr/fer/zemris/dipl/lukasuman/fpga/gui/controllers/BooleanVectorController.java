@@ -89,9 +89,13 @@ public class BooleanVectorController extends AbstractGUIController<BooleanVector
     public void updateActionsAreEnabled() {
         getJfpga().getGenerateFromFunctionsAction().setEnabled(areItemsEditable());
         getJfpga().getGenerateRandomVectorAction().setEnabled(areItemsEditable());
+        getJfpga().getGenerateSolvableAction().setEnabled(areItemsEditable());
         getJfpga().getDuplicateSelectedVectorAction().setEnabled(areItemsEditable());
         getJfpga().getRemoveSelectedVectorAction().setEnabled(areItemsEditable());
         getJfpga().getUndoRemoveVectorAction().setEnabled(getRemoveCount() > 0);
+        getJfpga().getDisplayAllVectorsAction().setEnabled(true);
+        getJfpga().getSaveVectorsAction().setEnabled(true);
+        getJfpga().getLoadVectorsAction().setEnabled(true);
     }
 
     public JComboBox<Integer> getNumInputsComboBox() {

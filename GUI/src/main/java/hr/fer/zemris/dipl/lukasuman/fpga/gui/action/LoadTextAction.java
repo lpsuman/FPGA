@@ -21,7 +21,7 @@ public class LoadTextAction extends AbstractAppAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Path[] filePaths = askForFilesToOpen(getLocalizationKey(), textFileFilter);
+        Path[] filePaths = askForFilesToOpen(getLocalizationKey(), TEXT_FILE_FILTER);
 
         if (filePaths == null) {
             return;

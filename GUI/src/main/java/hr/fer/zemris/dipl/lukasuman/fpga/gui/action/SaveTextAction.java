@@ -20,7 +20,7 @@ public class SaveTextAction extends AbstractAppAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Path filePath = askForSaveDestination(getLocalizationKey(), textFileFilter);
+        Path filePath = askForSaveDestination(getLocalizationKey(), TEXT_FILE_FILTER);
 
         if (filePath == null) {
             return;

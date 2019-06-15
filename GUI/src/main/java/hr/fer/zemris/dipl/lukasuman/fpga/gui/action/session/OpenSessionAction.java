@@ -26,7 +26,7 @@ public class OpenSessionAction extends AbstractAppAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Path[] filePaths = askForFilesToOpen(LocalizationKeys.OPEN_SESSION_KEY, sessionFileFilter);
+        Path[] filePaths = askForFilesToOpen(LocalizationKeys.OPEN_SESSION_KEY, JSON_FILE_FILTER);
 
         if (filePaths == null) {
             return;

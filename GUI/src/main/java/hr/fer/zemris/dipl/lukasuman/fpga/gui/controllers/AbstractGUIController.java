@@ -54,6 +54,7 @@ public abstract class AbstractGUIController<T extends Nameable> {
     }
 
     protected void addResizeAndLocalizationListener(JTable table, MyAbstractTableModel tableModel) {
+        GUIUtility.resizeColumns(table, tableModel);
         getJfpga().addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {

@@ -1,6 +1,9 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.bool.func;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.BoolVecProblem;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.BoolExpression;
+import hr.fer.zemris.dipl.lukasuman.fpga.bool.solver.BoolVectorSolution;
+import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Constants;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
@@ -298,5 +301,67 @@ public class BoolFuncController {
 
     public static int[] bitSetToArray(BooleanFunction func) {
         return bitSetToArray(func.getTruthTable(), 0, func.getNumInputCombinations(), 1);
+    }
+
+    public static BooleanVector generateSolvable(int numInputs, int numFunctions, int numCLBInputs, int numCLB, boolean canBeRedundant) {
+        BoolVecProblem problem = new BoolVecProblem(BoolFuncController.generateRandomVector(numInputs, numFunctions), numCLBInputs);
+        problem.getClbController().setNumCLB(numCLB);
+
+        while (true) {
+            BlockConfiguration blockConfiguration;
+            List<BitSet> fullCLBOutputs;
+
+            outer:
+            while (true) {
+                blockConfiguration = problem.generateBlockConfiguration(problem.get());
+                fullCLBOutputs = BoolVectorSolution.getFullCLBOutputs(problem.getBoolVector(), blockConfiguration);
+
+                for (BitSet fullCLBOutput : fullCLBOutputs) {
+                    if (fullCLBOutput.cardinality() == 0) {
+                        continue outer;
+                    } else {
+                        BitSet flipped = (BitSet) fullCLBOutput.clone();
+                        flipped.flip(0, problem.getBoolVector().getNumInputCombinations());
+                        if (flipped.cardinality() == 0) {
+                            continue outer;
+                        }
+                    }
+                }
+
+                break;
+            }
+
+            List<Integer> funcOutCLB = new ArrayList<>();
+            List<BooleanFunction> functions = new ArrayList<>();
+            int numCLBInSolution = fullCLBOutputs.size();
+            int indexLastUsed = numCLBInSolution;
+
+            for (int i = 0; i < numFunctions; i++) {
+                int truthTableIndex;
+                if (indexLastUsed == 0) {
+                    truthTableIndex = RNG.getRNG().nextInt(0, numCLBInSolution);
+                } else {
+                    truthTableIndex = indexLastUsed - 1;
+                    indexLastUsed--;
+                }
+                funcOutCLB.add(truthTableIndex + numInputs);
+                functions.add(new BooleanFunction(numInputs, fullCLBOutputs.get(truthTableIndex)));
+            }
+            BooleanVector solvableVector = new BooleanVector(functions);
+
+            if (!canBeRedundant) {
+                for (int i = 0; i < numFunctions; i++) {
+                    blockConfiguration.getOutputIndices().set(i, funcOutCLB.get(i));
+                }
+                BoolVectorSolution solution = new BoolVectorSolution(solvableVector, blockConfiguration);
+                BoolVectorSolution checkedSolution = BoolVectorSolution.removeRedundantCLBs(solution);
+
+                if (checkedSolution.getBlockConfiguration().getNumCLB() != solution.getBlockConfiguration().getNumCLB()) {
+                    continue;
+                }
+            }
+
+            return solvableVector;
+        }
     }
 }

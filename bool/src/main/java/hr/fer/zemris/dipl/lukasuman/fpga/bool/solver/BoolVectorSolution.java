@@ -116,13 +116,17 @@ public class BoolVectorSolution extends AbstractNameHandler implements Serializa
         return FuncToExpressionConverter.getString(truthTable, leftString, rightString);
     }
 
-    public List<BitSet> getFullCLBOutputs() {
+    public static List<BitSet> getFullCLBOutputs(BooleanVector boolVector, BlockConfiguration blockConfiguration) {
         BoolVecProblem problem = new BoolVecProblem(boolVector, blockConfiguration.getNumCLBInputs());
         problem.getClbController().setNumCLB(blockConfiguration.getNumCLB());
         BoolVecEvaluator evaluator = new BoolVecEvaluator(problem);
         evaluator.setSaveCLBOutputs(true);
         evaluator.evaluateSolution(blockConfiguration.getAsFlatArray(), false);
         return Arrays.asList(evaluator.getPerCLBFullOutputs());
+    }
+
+    public List<BitSet> getFullCLBOutputs() {
+        return getFullCLBOutputs(boolVector, blockConfiguration);
     }
 
     public static BoolVectorSolution mergeSolutions(List<BoolVectorSolution> solutions) {

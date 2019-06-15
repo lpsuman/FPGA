@@ -12,7 +12,7 @@ public abstract class LocalizableAction extends AbstractAction {
 
 	private static final long serialVersionUID = 6383078233483329169L;
 
-	private LocalizationHandler localizationHandler;
+	protected LocalizationHandler localizationHandler;
 
 	public LocalizableAction(String localizationKey, LocalizationProvider lp) {
 		super();
