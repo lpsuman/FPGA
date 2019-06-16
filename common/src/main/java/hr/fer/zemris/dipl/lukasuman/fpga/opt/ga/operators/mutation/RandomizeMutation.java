@@ -8,7 +8,7 @@ import java.util.List;
 
 public class RandomizeMutation<T> extends AbstractRandomizeOperator implements Mutation<T> {
 
-    private List<? extends Mutation<T>> mutations;
+    private transient List<? extends Mutation<T>> mutations;
 
     public RandomizeMutation(List<? extends Mutation<T>> mutations, boolean useStatistics) {
         super(Utility.checkNull(mutations, "list of mutations"), useStatistics);

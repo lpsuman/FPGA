@@ -302,6 +302,51 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         return trimmedSolution;
     }
 
+    public List<Solution<int[]>> trimRandom(Solution<int[]> solution, int numBlocksInTrimmed, int numNewSolutions) {
+        Utility.checkNull(solution, "solution to trim");
+        List<Solution<int[]>> newSolutions = new ArrayList<>(numNewSolutions);
+        BitSet blockToDelete = new BitSet();
+        int numInputs = clbController.getNumInputs();
+        int numCLB = clbController.getNumCLB();
+        IRNG random = RNG.getRNG();
+        int numBlocksToTrim = numCLB - numBlocksInTrimmed;
+
+        for (int i = 0; i < numNewSolutions; i++) {
+            int numSet = 0;
+            while (numSet < numBlocksToTrim) {
+                int randIndex = random.nextInt(0, numCLB) + numInputs;
+                if (!blockToDelete.get(randIndex)) {
+                    blockToDelete.set(randIndex);
+                    numSet++;
+                }
+            }
+
+            newSolutions.add(trimmedBoolSolution(solution, blockToDelete));
+            blockToDelete.clear();
+        }
+
+        return newSolutions;
+    }
+
+//    public List<Solution<int[]>> expandRandom(Solution<int[]> solution, int numBlocksInOriginal, int numNewSolutions) {
+//        Utility.checkNull(solution, "solution to trim");
+//        List<Solution<int[]>> newSolutions = new ArrayList<>(numNewSolutions);
+//        int numInputs = clbController.getNumInputs();
+//        int numCLB = clbController.getNumCLB();
+//        IRNG random = RNG.getRNG();
+//        int numBlocksToAdd = numCLB - numBlocksInOriginal;
+//
+//        for (int i = 0; i < numNewSolutions; i++) {
+//            Solution<int[]> newSolution = get();
+//
+//
+//
+//            newSolutions.add(newSolution);
+//        }
+//
+//        return newSolutions;
+//    }
+
     public BlockConfiguration generateBlockConfiguration(Solution<int[]> solution) {
         checkIfValidSolution(solution);
 

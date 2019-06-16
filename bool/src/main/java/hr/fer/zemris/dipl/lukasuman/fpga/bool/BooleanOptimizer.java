@@ -55,7 +55,7 @@ public class BooleanOptimizer {
     }
 
     private static final int[][] FIXED_PARAMETERS = new int[][]{
-            {1, 10, 100}
+            {10, 1000, 500}
     };
 
 //    private static final int[][] FIXED_PARAMETERS = new int[][]{
@@ -71,18 +71,20 @@ public class BooleanOptimizer {
     private static final int[] MAX_GENERATIONS = new int[]{400, 2000, 10000};
 
     private static final int NUM_THREADS = 3;
+    private static final int NUM_TESTS = 30;
+    private static final boolean SOLVE_INDIVIDUALLY = true;
+    private static final boolean USE_STATISTICS = true;
+    private static final boolean ALLOW_PRINTING = false;
 
     public static void main(String[] args) {
-        int numTests = 10;
-        int[][] params = getGridParameters();
-
-//        int numTests = 1;
-//        int[][] params = FIXED_PARAMETERS;
+//        int[][] params = getGridParameters();
+        int[][] params = FIXED_PARAMETERS;
 
         BooleanSolverConfig solverConfig = new BooleanSolverConfig()
                 .printOnlyBestSolution(true)
-                .useStatistics(false)
-                .printOnlyGlobalStatistics(true);
+                .useStatistics(USE_STATISTICS)
+                .printOnlyGlobalStatistics(true)
+                .solveIndividually(SOLVE_INDIVIDUALLY);
         ArrayList<OptimizationRunResult> optimizationResults = new ArrayList<>();
         int totalNumSteps = params.length;
 
@@ -94,9 +96,9 @@ public class BooleanOptimizer {
             int populationSize = params[i][1];
             int maxGenerations = params[i][2];
 
-            for (int j = 0; j < numTests; j++) {
+            for (int j = 0; j < NUM_TESTS; j++) {
                 String setup = String.format("Step %2d/%2d (try %2d/%2d), fails=%3d, pop_size=%6d, max_gen=%6d",
-                        i + 1, totalNumSteps, j + 1, numTests, maxNumFails, populationSize, maxGenerations);
+                        i + 1, totalNumSteps, j + 1, NUM_TESTS, maxNumFails, populationSize, maxGenerations);
                 System.out.println(setup);
 
                 BooleanSolver solver = new BooleanSolver(SolverMode.FULL, null, solverConfig);
@@ -108,7 +110,7 @@ public class BooleanOptimizer {
                 AnnealedThreadPoolConfig tpConfig = new AnnealedThreadPoolConfig()
                         .numThreads(NUM_THREADS);
                 solver.setThreadPoolConfig(tpConfig);
-                solver.setEnablePrinting(false);
+                solver.setEnablePrinting(ALLOW_PRINTING);
                 solver.solve(getTestProblem());
 
                 optimizationResults.add(new OptimizationRunResult(setup, solver.getRunResults(),
@@ -119,7 +121,7 @@ public class BooleanOptimizer {
         LocalDateTime time = LocalDateTime.now();
         TypeToken<ArrayList<OptimizationRunResult>> listType = new TypeToken<>(){};
         try {
-            MyGson.writeToJson(getFolderPath() + "opt_" + time.toString().replace(':', '_') + "_" + numTests + ".json",
+            MyGson.writeToJson(getFolderPath() + "opt_" + time.toString().replace(':', '_') + "_" + NUM_TESTS + ".json",
                     optimizationResults, listType.getRawType());
         } catch (IOException e) {
             e.printStackTrace();
@@ -173,8 +175,6 @@ public class BooleanOptimizer {
         for (OptimizationRunResult optimizationResult : optimizationResults) {
             System.out.println(optimizationResult.setup);
             BooleanSolver.printPerFuncResults(optimizationResult.runResults);
-//            BooleanSolver.printStats(randomizeCrossover, optimizationResult.crossoverOperatorStatistics,
-//                    randomizeMutation, optimizationResult.mutationOperatorStatistics);
 
             if (superGlobalCrossoverStatistics == null) {
                 superGlobalCrossoverStatistics = optimizationResult.crossoverOperatorStatistics;
@@ -185,9 +185,11 @@ public class BooleanOptimizer {
             }
         }
 
-        System.out.println("Super global operator statistics:");
-        BooleanSolver.printStats(randomizeCrossover, superGlobalCrossoverStatistics,
-                randomizeMutation, superGlobalMutationStatistics);
+        if (USE_STATISTICS) {
+            System.out.println("\nSuper global operator statistics:");
+            BooleanSolver.printStats(randomizeCrossover, superGlobalCrossoverStatistics,
+                    randomizeMutation, superGlobalMutationStatistics);
+        }
     }
 
     public static String getFolderPath() {

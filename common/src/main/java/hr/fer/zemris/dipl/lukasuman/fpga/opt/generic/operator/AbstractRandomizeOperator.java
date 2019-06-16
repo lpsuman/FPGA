@@ -24,11 +24,11 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
     }
 
     protected boolean useStatistics;
-    private List<OperatorStatistics> statsList;
+    private transient List<OperatorStatistics> statsList;
     private List<OperatorStatistics> cumulativeStatsList;
     private List<OperatorStatistics> globalStatsList;
 
-    private Map<Solution, WaitingSolutionData> waitingSolutions;
+    private transient ThreadLocal<Map<Solution, WaitingSolutionData>> waitingSolutions;
     private double bestFitness;
     private boolean shouldIgnoreFitnessChanges;
 
@@ -51,7 +51,7 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
                 cumulativeStatsList.add(new AtomicOperatorStatistics());
                 globalStatsList.add(new AtomicOperatorStatistics());
             }
-            waitingSolutions = new ConcurrentHashMap<>();
+            waitingSolutions = ThreadLocal.withInitial(HashMap::new);
         }
 
         bestFitness = 0.0;
@@ -106,7 +106,7 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
 
     protected void addWaitingSolution(Solution solution, double prevFitness, int indexOperator) {
         checkIfUsingStatistics();
-        waitingSolutions.put(solution, new WaitingSolutionData(prevFitness, indexOperator));
+        waitingSolutions.get().put(solution, new WaitingSolutionData(prevFitness, indexOperator));
     }
 
     @Override
@@ -134,7 +134,7 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
         sb.append('\n');
         sb.append(getResultMessage());
         sb.append('\n');
-        sb.append("Used   DecreasedFitness   IncreasedFitness   IncreasedBest");
+        sb.append(String.format("%14s %24s %21s %19s", "Times used", "Decreased fitness", "Increased fitness", "Increased best"));
         sb.append('\n');
 
         for (int i = 0, n = operatorStatistics.size(); i < n; i++) {
@@ -159,11 +159,11 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
     @Override
     public void fitnessChanged(Solution solution) {
         checkIfUsingStatistics();
-        WaitingSolutionData data = waitingSolutions.get(solution);
+        WaitingSolutionData data = waitingSolutions.get().get(solution);
         if (data == null) {
             return;
         }
-        waitingSolutions.remove(solution);
+        waitingSolutions.get().remove(solution);
 
         if (!shouldIgnoreFitnessChanges) {
             statsList.get(data.indexOperator).incrementNumUsed(data.prevFitness, solution.getFitness(), bestFitness);

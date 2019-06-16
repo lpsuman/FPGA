@@ -7,11 +7,8 @@ public class SingleBlockCrossover extends AbstractBoolCrossover {
 
     private static final double DEFAULT_OPERATOR_CHANCE = 1.0;
 
-    private boolean isAligned;
-
     public SingleBlockCrossover(CLBController clbController, boolean isAligned) {
-        super(clbController, isAligned ? DEFAULT_OPERATOR_CHANCE * ALIGNED_CHANCE_MODIFIER : DEFAULT_OPERATOR_CHANCE);
-        this.isAligned = isAligned;
+        super(clbController, isAligned ? DEFAULT_OPERATOR_CHANCE * ALIGNED_CHANCE_MODIFIER : DEFAULT_OPERATOR_CHANCE, isAligned);
     }
 
     public SingleBlockCrossover(CLBController clbController) {

@@ -7,11 +7,13 @@ public class BooleanSolverConfig {
     private boolean printOnlyBestSolution;
     private boolean useStatistics;
     private boolean printOnlyGlobalStatistics;
+    private boolean solveIndividually;
 
     public BooleanSolverConfig() {
         printOnlyBestSolution = Constants.DEFAULT_PRINT_ONLY_BEST_SOLUTION;
         useStatistics = Constants.DEFAULT_USE_STATISTICS;
         printOnlyGlobalStatistics = Constants.DEFAULT_PRINT_ONLY_GLOBAL_STATISTICS;
+        solveIndividually = Constants.DEFAULT_SOLVE_INDIVIDUALLY;
     }
 
     public BooleanSolverConfig printOnlyBestSolution(boolean printOnlyBestSolution) {
@@ -29,6 +31,11 @@ public class BooleanSolverConfig {
         return this;
     }
 
+    public BooleanSolverConfig solveIndividually(boolean solveIndividually) {
+        this.solveIndividually = solveIndividually;
+        return this;
+    }
+
     public boolean isPrintOnlyBestSolution() {
         return printOnlyBestSolution;
     }
@@ -39,5 +46,9 @@ public class BooleanSolverConfig {
 
     public boolean isPrintOnlyGlobalStatistics() {
         return printOnlyGlobalStatistics;
+    }
+
+    public boolean isSolveIndividually() {
+        return solveIndividually;
     }
 }

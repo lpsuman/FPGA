@@ -8,7 +8,7 @@ import java.util.List;
 
 public class RandomizeCrossover<T> extends AbstractRandomizeOperator implements Crossover<T> {
 
-    private List<? extends Crossover<T>> crossovers;
+    private transient List<? extends Crossover<T>> crossovers;
 
     public RandomizeCrossover(List<? extends Crossover<T>> crossovers, boolean useStatistics) {
         super(Utility.checkNull(crossovers, "list of crossovers"), useStatistics);

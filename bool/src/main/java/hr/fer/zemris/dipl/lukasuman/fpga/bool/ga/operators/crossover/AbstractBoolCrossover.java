@@ -6,18 +6,19 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.operator.AbstractOperator;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.IRNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
+import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 public abstract class AbstractBoolCrossover extends AbstractOperator implements Crossover<int[]> {
 
     protected static final double ALIGNED_CHANCE_MODIFIER = 2.0;
 
     protected CLBController clbController;
-
     protected boolean isAligned;
 
-    public AbstractBoolCrossover(CLBController clbController, double chance) {
+    public AbstractBoolCrossover(CLBController clbController, double chance, boolean isAligned) {
         super(chance);
-        this.clbController = clbController;
+        this.clbController = Utility.checkNull(clbController, "clb controller");
+        this.isAligned = isAligned;
     }
 
     @Override
