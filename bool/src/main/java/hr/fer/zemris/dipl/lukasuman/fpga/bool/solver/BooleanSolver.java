@@ -137,7 +137,11 @@ public class BooleanSolver implements Resetable, Serializable {
             if (bruteSolutions.size() == 1) {
                 return solverIsDone(bruteSolutions.get(0), problem);
             } else {
-                return solverIsDone(BoolVectorSolution.mergeSolutions(bruteSolutions), problem);
+                if (numFunctions == 1) {
+                    return solverIsDone(bruteSolutions.get(0), problem);
+                } else {
+                    return solverIsDone(BoolVectorSolution.mergeSolutions(bruteSolutions), problem);
+                }
             }
         }
 
@@ -209,7 +213,11 @@ public class BooleanSolver implements Resetable, Serializable {
                     .sum();
             numCLBEstimation = avgNumCLBForSolvedFuncs * numFunctions;
         } else {
-            solution = BoolVectorSolution.mergeSolutions(bruteSolutions);
+            if (numFunctions == 1) {
+                solution = bruteSolutions.get(0);
+            } else {
+                solution = BoolVectorSolution.mergeSolutions(bruteSolutions);
+            }
             numCLBEstimation = 2 * numFunctions;
         }
 
@@ -678,6 +686,7 @@ public class BooleanSolver implements Resetable, Serializable {
 
     public void setThreadPoolConfig(AnnealedThreadPoolConfig threadPoolConfig) {
         this.threadPoolConfig = threadPoolConfig;
+        this.threadPoolConfig.evaluateAfterCrossover(useStatistics);
     }
 
     public void setMutationChance(double mutationChance) {

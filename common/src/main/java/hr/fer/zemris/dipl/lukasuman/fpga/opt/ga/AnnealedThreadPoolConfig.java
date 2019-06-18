@@ -7,10 +7,12 @@ public class AnnealedThreadPoolConfig {
 
     private int numThreads;
     private double annealingThreshold;
+    private boolean evaluateAfterCrossover;
 
     public AnnealedThreadPoolConfig() {
         numThreads = Constants.DEFAULT_NUM_WORKERS;
         annealingThreshold = Constants.DEFAULT_ANNEALING_THRESHOLD;
+        evaluateAfterCrossover = Constants.DEFAULT_USE_STATISTICS;
     }
 
     public AnnealedThreadPoolConfig numThreads(int numThreads) {
@@ -25,11 +27,20 @@ public class AnnealedThreadPoolConfig {
         return this;
     }
 
+    public AnnealedThreadPoolConfig evaluateAfterCrossover(boolean evaluateAfterCrossover) {
+        this.evaluateAfterCrossover = evaluateAfterCrossover;
+        return this;
+    }
+
     public int getNumThreads() {
         return numThreads;
     }
 
     public double getAnnealingThreshold() {
         return annealingThreshold;
+    }
+
+    public boolean isEvaluateAfterCrossover() {
+        return evaluateAfterCrossover;
     }
 }

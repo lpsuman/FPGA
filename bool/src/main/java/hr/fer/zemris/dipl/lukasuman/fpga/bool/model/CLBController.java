@@ -122,7 +122,7 @@ public class CLBController implements Serializable {
         }
     }
 
-    public void randomizeTableBit(int[] data, int blockIndex, int bitIndex, IRNG random) {
+    public void flipTableBit(int[] data, int blockIndex, int bitIndex) {
         int offset = calcLUTOffset(blockIndex);
 
         int intIndex = bitIndex / 32;

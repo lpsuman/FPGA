@@ -18,19 +18,23 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
     private CLBController controller;
     private boolean useStructureFitness;
     private boolean saveCLBOutputs;
+    private boolean useCLBOutputCaching;
 
     private BitSet[] perCLBFullOutputs;
     private BitSet perCLBCurrentOutput;
+    private BitSet[] perCLBUsedInputs;
+    private BitSet outputChanged;
     private int[][] numMatchingOutputs;
     private int[] bestMatchingCounts;
     private BitSet[] blockUsage;
     private BitSet unusedBlocks;
 
-    public BoolVecEvaluator(BoolVecProblem problem, boolean useStructureFitness) {
+    public BoolVecEvaluator(BoolVecProblem problem, boolean useStructureFitness, boolean useCLBOutputCaching) {
         this.problem = Utility.checkNull(problem, "problem");
         this.vector = problem.getBoolVector();
         this.controller = problem.getClbController();
         this.useStructureFitness = useStructureFitness;
+        this.useCLBOutputCaching = useCLBOutputCaching;
         controller.addCLBChangeListener(this);
         bestMatchingCounts = new int[vector.getNumFunctions()];
         updateDataStructures();
@@ -38,7 +42,7 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
     }
 
     public BoolVecEvaluator(BoolVecProblem problem) {
-        this(problem, Constants.USE_STRUCTURE_FITNESS);
+        this(problem, Constants.USE_STRUCTURE_FITNESS, Constants.DEFAULT_USE_CLB_OUTPUT_CACHING);
     }
 
     private void updateDataStructures() {
@@ -49,6 +53,11 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
         numMatchingOutputs = new int[numCLB][numFunctions];
 
         int numInputs = controller.getNumInputs();
+        if (useCLBOutputCaching) {
+            perCLBUsedInputs = Utility.newBitSetArray(numInputs, numCLB);
+            outputChanged = new BitSet(numCLB);
+        }
+
         blockUsage = Utility.newBitSetArray(numFunctions, numInputs + numCLB);
         unusedBlocks = new BitSet(numInputs + numCLB);
     }
@@ -142,6 +151,30 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
             log(() -> "\n\n");
         }
 
+        if (useCLBOutputCaching) {
+            for (int i = 0; i < numInputs; i++) {
+                perCLBUsedInputs[i].clear();
+            }
+
+            for (int i = 0; i < numCLB; i++) {
+                int offset = controller.calcCLBOffset(i);
+                for (int j = 0; j < numCLBInputs; j++) {
+                    int input = data[offset + j];
+                    if (input < numInputs) {
+                        perCLBUsedInputs[input].set(i);
+                    } else {
+                        for (int k = 0; k < numInputs; k++) {
+                            if (perCLBUsedInputs[k].get(input - numInputs)) {
+                                perCLBUsedInputs[k].set(i);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        BitSet[] truthTables = vector.getTruthTable();
+
         for (int inputCombination = 0; inputCombination < numInputCombinations; inputCombination++) {
             if (enableLogging) {
                 final int inputCombinationFinal = inputCombination;
@@ -149,11 +182,28 @@ public class BoolVecEvaluator extends AbstractLoggingEvaluator<int[]> implements
                         Constants.BOOL_VECTOR_PRINT_CELL_SIZE - 1));
                 logPadding();
             }
-            BitSet[] truthTables = vector.getTruthTable();
+
+            if (useCLBOutputCaching) {
+                int indexInputChanged = (inputCombination - 1) ^ inputCombination;
+                outputChanged.clear();
+
+                if (inputCombination != 0) {
+                    for (int i = 0; i < numInputs; i++) {
+                        if (Utility.testBitFromRight(indexInputChanged, numInputs - i - 1)) {
+                            outputChanged.or(perCLBUsedInputs[i]);
+                        }
+                    }
+                }
+            }
 
             for (int k = 0; k < numCLB; ++k) {
-                boolean outputCLB = calcCLBOutput(inputCombination, data, k, numInputs, numCLBInputs);
-                perCLBCurrentOutput.set(k, outputCLB);
+                boolean outputCLB;
+                if (inputCombination == 0 || !useCLBOutputCaching || outputChanged.get(k)) {
+                    outputCLB = calcCLBOutput(inputCombination, data, k, numInputs, numCLBInputs);
+                    perCLBCurrentOutput.set(k, outputCLB);
+                } else {
+                    outputCLB = perCLBCurrentOutput.get(k);
+                }
 
                 if (saveCLBOutputs) {
                     perCLBFullOutputs[k].set(inputCombination, outputCLB);

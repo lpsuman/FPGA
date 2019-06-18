@@ -20,8 +20,16 @@ public class TableSingleMutation extends AbstractBoolMutation {
     @Override
     public void mutateData(int[] data, IRNG random) {
         int mutationIndex = random.nextInt(0, clbController.getNumCLB());
-        int bitMutationIndex = random.nextInt(0, clbController.getBitsPerLUT());
+        int bitsPerLUT = clbController.getBitsPerLUT();
 
-        clbController.randomizeTableBit(data, mutationIndex, bitMutationIndex, random);
+        if (mutationChance == 0.0) {
+            int bitMutationIndex = random.nextInt(0, bitsPerLUT);
+            clbController.flipTableBit(data, mutationIndex, bitMutationIndex);
+        } else {
+            for (int i = 0, n = mirroredGaussian(random, 1, bitsPerLUT); i < n; i++) {
+                int bitMutationIndex = random.nextInt(0, bitsPerLUT);
+                clbController.flipTableBit(data, mutationIndex, bitMutationIndex);
+            }
+        }
     }
 }

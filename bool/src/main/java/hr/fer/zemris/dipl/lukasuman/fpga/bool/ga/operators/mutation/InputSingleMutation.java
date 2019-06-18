@@ -21,8 +21,16 @@ public class InputSingleMutation extends AbstractBoolMutation {
     public void mutateData(int[] data, IRNG random) {
         int mutationIndex = random.nextInt(0, clbController.getNumCLB());
         int offset = clbController.calcCLBOffset(mutationIndex);
-        int inputIndex = random.nextInt(0, clbController.getNumCLBInputs());
+        int numCLBInputs = clbController.getNumCLBInputs();
 
-        data[offset + inputIndex] = random.nextInt(0, mutationIndex + clbController.getNumInputs());
+        if (mutationChance == 0.0) {
+            int inputIndex = random.nextInt(0, numCLBInputs);
+            data[offset + inputIndex] = random.nextInt(0, mutationIndex + clbController.getNumInputs());
+        } else {
+            for (int i = 0, n = mirroredGaussian(random, 1, numCLBInputs); i < n; i++) {
+                int inputIndex = random.nextInt(0, numCLBInputs);
+                data[offset + inputIndex] = random.nextInt(0, mutationIndex + clbController.getNumInputs());
+            }
+        }
     }
 }

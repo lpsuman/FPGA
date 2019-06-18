@@ -155,7 +155,7 @@ public class UtilTests {
 
     @Test
     void testBreakIntoWords() {
-        TestUtil.argThrow(() -> Utility.breakIntoWords(null));
+        TestUtil.argThrow(() -> Utility.breakIntoWords((List<String>)null));
         TestUtil.argThrow(() -> Utility.breakIntoWords(new ArrayList<>()));
         assertNull(Utility.breakIntoWords(Collections.singletonList("")));
 

@@ -72,6 +72,7 @@ public class Constants {
     public static final boolean DEFAULT_USE_STATISTICS = true;
     public static final boolean DEFAULT_PRINT_ONLY_GLOBAL_STATISTICS = true;
     public static final boolean DEFAULT_SOLVE_INDIVIDUALLY = false;
+    public static final boolean DEFAULT_USE_CLB_OUTPUT_CACHING = false;
 
     public static final int MAXIMUM_INPUT_ID_LENGTH = 10;
     public static final int MAXIMUM_NAME_LENGTH = 30;

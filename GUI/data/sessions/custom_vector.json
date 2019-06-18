@@ -1231,6 +1231,58 @@
         ]
       },
       "name": "adder2"
+    },
+    {
+      "boolVector": {
+        "name": "adder",
+        "functions": [
+          {
+            "name": "S0",
+            "inputs": [
+              "a0",
+              "b0",
+              "cin"
+            ],
+            "truthTable": "01101001"
+          },
+          {
+            "name": "C0",
+            "inputs": [
+              "a0",
+              "b0",
+              "cin"
+            ],
+            "truthTable": "00010111"
+          }
+        ]
+      },
+      "blockConfiguration": {
+        "numCLB": 5,
+        "numCLBInputs": 2,
+        "blockSize": 3,
+        "data": [
+          0,
+          1,
+          6,
+          1,
+          2,
+          6,
+          3,
+          4,
+          1,
+          1,
+          5,
+          6,
+          4,
+          0,
+          6
+        ],
+        "outputIndices": [
+          7,
+          6
+        ]
+      },
+      "name": "adder"
     }
   ]
 }

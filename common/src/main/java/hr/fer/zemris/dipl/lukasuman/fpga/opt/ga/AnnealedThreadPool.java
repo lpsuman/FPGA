@@ -6,7 +6,6 @@ import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.selection.Selection;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.selection.TournamentSelection;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.evaluator.Evaluator;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.listener.GenerationListener;
-import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.listener.TerminationListener;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.IRNG;
 import hr.fer.zemris.dipl.lukasuman.fpga.rng.RNG;
@@ -48,13 +47,14 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
     private final ThreadLocal<Evaluator<T>> threadLocalEvaluator;
     private double generationProgress;
     private double annealingThreshold;
+    private boolean evaluateAfterCrossover;
 
     private List<Solution<T>> newPopulation;
     private AtomicInteger copyOverIndex;
 
     public AnnealedThreadPool(Crossover<T> crossover, Mutation<T> mutation, Supplier<Evaluator<T>> evaluatorSupplier,
                               double annealingThreshold, int numThreads, Selection<T> selection,
-                              Function<Runnable, Thread> threadFactory) {
+                              Function<Runnable, Thread> threadFactory, boolean evaluateAfterCrossover) {
 
         this.selection = selection;
         this.crossover = crossover;
@@ -63,6 +63,7 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
 
         Utility.checkLimit(Constants.ANNEALING_THRESHOLD_LIMIT, annealingThreshold);
         this.annealingThreshold = annealingThreshold;
+        this.evaluateAfterCrossover = evaluateAfterCrossover;
 
         shouldTerminate = new AtomicBoolean();
         numRemainingTerminationAcknowledged = new AtomicInteger();
@@ -103,16 +104,18 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
                 Solution<T> secondChild = newPopulation.get(copyOverIndex.incrementAndGet());
                 secondParent.copyOver(secondChild);
 
-                if (generationProgress < AnnealedThreadPool.this.annealingThreshold) {
-                    AnnealedThreadPool.this.crossover.crossover(firstChild, secondChild);
-                    threadLocalEvaluator.get().evaluateSolution(firstChild, false);
-                    threadLocalEvaluator.get().evaluateSolution(secondChild, false);
-                }
-
                 boolean acceptyOnlyImproving = true;
                 if (generationProgress < AnnealedThreadPool.this.annealingThreshold
                         && random.nextDouble(0.0, AnnealedThreadPool.this.annealingThreshold) > generationProgress) {
                     acceptyOnlyImproving = false;
+                }
+
+                if (generationProgress < AnnealedThreadPool.this.annealingThreshold) {
+                    AnnealedThreadPool.this.crossover.crossover(firstChild, secondChild);
+                    if (acceptyOnlyImproving || AnnealedThreadPool.this.evaluateAfterCrossover) {
+                        threadLocalEvaluator.get().evaluateSolution(firstChild, false);
+                        threadLocalEvaluator.get().evaluateSolution(secondChild, false);
+                    }
                 }
 
                 if (!acceptyOnlyImproving
@@ -171,7 +174,7 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
     public AnnealedThreadPool(Crossover<T> crossover, Mutation<T> mutation, Supplier<Evaluator<T>> evaluatorSupplier,
                               double annealingThreshold, int numThreads, Selection<T> selection) {
 
-        this(crossover, mutation, evaluatorSupplier, annealingThreshold, numThreads, selection, Thread::new);
+        this(crossover, mutation, evaluatorSupplier, annealingThreshold, numThreads, selection, Thread::new, Constants.DEFAULT_USE_STATISTICS);
     }
 
     public AnnealedThreadPool(Crossover<T> crossover, Mutation<T> mutation, Supplier<Evaluator<T>> evaluatorSupplier,
@@ -193,6 +196,7 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
     public AnnealedThreadPool(Crossover<T> crossover, Mutation<T> mutation, Supplier<Evaluator<T>> evaluatorSupplier,
                               AnnealedThreadPoolConfig config) {
         this(crossover, mutation, evaluatorSupplier, config.getAnnealingThreshold(), config.getNumThreads());
+        this.evaluateAfterCrossover = config.isEvaluateAfterCrossover();
     }
 
     @Override
@@ -210,7 +214,7 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
         isShuttingDown = false;
         incoming.clear();
         remainingRedPills.set(0);
-        generationProgress = 0.0;
+        generationProgress(0.0);
 
         shouldTerminate.set(false);
         numRemainingTerminationAcknowledged.set(-1);
@@ -219,6 +223,7 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
 
         for (int i = 0; i < threads.length; i++) {
             threads[i] = threadFactory.apply(runnable);
+            threads[i].setDaemon(true);
             threads[i].start();
         }
     }
@@ -330,6 +335,7 @@ public class AnnealedThreadPool<T> implements GAThreadPool<T>, GenerationListene
     @Override
     public void generationProgress(double generationProgress) {
         this.generationProgress = generationProgress;
+//        mutation.setMutationChance(1.0 - generationProgress);
     }
 
     @Override

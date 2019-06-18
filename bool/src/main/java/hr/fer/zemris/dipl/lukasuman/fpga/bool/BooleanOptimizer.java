@@ -72,8 +72,8 @@ public class BooleanOptimizer {
 
     private static final int NUM_THREADS = 3;
     private static final int NUM_TESTS = 30;
-    private static final boolean SOLVE_INDIVIDUALLY = true;
-    private static final boolean USE_STATISTICS = true;
+    private static final boolean SOLVE_INDIVIDUALLY = false;
+    private static final boolean USE_STATISTICS = false;
     private static final boolean ALLOW_PRINTING = false;
 
     public static void main(String[] args) {
@@ -128,6 +128,7 @@ public class BooleanOptimizer {
         }
 
         showResults(getTestProblem(), optimizationResults);
+        showAverageResults(optimizationResults, NUM_TESTS);
 
         System.out.println("Total elapsed time: " + timer.getElapsedTime() / 1000.0);
     }
@@ -189,6 +190,19 @@ public class BooleanOptimizer {
             System.out.println("\nSuper global operator statistics:");
             BooleanSolver.printStats(randomizeCrossover, superGlobalCrossoverStatistics,
                     randomizeMutation, superGlobalMutationStatistics);
+        }
+    }
+
+    public static void showAverageResults(List<OptimizationRunResult> optimizationResults, int numTests) {
+        int numSetups = optimizationResults.size() / numTests;
+
+        for (int i = 0; i < numSetups; i++) {
+            List<List<BooleanSolver.RunResults>> results = new ArrayList<>();
+            for (int j = 0; j < numTests; j++) {
+                results.add(optimizationResults.get(i * numTests + j).getRunResults());
+            }
+            System.out.println(optimizationResults.get(i * numTests).getSetup());
+            BooleanSolver.printPerFuncResultsMulti(results);
         }
     }
 

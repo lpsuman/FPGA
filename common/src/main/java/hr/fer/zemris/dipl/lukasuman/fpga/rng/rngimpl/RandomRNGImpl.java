@@ -49,6 +49,17 @@ public class RandomRNGImpl implements IRNG {
     }
 
     @Override
+    public double nextGaussian(double min, double max) {
+        double mean = (min + max) / 2.0;
+        double scale = (max - min) / 6.0;
+        double result = random.nextGaussian() * scale + mean;
+        if (result < min || result > max) {
+            result = mean;
+        }
+        return result;
+    }
+
+    @Override
     public BitSet nextBitSet(int size) {
         byte[] randomBytes = new byte[Math.max(1, size / 8)];
         random.nextBytes(randomBytes);

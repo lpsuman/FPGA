@@ -13,6 +13,7 @@ public interface IRNG {
     double nextDouble();
     double nextDouble(double min, double max);
 
+    double nextGaussian(double min, double max);
     boolean nextBoolean();
 
     BitSet nextBitSet(int size);

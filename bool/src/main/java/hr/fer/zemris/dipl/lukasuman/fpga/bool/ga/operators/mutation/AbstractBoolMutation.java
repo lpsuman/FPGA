@@ -21,18 +21,41 @@ public abstract class AbstractBoolMutation extends AbstractOperator implements M
 
     @Override
     public void mutate(Solution<int[]> candidate) {
-        for (int i = 0, n = calcNumMutations(); i < n; i++) {
-            mutateData(candidate.getData(), RNG.getRNG());
+        IRNG random = RNG.getRNG();
+
+        if (mutationChance == 0.0) {
+            mutateData(candidate.getData(), random);
+        } else {
+            for (int i = 0, n = calcNumMutations(random); i < n; i++) {
+                mutateData(candidate.getData(), random);
+            }
         }
     }
 
     protected abstract void mutateData(int[] data, IRNG random);
 
-    protected int calcNumMutations() {
-        if (mutationChance == 0.0) {
+    private int calcNumMutations(IRNG random) {
+        int maxNumMutations = (int)(mutationChance * clbController.getNumCLB());
+        if (mutationChance == 0.0 || maxNumMutations <= 1) {
             return 1;
         }
-        return (int) Math.max(1, mutationChance * clbController.getNumCLB());
+        return Math.max(1, mirroredGaussian(random, 1, maxNumMutations));
+    }
+
+    protected int mirroredGaussian(IRNG random, double min, double max) {
+        double scale = mutationChance * (max - min);
+        double gaussian = random.nextGaussian(-scale, scale);
+        return (int)(Math.abs(gaussian) + min);
+    }
+
+    @Override
+    public double getMutationChance() {
+        return mutationChance;
+    }
+
+    @Override
+    public void setMutationChance(double mutationChance) {
+        this.mutationChance = mutationChance;
     }
 
     public void setClbController(CLBController clbController) {

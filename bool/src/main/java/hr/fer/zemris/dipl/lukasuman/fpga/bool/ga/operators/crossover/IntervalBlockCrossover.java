@@ -18,7 +18,7 @@ public class IntervalBlockCrossover extends AbstractBoolCrossover {
     @Override
     protected void crossoverData(int[] firstData, int[] secondData, IRNG random) {
         int numCLB = clbController.getNumCLB();
-        int intervalSize = random.nextInt(1, Math.max(2, numCLB / 2 + 1));
+        int intervalSize = random.nextInt(1, numCLB);
         int firstIndex = random.nextInt(0, numCLB - intervalSize);
 
         if (isAligned) {

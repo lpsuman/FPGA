@@ -28,6 +28,16 @@ public class RandomizeMutation<T> extends AbstractRandomizeOperator implements M
     }
 
     @Override
+    public double getMutationChance() {
+        return 1.0;
+    }
+
+    @Override
+    public void setMutationChance(double mutationChance) {
+        mutations.forEach(m -> m.setMutationChance(mutationChance));
+    }
+
+    @Override
     protected String getResultMessage() {
         return "Mutation operator statistics.";
     }
