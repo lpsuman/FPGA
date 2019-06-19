@@ -366,7 +366,7 @@ public class BooleanSolver implements Resetable, Serializable {
             solutionConsumer.accept(solution);
         }
 
-//        if (enablePrinting) System.out.println("Boolean solver is done.");
+        if (enablePrinting) System.out.println("Boolean solver is done.");
         return solution;
     }
 

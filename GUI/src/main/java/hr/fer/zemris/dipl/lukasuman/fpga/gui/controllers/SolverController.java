@@ -159,7 +159,7 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
                 LocalizationKeys.NO_BEST_THRESHOLD_KEY, solverConfigLeftPanel, indexInLeftPanel++);
 
         bestExistsThresholdFTF = GUIUtility.getFormattedTextFieldFromLimit(
-                Constants.DOUBLE_RATIO_LIMIT, Constants.DEFAULT_NO_BEST_THRESHOLD_TO_STOP_TRYING);
+                Constants.DOUBLE_RATIO_LIMIT, Constants.DEFAULT_BEST_EXISTS_THRESHOLD_TO_STOP_TRYING);
         GUIUtility.addFTFPanel(bestExistsThresholdFTF, getLocProv(),
                 LocalizationKeys.BEST_EXISTS_THRESHOLD_KEY, solverConfigRightPanel, indexInRightPanel++);
 

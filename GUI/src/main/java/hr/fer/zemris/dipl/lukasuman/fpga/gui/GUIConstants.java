@@ -3,6 +3,8 @@ package hr.fer.zemris.dipl.lukasuman.fpga.gui;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.awt.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class GUIConstants {
 
@@ -26,12 +28,20 @@ public class GUIConstants {
     public static final String LAST_SESSIONS_FILE_NAME = "last_sessions.txt";
     public static final String LAST_LANGUAGE_FILE_NAME = "language.txt";
 
+    public static String getDataDirectory() {
+        String currentDir = Utility.getWorkingDir() + SESSIONS_FOLDER;
+        if (!Files.exists(Paths.get(currentDir))) {
+            currentDir = Utility.getWorkingDir();
+        }
+        return currentDir;
+    }
+
     public static String getLastSessionsFilePath() {
-        return Utility.getWorkingDir() + SESSIONS_FOLDER + LAST_SESSIONS_FILE_NAME;
+        return getDataDirectory() + LAST_SESSIONS_FILE_NAME;
     }
 
     public static String getLastLanguageFilePath() {
-        return Utility.getWorkingDir() + SESSIONS_FOLDER + LAST_LANGUAGE_FILE_NAME;
+        return getDataDirectory() + LAST_LANGUAGE_FILE_NAME;
     }
 
     public static final Dimension CLOSE_BUTTON_SIZE = new Dimension(22, 22);

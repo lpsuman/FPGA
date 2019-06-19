@@ -54,6 +54,8 @@ public class BooleanOptimizer {
         }
     }
 
+    private static final String VECTOR_FILE_NAME = "adder3no.json";
+
     private static final int[][] FIXED_PARAMETERS = new int[][]{
             {10, 1000, 500}
     };
@@ -66,19 +68,23 @@ public class BooleanOptimizer {
 //            {10, 1000, 400}
 //    };
 
+//    private static final int[] MAX_NUM_FAILS = new int[]{1, 5};
+//    private static final int[] POPULATION_SIZES = new int[]{50};
+//    private static final int[] MAX_GENERATIONS = new int[]{500};
+
     private static final int[] MAX_NUM_FAILS = new int[]{1, 5, 10};
     private static final int[] POPULATION_SIZES = new int[]{50, 200, 1000};
-    private static final int[] MAX_GENERATIONS = new int[]{400, 2000, 10000};
+    private static final int[] MAX_GENERATIONS = new int[]{500, 2000, 10000};
 
     private static final int NUM_THREADS = 3;
-    private static final int NUM_TESTS = 30;
+    private static final int NUM_TESTS = 20;
     private static final boolean SOLVE_INDIVIDUALLY = false;
-    private static final boolean USE_STATISTICS = false;
+    private static final boolean USE_STATISTICS = true;
     private static final boolean ALLOW_PRINTING = false;
 
     public static void main(String[] args) {
-//        int[][] params = getGridParameters();
-        int[][] params = FIXED_PARAMETERS;
+        int[][] params = getGridParameters();
+//        int[][] params = FIXED_PARAMETERS;
 
         BooleanSolverConfig solverConfig = new BooleanSolverConfig()
                 .printOnlyBestSolution(true)
@@ -90,6 +96,8 @@ public class BooleanOptimizer {
 
         Timer timer = new Timer();
         timer.start();
+        TypeToken<ArrayList<OptimizationRunResult>> listType = new TypeToken<>(){};
+        LocalDateTime time;
 
         for (int i = 0; i < totalNumSteps; i++) {
             int maxNumFails = params[i][0];
@@ -116,12 +124,19 @@ public class BooleanOptimizer {
                 optimizationResults.add(new OptimizationRunResult(setup, solver.getRunResults(),
                         solver.getCrossoverOperatorStatistics(), solver.getMutationOperatorStatistics()));
             }
+
+            time = LocalDateTime.now();
+            try {
+                MyGson.writeToJson(getFolderPath() + "opt_" + time.toString().replace(':', '_') + "_step_" + (i + 1) + "_of_" + totalNumSteps + "_" + NUM_TESTS + ".json",
+                        optimizationResults, listType.getRawType());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
-        LocalDateTime time = LocalDateTime.now();
-        TypeToken<ArrayList<OptimizationRunResult>> listType = new TypeToken<>(){};
+        time = LocalDateTime.now();
         try {
-            MyGson.writeToJson(getFolderPath() + "opt_" + time.toString().replace(':', '_') + "_" + NUM_TESTS + ".json",
+            MyGson.writeToJson(getFolderPath() + "opt_" + time.toString().replace(':', '_') + "_final_" + NUM_TESTS + ".json",
                     optimizationResults, listType.getRawType());
         } catch (IOException e) {
             e.printStackTrace();
@@ -155,7 +170,7 @@ public class BooleanOptimizer {
     public static BoolVecProblem getTestProblem() {
         BooleanVector adder3no;
         try {
-            adder3no = MyGson.readFromJson(getFolderPath() + "adder3no.json", BooleanVector.class);
+            adder3no = MyGson.readFromJson(getFolderPath() + VECTOR_FILE_NAME, BooleanVector.class);
         } catch (IOException e) {
             e.printStackTrace();
             return null;

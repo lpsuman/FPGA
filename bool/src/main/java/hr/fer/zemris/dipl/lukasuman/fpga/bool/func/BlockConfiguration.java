@@ -94,7 +94,9 @@ public class BlockConfiguration implements Serializable, Duplicateable<BlockConf
             if (blockUsage != null) {
                 appendBlockUsage(sb, blockUsage, i);
             }
-            sb.append(String.format(Constants.SOLUTION_PRINT_FORMAT + "%s\n", i, inputIDs.get(i)));
+            sb.append(String.format(Constants.SOLUTION_PRINT_FORMAT , i));
+            sb.append(String.format("%" + (Constants.BOOL_VECTOR_PRINT_CELL_SIZE - 2) + "s", ""));
+            sb.append(String.format("%s\n", inputIDs.get(i)));
         }
     }
 
