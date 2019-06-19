@@ -4,7 +4,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.AbstractGUIController;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.AbstractNameHandler;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanVector;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 

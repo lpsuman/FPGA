@@ -1,1 +1,1 @@
-C:\FER\Diplomski\FPGA\GUI\data\sessions\custom_vector.json
+C:\FER\Diplomski\FPGA\GUI\data\sessions\glavna_sjednica.json

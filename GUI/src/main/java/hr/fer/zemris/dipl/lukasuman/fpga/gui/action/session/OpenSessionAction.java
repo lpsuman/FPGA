@@ -4,7 +4,7 @@ import com.google.gson.JsonParseException;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.MyGson;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.AbstractAppAction;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionData;
 
 import java.awt.event.ActionEvent;

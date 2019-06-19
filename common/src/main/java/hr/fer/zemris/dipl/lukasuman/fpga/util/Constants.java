@@ -18,9 +18,9 @@ public class Constants {
     public static final double DEFAULT_IMPROVING_GENERATION_CONTINUE_RATIO = 0.25;
     public static final double DEFAULT_NON_IMPROVING_GENERATION_STOP_RATIO = 0.5;
     public static final int DEFAULT_MAX_NUM_FAILS = 10;
-    public static final double DEFAULT_BEST_EXISTS_THRESHOLD_TO_STOP_TRYING = FITNESS_SCALE * 0.93;
-    public static final double DEFAULT_NO_BEST_THRESHOLD_TO_STOP_TRYING = FITNESS_SCALE * 0.97;
-    public static final int DEFAULT_MAX_NUM_BELOW_THRESHOLD_ATTEMPTS = (int)(DEFAULT_MAX_NUM_FAILS * 0.4);
+    public static final double DEFAULT_BEST_EXISTS_THRESHOLD_TO_STOP_TRYING = 0.93;
+    public static final double DEFAULT_NO_BEST_THRESHOLD_TO_STOP_TRYING = 0.97;
+    public static final double DEFAULT_MAX_NUM_BELOW_THRESHOLD_ATTEMPTS = 0.4;
     public static final double SINGLE_CLB_MAX_NON_IMPROVING_MODIFIER = 0.05;
 
     public static final boolean STOP_AFTER_MERGING = false;
@@ -67,6 +67,9 @@ public class Constants {
 
     public static final ArgumentLimit<Integer> NUM_THREADS_LIMIT =
             new ArgumentIntervalLimit<>("elitism size", 1, 64);
+
+    public static final ArgumentLimit<Integer> NUM_FAILS_LIMIT =
+            new ArgumentIntervalLimit<>("number of fails", 1, 100);
 
     public static final boolean DEFAULT_PRINT_ONLY_BEST_SOLUTION = true;
     public static final boolean DEFAULT_USE_STATISTICS = true;

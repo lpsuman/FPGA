@@ -42,9 +42,9 @@ public class GUIConstants {
     public static final int EXPRESSION_TEXT_AREA_ROWS = 4;
     public static final int SHOW_EXPRESSION_TEXT_AREA_ROWS = EXPRESSION_TEXT_AREA_ROWS;
     public static final int MINIMUM_COLUMN_WIDTH = 20;
-    public static final double COMBO_BOX_WIDTH_WEIGHT = 0.33;
-    public static final double FORMATTED_TEXT_FIELD_WIDTH_WEIGHT = 0.00;
-    public static final double CHECK_BOX_WIDTH_WEIGHT = 0.00;
+    public static final double COMBO_BOX_WIDTH_WEIGHT = 0.5;
+    public static final double FORMATTED_TEXT_FIELD_WIDTH_WEIGHT = 0.4;
+    public static final double CHECK_BOX_WIDTH_WEIGHT = 0.4;
 
     public static final boolean SHOW_CONFIRM_EXIT_DIALOG = false;
     public static final boolean SHOW_DUPLICATE_BUTTONS = false;

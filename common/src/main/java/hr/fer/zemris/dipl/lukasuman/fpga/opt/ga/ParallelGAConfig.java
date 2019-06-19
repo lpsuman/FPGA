@@ -10,6 +10,8 @@ public class ParallelGAConfig {
     private int elitismSize;
     private double fitnessThreshold;
     private long timeToStop;
+    private double maxNonImprovingGenerationsRatio;
+    private double minImprovingGenerationsRatio;
 
     public ParallelGAConfig() {
         populationSize = Constants.DEFAULT_POPULATION_SIZE;
@@ -17,6 +19,8 @@ public class ParallelGAConfig {
         elitismSize = Constants.DEFAULT_MIN_ELITISM_SIZE;
         fitnessThreshold = Constants.DEFAULT_FITNESS_THRESHOLD;
         timeToStop = Constants.DEFAULT_TIME_LIMIT;
+        maxNonImprovingGenerationsRatio = Constants.DEFAULT_NON_IMPROVING_GENERATION_STOP_RATIO;
+        minImprovingGenerationsRatio = Constants.DEFAULT_IMPROVING_GENERATION_CONTINUE_RATIO;
     }
 
     public ParallelGAConfig populationSize(int populationSize) {
@@ -34,6 +38,11 @@ public class ParallelGAConfig {
     public ParallelGAConfig elitismSize(int elitismSize) {
         Utility.checkLimit(Constants.ELITISM_SIZE_LIMIT, elitismSize);
         this.elitismSize = elitismSize;
+        return this;
+    }
+
+    public ParallelGAConfig maxNonImprovingGenerationsRatio(double maxNonImprovingGenerationsRatio) {
+        this.maxNonImprovingGenerationsRatio = maxNonImprovingGenerationsRatio;
         return this;
     }
 
@@ -55,5 +64,13 @@ public class ParallelGAConfig {
 
     public long getTimeToStop() {
         return timeToStop;
+    }
+
+    public double getMaxNonImprovingGenerationsRatio() {
+        return maxNonImprovingGenerationsRatio;
+    }
+
+    public double getMinImprovingGenerationsRatio() {
+        return minImprovingGenerationsRatio;
     }
 }

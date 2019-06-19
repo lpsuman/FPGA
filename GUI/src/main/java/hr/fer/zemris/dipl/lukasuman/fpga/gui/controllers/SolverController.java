@@ -10,7 +10,7 @@ import hr.fer.zemris.dipl.lukasuman.fpga.gui.JPanelPair;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JTextAreaOutputStream;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LJComboBox;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LJLabel;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.table.BoolVecSolutionTableModel;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.table.MyJTable;
@@ -35,7 +35,12 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
     private JFormattedTextField numThreadsFTF;
     private JFormattedTextField annealingThresholdFTF;
     private JFormattedTextField mutationChanceFTF;
+    private JFormattedTextField maxNumFailsFTF;
+    private JFormattedTextField noBestThresholdFTF;
+    private JFormattedTextField bestExistsThresholdFTF;
+    private JFormattedTextField maxBelowAttemptsFTF;
 
+    private JCheckBox solveIndividuallyCheckBox;
     private JCheckBox printOnlyBestCheckBox;
     private JCheckBox useStatisticsCheckBox;
     private JCheckBox printOnlyGlobalStatisticsCheckBox;
@@ -84,12 +89,19 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
         JPanel upperPanel = panelPair.getUpperPanel();
         JPanel lowerPanel = panelPair.getLowerPanel();
 
-        JPanel inputAndModePanel = GUIUtility.getPanel(new GridLayout(1, 2));
+        JPanel inputAndModePanel = GUIUtility.getPanel(new GridLayout(0, 2));
         upperPanel.add(inputAndModePanel);
+        JPanel solverConfigLeftPanel = GUIUtility.getPanel(new GridBagLayout());
+        inputAndModePanel.add(solverConfigLeftPanel);
+        int indexInLeftPanel = 0;
+        JPanel solverConfigRightPanel = GUIUtility.getPanel(new GridBagLayout());
+        inputAndModePanel.add(solverConfigRightPanel);
+        int indexInRightPanel = 0;
+
         numCLBInputsComboBox = GUIUtility.getComboBoxFromLimit(Constants.NUM_CLB_INPUTS_LIMIT);
         numCLBInputsComboBox.setSelectedIndex(GUIConstants.DEFAULT_NUM_CLB_INPUTS_COMBOBOX_INDEX);
-        inputAndModePanel.add(GUIUtility.getComboBoxPanel(numCLBInputsComboBox, getLocProv(),
-                LocalizationKeys.NUMBER_OF_CLB_INPUTS_KEY));
+        GUIUtility.addComboBoxPanel(numCLBInputsComboBox, getLocProv(),
+                LocalizationKeys.NUMBER_OF_CLB_INPUTS_KEY, solverConfigLeftPanel, indexInLeftPanel++);
 
         solverModeComboBox = new LJComboBox<>(SolverMode.values(), getLocProv(), Arrays.asList(
                 LocalizationKeys.BRUTE_SOLVE_MODE_KEY,
@@ -98,66 +110,88 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
                 LocalizationKeys.FULL_SOLVE_MODE_KEY
         ));
         solverModeComboBox.setSelectedIndex(GUIConstants.DEFAULT_SOLVE_MODE_COMBOBOX_INDEX);
-        inputAndModePanel.add(GUIUtility.getComboBoxPanel(solverModeComboBox, getLocProv(),
-                LocalizationKeys.SOLVING_MODE_KEY));
-
-        JPanel solverConfigPanel = GUIUtility.getPanel(new GridBagLayout());
-        upperPanel.add(solverConfigPanel);
-        int indexInPanel = 0;
+        GUIUtility.addComboBoxPanel(solverModeComboBox, getLocProv(),
+                LocalizationKeys.SOLVING_MODE_KEY, solverConfigRightPanel, indexInRightPanel++);
 
         populationSizeFTF = GUIUtility.getFormattedTextFieldFromLimit(
                 Constants.POPULATION_SIZE_LIMIT, Constants.DEFAULT_POPULATION_SIZE);
         GUIUtility.addFTFPanel(populationSizeFTF, getLocProv(),
-                LocalizationKeys.POPULATION_SIZE_KEY, solverConfigPanel, indexInPanel++);
+                LocalizationKeys.POPULATION_SIZE_KEY, solverConfigLeftPanel, indexInLeftPanel++);
 
         maxGenerationsFTF = GUIUtility.getFormattedTextFieldFromLimit(
                 Constants.MAX_GENERATIONS_LIMIT, Constants.DEFAULT_MAX_NUM_GENERATIONS);
         GUIUtility.addFTFPanel(maxGenerationsFTF, getLocProv(),
-                LocalizationKeys.NUMBER_OF_GENERATIONS_KEY, solverConfigPanel, indexInPanel++);
-
-        elitismSizeFTF = GUIUtility.getFormattedTextFieldFromLimit(
-                Constants.ELITISM_SIZE_LIMIT, Constants.DEFAULT_MIN_ELITISM_SIZE);
-        GUIUtility.addFTFPanel(elitismSizeFTF, getLocProv(),
-                LocalizationKeys.SIZE_OF_ELITISM_KEY, solverConfigPanel, indexInPanel++);
+                LocalizationKeys.NUMBER_OF_GENERATIONS_KEY, solverConfigRightPanel, indexInRightPanel++);
 
         numThreadsFTF = GUIUtility.getFormattedTextFieldFromLimit(
                 Constants.NUM_THREADS_LIMIT, Constants.DEFAULT_NUM_WORKERS);
         GUIUtility.addFTFPanel(numThreadsFTF, getLocProv(),
-                LocalizationKeys.NUMBER_OF_THREADS_KEY, solverConfigPanel, indexInPanel++);
+                LocalizationKeys.NUMBER_OF_THREADS_KEY, solverConfigLeftPanel, indexInLeftPanel++);
 
-        annealingThresholdFTF = GUIUtility.getFormattedTextFieldFromLimit(
-                Constants.ANNEALING_THRESHOLD_LIMIT, Constants.DEFAULT_ANNEALING_THRESHOLD);
-        GUIUtility.addFTFPanel(annealingThresholdFTF, getLocProv(),
-                LocalizationKeys.ANNEALING_THRESHOLD_KEY, solverConfigPanel, indexInPanel++);
+        elitismSizeFTF = GUIUtility.getFormattedTextFieldFromLimit(
+                Constants.ELITISM_SIZE_LIMIT, Constants.DEFAULT_MIN_ELITISM_SIZE);
+        GUIUtility.addFTFPanel(elitismSizeFTF, getLocProv(),
+                LocalizationKeys.SIZE_OF_ELITISM_KEY, solverConfigRightPanel, indexInRightPanel++);
 
         mutationChanceFTF = GUIUtility.getFormattedTextFieldFromLimit(
                 Constants.DOUBLE_RATIO_LIMIT, Constants.OPERATOR_CHANCE_MULTIPLIER);
         GUIUtility.addFTFPanel(mutationChanceFTF, getLocProv(),
-                LocalizationKeys.MUTATION_CHANCE_KEY, solverConfigPanel, indexInPanel++);
+                LocalizationKeys.MUTATION_CHANCE_KEY, solverConfigLeftPanel, indexInLeftPanel++);
+
+        annealingThresholdFTF = GUIUtility.getFormattedTextFieldFromLimit(
+                Constants.ANNEALING_THRESHOLD_LIMIT, Constants.DEFAULT_ANNEALING_THRESHOLD);
+        GUIUtility.addFTFPanel(annealingThresholdFTF, getLocProv(),
+                LocalizationKeys.ANNEALING_THRESHOLD_KEY, solverConfigRightPanel, indexInRightPanel++);
+
+        maxNumFailsFTF = GUIUtility.getFormattedTextFieldFromLimit(
+                Constants.NUM_FAILS_LIMIT, Constants.DEFAULT_MAX_NUM_FAILS);
+        GUIUtility.addFTFPanel(maxNumFailsFTF, getLocProv(),
+                LocalizationKeys.MAX_NUM_FAILS_KEY, solverConfigLeftPanel, indexInLeftPanel++);
+
+        maxBelowAttemptsFTF = GUIUtility.getFormattedTextFieldFromLimit(
+                Constants.DOUBLE_RATIO_LIMIT, Constants.DEFAULT_MAX_NUM_BELOW_THRESHOLD_ATTEMPTS);
+        GUIUtility.addFTFPanel(maxBelowAttemptsFTF, getLocProv(),
+                LocalizationKeys.BELOW_THRESHOLD_ATTEMPTS_KEY, solverConfigRightPanel, indexInRightPanel++);
+
+        noBestThresholdFTF = GUIUtility.getFormattedTextFieldFromLimit(
+                Constants.DOUBLE_RATIO_LIMIT, Constants.DEFAULT_NO_BEST_THRESHOLD_TO_STOP_TRYING);
+        GUIUtility.addFTFPanel(noBestThresholdFTF, getLocProv(),
+                LocalizationKeys.NO_BEST_THRESHOLD_KEY, solverConfigLeftPanel, indexInLeftPanel++);
+
+        bestExistsThresholdFTF = GUIUtility.getFormattedTextFieldFromLimit(
+                Constants.DOUBLE_RATIO_LIMIT, Constants.DEFAULT_NO_BEST_THRESHOLD_TO_STOP_TRYING);
+        GUIUtility.addFTFPanel(bestExistsThresholdFTF, getLocProv(),
+                LocalizationKeys.BEST_EXISTS_THRESHOLD_KEY, solverConfigRightPanel, indexInRightPanel++);
+
+        solveIndividuallyCheckBox = new JCheckBox();
+        solveIndividuallyCheckBox.setSelected(Constants.DEFAULT_SOLVE_INDIVIDUALLY);
+        GUIUtility.addcheckBoxPanel(solveIndividuallyCheckBox, getLocProv(),
+                LocalizationKeys.SOLVE_INDIVIDUALLY_KEY, solverConfigLeftPanel, indexInLeftPanel++);
 
         printOnlyBestCheckBox = new JCheckBox();
         printOnlyBestCheckBox.setSelected(Constants.DEFAULT_PRINT_ONLY_BEST_SOLUTION);
         GUIUtility.addcheckBoxPanel(printOnlyBestCheckBox, getLocProv(),
-                LocalizationKeys.PRINT_ONLY_BEST_SOLUTIONS_KEY, solverConfigPanel, indexInPanel++);
+                LocalizationKeys.PRINT_ONLY_BEST_SOLUTIONS_KEY, solverConfigRightPanel, indexInRightPanel++);
 
         useStatisticsCheckBox = new JCheckBox();
         useStatisticsCheckBox.setSelected(Constants.DEFAULT_USE_STATISTICS);
         GUIUtility.addcheckBoxPanel(useStatisticsCheckBox, getLocProv(),
-                LocalizationKeys.USE_STATISTICS_KEY, solverConfigPanel, indexInPanel++);
+                LocalizationKeys.USE_STATISTICS_KEY, solverConfigLeftPanel, indexInLeftPanel++);
 
         printOnlyGlobalStatisticsCheckBox = new JCheckBox();
         printOnlyGlobalStatisticsCheckBox.setSelected(Constants.DEFAULT_PRINT_ONLY_GLOBAL_STATISTICS);
         GUIUtility.addcheckBoxPanel(printOnlyGlobalStatisticsCheckBox, getLocProv(),
-                LocalizationKeys.PRINT_ONLY_GLOBAL_STATISTICS_KEY, solverConfigPanel, indexInPanel++);
+                LocalizationKeys.PRINT_ONLY_GLOBAL_STATISTICS_KEY, solverConfigRightPanel, indexInRightPanel++);
 
-        JPanel runPanel = GUIUtility.getPanel(new GridLayout(1, 2));
+        JPanel runPanel = GUIUtility.getPanel(new GridLayout(1, 3));
         upperPanel.add(runPanel);
         runPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getRunSolverAction())));
         runPanel.add(GUIUtility.putIntoPanelWithBorder(new JButton(getJfpga().getStopSolverAction())));
-
         clearTextButton = new JButton(getJfpga().getClearOutputAction());
-        //TODO toggle button
+        runPanel.add(GUIUtility.putIntoPanelWithBorder(clearTextButton));
+
         clearToggleButton = new JToggleButton();
+        //TODO toggle button
 
         outputTextArea = new JTextArea();
         outputTextArea.setEditable(false);
@@ -229,6 +263,26 @@ public class SolverController extends AbstractGUIController<BoolVectorSolution> 
 
     public JFormattedTextField getMutationChanceFTF() {
         return mutationChanceFTF;
+    }
+
+    public JFormattedTextField getMaxNumFailsFTF() {
+        return maxNumFailsFTF;
+    }
+
+    public JFormattedTextField getNoBestThresholdFTF() {
+        return noBestThresholdFTF;
+    }
+
+    public JFormattedTextField getBestExistsThresholdFTF() {
+        return bestExistsThresholdFTF;
+    }
+
+    public JFormattedTextField getMaxBelowAttemptsFTF() {
+        return maxBelowAttemptsFTF;
+    }
+
+    public JCheckBox getSolveIndividuallyCheckBox() {
+        return solveIndividuallyCheckBox;
     }
 
     public JCheckBox getPrintOnlyBestCheckBox() {

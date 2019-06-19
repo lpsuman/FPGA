@@ -7,13 +7,9 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.lexer.BoolLexer;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.parser.BoolParser;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.parsing.parser.BoolParserException;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.action.AbstractAppAction;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.session.SessionController;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
 import java.util.function.Supplier;
 
 public class GenerateFromExpressionAction extends AbstractGenerateFromTextAction {

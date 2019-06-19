@@ -1,5 +1,7 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.local;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.LocalizationKeys;
+
 import javax.swing.*;
 import java.util.MissingResourceException;
 

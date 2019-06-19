@@ -3,9 +3,8 @@ package hr.fer.zemris.dipl.lukasuman.fpga.gui.action.func;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BoolFuncController;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.func.BooleanFunction;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.LocalizationKeys;
 
-import java.util.Collections;
 import java.util.function.Supplier;
 
 public class GenerateFromTextAction extends AbstractGenerateFromTextAction {

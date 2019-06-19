@@ -123,22 +123,31 @@ public class GUIUtility {
         return comboBox;
     }
 
-    public static void getDescriptionPanel(LocalizationProvider lp, String labelLocKey, Component comp, double compWidthRatio, JPanel mainPanel, int y) {
+    public static void setupDescriptionPanel(LocalizationProvider lp, String labelLocKey, Component comp, double compWidthRatio, JPanel mainPanel, int y) {
         GridBagConstraints gbc = GUIUtility.getGBC(0, y, 1.0 - compWidthRatio, 0.5);
-        mainPanel.add(GUIUtility.putIntoPanelWithBorder(new LJLabel(labelLocKey, lp, SwingConstants.CENTER)), gbc);
+        JPanel firstPanel = GUIUtility.putIntoPanelWithBorder(new LJLabel(labelLocKey, lp, SwingConstants.CENTER));
+        firstPanel.setPreferredSize(new Dimension(0, firstPanel.getPreferredSize().height));
+        mainPanel.add(firstPanel, gbc);
 
         gbc = GUIUtility.getGBC(1, y, compWidthRatio, 0.5);
-        mainPanel.add(GUIUtility.putIntoPanelWithBorder(comp), gbc);
+        JPanel secondPanel = GUIUtility.putIntoPanelWithBorder(comp);
+        secondPanel.setPreferredSize(new Dimension(0, secondPanel.getPreferredSize().height));
+        mainPanel.add(secondPanel, gbc);
     }
 
     public static JPanel getDescriptionPanel(LocalizationProvider lp, String labelLocKey, Component comp, double compWidthRatio) {
         JPanel mainPanel = GUIUtility.getPanel(new GridBagLayout());
-        getDescriptionPanel(lp, labelLocKey, comp, compWidthRatio, mainPanel, 0);
+        setupDescriptionPanel(lp, labelLocKey, comp, compWidthRatio, mainPanel, 0);
         return mainPanel;
     }
 
     public static JPanel getComboBoxPanel(JComboBox comboBox, LocalizationProvider locProvider, String labelLocKey) {
         return getDescriptionPanel(locProvider, labelLocKey, comboBox, GUIConstants.COMBO_BOX_WIDTH_WEIGHT);
+    }
+
+    public static void addComboBoxPanel(JComboBox comboBox, LocalizationProvider locProvider,
+                                        String labelLocKey, JPanel mainPanel, int y) {
+        setupDescriptionPanel(locProvider, labelLocKey, comboBox, GUIConstants.COMBO_BOX_WIDTH_WEIGHT, mainPanel, y);
     }
 
     public static <T> T getSelectedComboBoxValue(JComboBox<T> comboBox) {
@@ -154,7 +163,7 @@ public class GUIUtility {
         JPanel controlPanel = getPanel(new GridLayout(1, 2));
         mainPanel.add(controlPanel, BorderLayout.NORTH);
 
-        controlPanel.add(putIntoPanelWithBorder(clearButton));
+//        controlPanel.add(putIntoPanelWithBorder(clearButton));
         clearButton.addActionListener((e) -> textArea.setText(""));
 //        controlPanel.add(putIntoPanelWithBorder(clearToggleButton));
 
@@ -189,7 +198,7 @@ public class GUIUtility {
 
     public static void addFTFPanel(JFormattedTextField formattedTextField, LocalizationProvider locProvider,
                                      String labelLocKey, JPanel mainPanel, int y) {
-        getDescriptionPanel(locProvider, labelLocKey, formattedTextField,
+        setupDescriptionPanel(locProvider, labelLocKey, formattedTextField,
                 GUIConstants.FORMATTED_TEXT_FIELD_WIDTH_WEIGHT, mainPanel, y);
     }
 
@@ -199,7 +208,7 @@ public class GUIUtility {
 
     public static void addcheckBoxPanel(JCheckBox checkBox, LocalizationProvider locProvider,
                                         String labelLocKey, JPanel mainPanel, int y) {
-        getDescriptionPanel(locProvider, labelLocKey, checkBox,
+        setupDescriptionPanel(locProvider, labelLocKey, checkBox,
                 GUIConstants.CHECK_BOX_WIDTH_WEIGHT, mainPanel, y);
     }
 }

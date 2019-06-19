@@ -366,6 +366,14 @@ public class BoolVecProblem extends AbstractNameHandler implements Supplier<Solu
         return new BlockConfiguration(numCLBInputs, numCLB, newData, outputIndices);
     }
 
+    public Solution<int[]> removeRedundant(Solution<int[]> solution) {
+        BlockConfiguration blockConfiguration = generateBlockConfiguration(solution);
+        BoolVectorSolution redundantVectorSolution = new BoolVectorSolution(boolVector, blockConfiguration);
+        BoolVectorSolution vectorSolution = BoolVectorSolution.removeRedundantCLBs(redundantVectorSolution);
+        clbController.setNumCLB(vectorSolution.getBlockConfiguration().getNumCLB());
+        return vectorSolution.getBlockConfiguration().getAsFlatArray();
+    }
+
     public BooleanVector getBoolVector() {
         return boolVector;
     }

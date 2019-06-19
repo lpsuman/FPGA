@@ -4,7 +4,7 @@ import com.google.gson.JsonParseException;
 import hr.fer.zemris.dipl.lukasuman.fpga.bool.MyGson;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.controllers.AbstractGUIController;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Duplicateable;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Nameable;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;

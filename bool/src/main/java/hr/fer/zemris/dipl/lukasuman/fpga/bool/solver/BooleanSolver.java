@@ -14,7 +14,6 @@ import hr.fer.zemris.dipl.lukasuman.fpga.bool.model.CLBController;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.*;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.crossover.RandomizeCrossover;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.ga.operators.mutation.RandomizeMutation;
-import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.evaluator.AbstractEvaluator;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.evaluator.Evaluator;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.operator.OperatorStatistics;
 import hr.fer.zemris.dipl.lukasuman.fpga.opt.generic.solution.Solution;
@@ -79,7 +78,7 @@ public class BooleanSolver implements Resetable, Serializable {
     public BooleanSolver(SolverMode solverMode, Consumer<BoolVectorSolution> solutionConsumer,
                          boolean printOnlyBestSolution, boolean useStatistics, boolean printOnlyGlobalStatistics, boolean solveIndividually,
                          int maxNumFails, double noBestThresholdToStopTrying, double bestExistsThresholdToStopTrying,
-                         int maxNumBelowThresholdAttempts) {
+                         double maxNumBelowThresholdAttempts) {
 
         this.solverMode = Utility.checkNull(solverMode, "solver mode");
         this.solutionConsumer = solutionConsumer;
@@ -87,9 +86,9 @@ public class BooleanSolver implements Resetable, Serializable {
         this.useStatistics = useStatistics;
         this.printOnlyGlobalStatistics = printOnlyGlobalStatistics;
         this.maxNumFails = maxNumFails;
-        this.noBestThresholdToStopTrying = noBestThresholdToStopTrying;
-        this.bestExistsThresholdToStopTrying = bestExistsThresholdToStopTrying;
-        this.maxNumBelowThresholdAttempts = maxNumBelowThresholdAttempts;
+        this.noBestThresholdToStopTrying = noBestThresholdToStopTrying * Constants.FITNESS_SCALE;
+        this.bestExistsThresholdToStopTrying = bestExistsThresholdToStopTrying * Constants.FITNESS_SCALE;
+        this.maxNumBelowThresholdAttempts = (int)(maxNumFails * maxNumBelowThresholdAttempts);
         enablePrinting = true;
         this.solveIndividually = solveIndividually;
         this.mutationChance = Constants.OPERATOR_CHANCE_MULTIPLIER;
@@ -109,7 +108,9 @@ public class BooleanSolver implements Resetable, Serializable {
 
     public BooleanSolver(SolverMode solverMode, Consumer<BoolVectorSolution> solutionConsumer, BooleanSolverConfig config) {
         this(solverMode, solutionConsumer, config.isPrintOnlyBestSolution(), config.isUseStatistics(),
-                config.isPrintOnlyGlobalStatistics(), config.isSolveIndividually());
+                config.isPrintOnlyGlobalStatistics(), config.isSolveIndividually(), config.getMaxNumFails(),
+                config.getNoBestThresholdToStopTrying(), config.getBestExistsThresholdToStopTrying(),
+                config.getMaxNumBelowThresholdAttempts());
     }
 
     public BoolVectorSolution solve(BoolVecProblem problem) {
@@ -536,6 +537,9 @@ public class BooleanSolver implements Resetable, Serializable {
                 continue;
             }
 
+            int prevNumCLB = controller.getNumCLB();
+            solution = problem.removeRedundant(solution);
+            int numRedundantCLB = prevNumCLB - controller.getNumCLB();
             String testResults = problem.getSolutionTestResults(solution, evaluator, true);
             if (enablePrinting && !printOnlyBestSolution) {
                 System.out.println(testResults);
@@ -547,7 +551,7 @@ public class BooleanSolver implements Resetable, Serializable {
                 if (enablePrinting) System.out.println("A solution with a single CLB was found, stopping");
                 break;
             } else if (enablePrinting) {
-                System.out.println(String.format("CLBs in solution: %d (%d were unused)", numCLBOfBest, numUnusedBlocks));
+                System.out.println(String.format("CLBs in solution: %d (%d were unused, %d were redundant)", numCLBOfBest, numUnusedBlocks, numRedundantCLB));
             }
 
             if (numCLBOfBest <= highestNumCLBFailed + 1) {

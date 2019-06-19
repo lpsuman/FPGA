@@ -1,7 +1,7 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.action;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.JFPGA;
-import hr.fer.zemris.dipl.lukasuman.fpga.gui.local.LocalizationKeys;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import java.awt.event.ActionEvent;

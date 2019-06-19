@@ -30,7 +30,8 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
     private boolean enablePrinting;
 
     public ParallelGA(Supplier<Solution<T>> candidateSupplier, Evaluator<T> evaluator, GAThreadPool<T> threadPool,
-                      int populationSize, int maxGenerations, int elitismSize, double threshold, long timeToStop) {
+                      int populationSize, int maxGenerations, int elitismSize, double threshold, long timeToStop,
+                      double maxNonImprovingGenerationsRatio, double minImprovingGenerationsRatio) {
 
         this.candidateSupplier = candidateSupplier;
         this.evaluator = evaluator;
@@ -43,15 +44,16 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
         
         setDoFullRuns(false);
         enablePrinting = true;
-        setMaxNonImprovingGenerationsRatio(Constants.DEFAULT_NON_IMPROVING_GENERATION_STOP_RATIO);
-        setMinImprovingGenerationsRatio(Constants.DEFAULT_IMPROVING_GENERATION_CONTINUE_RATIO);
+        setMaxNonImprovingGenerationsRatio(maxNonImprovingGenerationsRatio);
+        setMinImprovingGenerationsRatio(minImprovingGenerationsRatio);
     }
 
     public ParallelGA(Supplier<Solution<T>> candidateSupplier, Evaluator<T> evaluator, GAThreadPool<T> threadPool,
                       int populationSize, int maxGenerations, int elitismSize, double threshold) {
 
         this(candidateSupplier, evaluator, threadPool, populationSize, maxGenerations, elitismSize,
-                threshold, Constants.DEFAULT_TIME_LIMIT);
+                threshold, Constants.DEFAULT_TIME_LIMIT, Constants.DEFAULT_NON_IMPROVING_GENERATION_STOP_RATIO,
+                Constants.DEFAULT_IMPROVING_GENERATION_CONTINUE_RATIO);
     }
 
     public ParallelGA(Supplier<Solution<T>> candidateSupplier, Evaluator<T> evaluator, GAThreadPool<T> threadPool,
@@ -70,7 +72,8 @@ public class ParallelGA<T> extends AbstractAlgorithm<T> {
     public ParallelGA(Supplier<Solution<T>> candidateSupplier, Evaluator<T> evaluator, GAThreadPool<T> threadPool,
                       ParallelGAConfig config) {
         this(candidateSupplier, evaluator, threadPool, config.getPopulationSize(), config.getMaxGenerations(),
-                config.getElitismSize(), config.getFitnessThreshold(), config.getTimeToStop());
+                config.getElitismSize(), config.getFitnessThreshold(), config.getTimeToStop(),
+                config.getMaxNonImprovingGenerationsRatio(), config.getMinImprovingGenerationsRatio());
     }
 
     @Override

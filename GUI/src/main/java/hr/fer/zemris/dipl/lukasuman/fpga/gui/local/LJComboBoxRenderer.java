@@ -1,5 +1,6 @@
 package hr.fer.zemris.dipl.lukasuman.fpga.gui.local;
 
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.LocalizationKeys;
 import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 
 import javax.swing.*;

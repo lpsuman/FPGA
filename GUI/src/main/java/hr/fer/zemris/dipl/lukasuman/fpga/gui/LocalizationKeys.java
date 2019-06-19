@@ -1,4 +1,4 @@
-package hr.fer.zemris.dipl.lukasuman.fpga.gui.local;
+package hr.fer.zemris.dipl.lukasuman.fpga.gui;
 
 public class LocalizationKeys {
 
@@ -6,7 +6,7 @@ public class LocalizationKeys {
     }
 
     /**Key suffix for fetching action's description.*/
-    static final String SHORT_DESC_SUFFIX_KEY = "_desc";
+    public static final String SHORT_DESC_SUFFIX_KEY = "_desc";
 
     public static final String FILE_KEY = "file";
     public static final String EDIT_KEY = "edit";
@@ -119,7 +119,12 @@ public class LocalizationKeys {
     public static final String NUMBER_OF_THREADS_KEY = "number_of_threads";
     public static final String ANNEALING_THRESHOLD_KEY = "annealing_threshold";
     public static final String MUTATION_CHANCE_KEY = "mutation_chance";
+    public static final String MAX_NUM_FAILS_KEY = "max_num_fails";
+    public static final String BELOW_THRESHOLD_ATTEMPTS_KEY = "below_threshold";
+    public static final String NO_BEST_THRESHOLD_KEY = "no_best_threshold";
+    public static final String BEST_EXISTS_THRESHOLD_KEY = "best_exists_threshold";
 
+    public static final String SOLVE_INDIVIDUALLY_KEY = "solve_individually";
     public static final String PRINT_ONLY_BEST_SOLUTIONS_KEY = "print_only_best_solutions";
     public static final String USE_STATISTICS_KEY = "use_statistics";
     public static final String PRINT_ONLY_GLOBAL_STATISTICS_KEY = "print_only_global_statistics";

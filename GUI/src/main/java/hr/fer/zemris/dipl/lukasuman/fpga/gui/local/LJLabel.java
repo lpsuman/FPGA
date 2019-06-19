@@ -2,6 +2,7 @@ package hr.fer.zemris.dipl.lukasuman.fpga.gui.local;
 
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIConstants;
 import hr.fer.zemris.dipl.lukasuman.fpga.gui.GUIUtility;
+import hr.fer.zemris.dipl.lukasuman.fpga.gui.LocalizationKeys;
 
 import javax.swing.*;
 import java.util.MissingResourceException;

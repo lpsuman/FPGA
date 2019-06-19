@@ -131,9 +131,14 @@ public class SessionController {
 
     public void runBooleanSolver(BoolVecProblem problem, SolverMode solverMode) {
         BooleanSolverConfig booleanSolverConfig = new BooleanSolverConfig()
+                .solveIndividually(solverController.getSolveIndividuallyCheckBox().isSelected())
                 .printOnlyBestSolution(solverController.getPrintOnlyBestCheckBox().isSelected())
                 .useStatistics(solverController.getUseStatisticsCheckBox().isSelected())
-                .printOnlyGlobalStatistics(solverController.getPrintOnlyGlobalStatisticsCheckBox().isSelected());
+                .printOnlyGlobalStatistics(solverController.getPrintOnlyGlobalStatisticsCheckBox().isSelected())
+                .maxNumFails((Integer) solverController.getMaxNumFailsFTF().getValue())
+                .maxNumBelowThresholdAttempts((Double) solverController.getMaxBelowAttemptsFTF().getValue())
+                .noBestThresholdToStopTrying((Double) solverController.getNoBestThresholdFTF().getValue())
+                .bestExistsThresholdToStopTrying((Double) solverController.getBestExistsThresholdFTF().getValue());
 
         solver = new BooleanSolver(solverMode, solution -> {
             if (solution != null) {
