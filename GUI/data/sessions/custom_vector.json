@@ -579,6 +579,37 @@
           "truthTable": "00000001001101110001001101111111"
         }
       ]
+    },
+    {
+      "name": "brute_shorter",
+      "functions": [
+        {
+          "name": "func",
+          "inputs": [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e"
+          ],
+          "truthTable": "00100001101101010100100101001001"
+        }
+      ]
+    },
+    {
+      "name": "S0",
+      "functions": [
+        {
+          "name": "S0",
+          "expression": " A0 XOR B0 XOR CIN",
+          "inputs": [
+            "A0",
+            "B0",
+            "CIN"
+          ],
+          "truthTable": "01101001"
+        }
+      ]
     }
   ],
   "boolSolutions": [
@@ -1283,6 +1314,215 @@
         ]
       },
       "name": "adder"
+    },
+    {
+      "boolVector": {
+        "name": "func",
+        "functions": [
+          {
+            "name": "func",
+            "inputs": [
+              "a",
+              "b",
+              "c",
+              "d",
+              "e"
+            ],
+            "truthTable": "00100001101101010100100101001001"
+          }
+        ]
+      },
+      "blockConfiguration": {
+        "numCLB": 7,
+        "numCLBInputs": 3,
+        "blockSize": 4,
+        "data": [
+          2,
+          3,
+          4,
+          33,
+          2,
+          3,
+          4,
+          181,
+          2,
+          3,
+          4,
+          73,
+          2,
+          3,
+          4,
+          73,
+          1,
+          5,
+          6,
+          53,
+          1,
+          7,
+          8,
+          53,
+          0,
+          9,
+          10,
+          53
+        ],
+        "outputIndices": [
+          11
+        ]
+      },
+      "name": "random"
+    },
+    {
+      "boolVector": {
+        "name": "func",
+        "functions": [
+          {
+            "name": "func",
+            "inputs": [
+              "a",
+              "b",
+              "c",
+              "d",
+              "e"
+            ],
+            "truthTable": "00100001101101010100100101001001"
+          }
+        ]
+      },
+      "blockConfiguration": {
+        "numCLB": 5,
+        "numCLBInputs": 3,
+        "blockSize": 4,
+        "data": [
+          2,
+          3,
+          4,
+          33,
+          2,
+          3,
+          4,
+          181,
+          2,
+          3,
+          4,
+          73,
+          1,
+          5,
+          6,
+          53,
+          0,
+          8,
+          7,
+          53
+        ],
+        "outputIndices": [
+          9
+        ]
+      },
+      "name": "brute_shorter"
+    },
+    {
+      "boolVector": {
+        "name": "func",
+        "functions": [
+          {
+            "name": "func",
+            "inputs": [
+              "a",
+              "b",
+              "c",
+              "d",
+              "e"
+            ],
+            "truthTable": "00100001101101010100100101001001"
+          }
+        ]
+      },
+      "blockConfiguration": {
+        "numCLB": 7,
+        "numCLBInputs": 3,
+        "blockSize": 4,
+        "data": [
+          2,
+          3,
+          4,
+          33,
+          2,
+          3,
+          4,
+          181,
+          2,
+          3,
+          4,
+          73,
+          2,
+          3,
+          4,
+          73,
+          1,
+          5,
+          6,
+          53,
+          1,
+          7,
+          8,
+          53,
+          0,
+          9,
+          10,
+          53
+        ],
+        "outputIndices": [
+          11
+        ]
+      },
+      "name": "brute_shorter"
+    },
+    {
+      "boolVector": {
+        "name": "S0",
+        "functions": [
+          {
+            "name": "S0",
+            "expression": " A0 XOR B0 XOR CIN",
+            "inputs": [
+              "A0",
+              "B0",
+              "CIN"
+            ],
+            "truthTable": "01101001"
+          }
+        ]
+      },
+      "blockConfiguration": {
+        "numCLB": 6,
+        "numCLBInputs": 2,
+        "blockSize": 3,
+        "data": [
+          0,
+          0,
+          12,
+          1,
+          2,
+          6,
+          1,
+          2,
+          9,
+          3,
+          4,
+          1,
+          0,
+          5,
+          1,
+          6,
+          7,
+          7
+        ],
+        "outputIndices": [
+          8
+        ]
+      },
+      "name": "S0"
     }
   ]
 }

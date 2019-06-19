@@ -135,10 +135,11 @@ public class BooleanSolver implements Resetable, Serializable {
         if (solverMode == SolverMode.BRUTE || shouldStop) {
             if (enablePrinting) System.out.println("Returning brute solution as the result.");
             if (bruteSolutions.size() == 1) {
-                return solverIsDone(bruteSolutions.get(0), problem);
+//                return solverIsDone(bruteSolutions.get(0), problem);
+                return solverIsDone(BoolVectorSolution.removeRedundantCLBs(bruteSolutions.get(0)), problem);
             } else {
                 if (numFunctions == 1) {
-                    return solverIsDone(bruteSolutions.get(0), problem);
+                    return solverIsDone(BoolVectorSolution.removeRedundantCLBs(bruteSolutions.get(0)), problem);
                 } else {
                     return solverIsDone(BoolVectorSolution.mergeSolutions(bruteSolutions), problem);
                 }
@@ -194,7 +195,7 @@ public class BooleanSolver implements Resetable, Serializable {
             if (numFunctions == 1) {
                 if (enablePrinting)
                     System.out.println("A vector with a single function was given, it's solution is the result.");
-                return solverIsDone(solution, problem);
+                return solverIsDone(BoolVectorSolution.removeRedundantCLBs(solution), problem);
             }
 
             List<BoolVectorSolution> perFuncSolutions = perFuncResults.stream()
@@ -211,10 +212,10 @@ public class BooleanSolver implements Resetable, Serializable {
             totalNumEvaluations = perFuncResults.stream()
                     .mapToInt(result -> result.numEvaluations)
                     .sum();
-            numCLBEstimation = avgNumCLBForSolvedFuncs * numFunctions;
+            numCLBEstimation = avgNumCLBForSolvedFuncs * numFunctions - 1;
         } else {
             if (numFunctions == 1) {
-                solution = bruteSolutions.get(0);
+                solution = BoolVectorSolution.removeRedundantCLBs(bruteSolutions.get(0));
             } else {
                 solution = BoolVectorSolution.mergeSolutions(bruteSolutions);
             }
@@ -256,7 +257,7 @@ public class BooleanSolver implements Resetable, Serializable {
             return solverIsDone(solution, problem);
         } else {
             if (enablePrinting) System.out.println("Found a solution better than the merge of individual function's solutions");
-            return solverIsDone(mergedRunResult.result, problem);
+            return solverIsDone(BoolVectorSolution.removeRedundantCLBs(mergedRunResult.result), problem);
         }
     }
 
