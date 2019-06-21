@@ -44,7 +44,7 @@ public abstract class AbstractAppAction extends LocalizableAction {
 	}
 
 	private JFileChooser getFileChooser(String titleKey, FileFilter fileFilter, boolean enableMultiSelection) {
-		System.out.println(GUIConstants.getDataDirectory());
+//		System.out.println(GUIConstants.getDataDirectory());
 		JFileChooser jfc = new JFileChooser(GUIConstants.getDataDirectory());
 		jfc.setDialogTitle(jfpga.getFlp().getString(titleKey));
 

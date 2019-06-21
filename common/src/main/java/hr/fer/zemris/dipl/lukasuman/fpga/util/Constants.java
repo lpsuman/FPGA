@@ -10,14 +10,14 @@ public class Constants {
     public static final boolean USE_STRUCTURE_FITNESS = false;
 
     public static final int DEFAULT_MAX_NUM_GENERATIONS = 500;
-    public static final int DEFAULT_POPULATION_SIZE = 1000;
+    public static final int DEFAULT_POPULATION_SIZE = 2000;
     public static final double OPERATOR_CHANCE_MULTIPLIER = 0.0;
 
     public static final double NUM_CLB_ESTIMATION_MULTIPLIER = 2.0;
     public static final double DEFAULT_ANNEALING_THRESHOLD = 0.8;
     public static final double DEFAULT_IMPROVING_GENERATION_CONTINUE_RATIO = 0.25;
     public static final double DEFAULT_NON_IMPROVING_GENERATION_STOP_RATIO = 0.5;
-    public static final int DEFAULT_MAX_NUM_FAILS = 10;
+    public static final int DEFAULT_MAX_NUM_FAILS = 5;
     public static final double DEFAULT_BEST_EXISTS_THRESHOLD_TO_STOP_TRYING = 0.93;
     public static final double DEFAULT_NO_BEST_THRESHOLD_TO_STOP_TRYING = 0.97;
     public static final double DEFAULT_MAX_NUM_BELOW_THRESHOLD_ATTEMPTS = 0.4;

@@ -56,6 +56,8 @@ public class BooleanOptimizer {
         }
     }
 
+    private static int NUM_CLB_INPUTS = 2;
+
     private static final String VECTOR_FILE_NAME = "adder4no";
     private static final int[][] FIXED_PARAMETERS = new int[][]{
             {1, 1000, 500}
@@ -82,7 +84,7 @@ public class BooleanOptimizer {
     private static final int[] MAX_GENERATIONS = new int[]{200, 500};
 
     private static final int NUM_THREADS = 3;
-    private static final int NUM_TESTS = 20;
+    private static final int NUM_TESTS = 10;
     private static final boolean SOLVE_INDIVIDUALLY = false;
     private static final boolean USE_STATISTICS = false;
     private static final boolean ALLOW_PRINTING = false;
@@ -90,15 +92,15 @@ public class BooleanOptimizer {
     public static void main(String[] args) {
 //        List<String> problemNames = Collections.singletonList(VECTOR_FILE_NAME);
         List<String> problemNames = Arrays.asList(
-                "adder1",
-                "adder2",
-                "adder2no",
+//                "adder1",
+//                "adder2",
+//                "adder2no",
                 "adder3",
-                "adder3no",
-                "adder4",
-                "adder4no",
-                "adder5",
-                "adder5no"
+                "adder3no"
+//                "adder4",
+//                "adder4no",
+//                "adder5",
+//                "adder5no"
                 );
 
 //        int[][] params = getGridParameters();
@@ -127,7 +129,7 @@ public class BooleanOptimizer {
         TypeToken<ArrayList<OptimizationRunResult>> listType = new TypeToken<>(){};
         LocalDateTime time;
 
-        for (int j = 0; j < NUM_TESTS; j++) {
+//        for (int j = 0; j < NUM_TESTS; j++) {
             for (int k = 0; k < problems.size(); k++) {
                 BoolVecProblem problem = problems.get(k);
                 String problemName = problemNames.get(k);
@@ -136,7 +138,7 @@ public class BooleanOptimizer {
                     int populationSize = params[i][1];
                     int maxGenerations = params[i][2];
 
-//                    for (int j = 0; j < NUM_TESTS; j++) {
+                    for (int j = 0; j < NUM_TESTS; j++) {
                         String setup = String.format("Problem %12s     Step %2d/%2d (try %2d/%2d), fails=%3d, pop_size=%6d, max_gen=%6d",
                                 problemName, i + 1, totalNumSteps, j + 1, NUM_TESTS, maxNumFails, populationSize, maxGenerations);
                         System.out.println(setup);
@@ -155,7 +157,7 @@ public class BooleanOptimizer {
 
                         optimizationResults.add(new OptimizationRunResult(setup, solver.getRunResults(),
                                 solver.getCrossoverOperatorStatistics(), solver.getMutationOperatorStatistics()));
-//                    }
+                    }
 
                     time = LocalDateTime.now();
                     try {
@@ -169,7 +171,7 @@ public class BooleanOptimizer {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }
+//                }
 
                 if (totalNumSteps > 1) {
                     time = LocalDateTime.now();
@@ -223,7 +225,7 @@ public class BooleanOptimizer {
             return null;
         }
 
-        return new BoolVecProblem(adder3no, 3);
+        return new BoolVecProblem(adder3no, NUM_CLB_INPUTS);
     }
 
     public static void showResults(BoolVecProblem problem, List<OptimizationRunResult> optimizationResults) {
