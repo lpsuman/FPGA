@@ -24,7 +24,7 @@ public class GUIConstants {
     public static final String DEFAULT_LANGUAGE = "en";
     public static final String[] SUPPORTED_LANGUAGES = {"English", "Hrvatski"};
     public static final String TRANSLATION_BUNDLE_PATH = "translations";
-    public static final String SESSIONS_FOLDER = "/data/sessions/";
+    public static final String SESSIONS_FOLDER = "/GUI/data/sessions";
     public static final String LAST_SESSIONS_FILE_NAME = "last_sessions.txt";
     public static final String LAST_LANGUAGE_FILE_NAME = "language.txt";
 
@@ -33,7 +33,7 @@ public class GUIConstants {
         if (!Files.exists(Paths.get(currentDir))) {
             currentDir = Utility.getWorkingDir();
         }
-        return currentDir;
+        return currentDir + "/";
     }
 
     public static String getLastSessionsFilePath() {

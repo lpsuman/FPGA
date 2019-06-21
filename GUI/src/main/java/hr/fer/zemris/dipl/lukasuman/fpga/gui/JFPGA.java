@@ -512,6 +512,10 @@ public class JFPGA extends JFrame {
                 .map(Path::toString)
                 .collect(Collectors.toList());
 
+        if (sessionPaths.isEmpty()) {
+            return;
+        }
+
         try {
             Utility.saveTextFile(GUIConstants.getLastSessionsFilePath(), sessionPaths);
         } catch (IOException e) {
