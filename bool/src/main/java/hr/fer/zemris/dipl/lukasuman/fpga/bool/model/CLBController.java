@@ -11,6 +11,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class CLBController implements Serializable {
 
@@ -26,7 +28,7 @@ public class CLBController implements Serializable {
     private int numCLBInputs;
     private int numCLB;
 
-    private List<CLBChangeListener> clbChangeListeners;
+    private Queue<CLBChangeListener> clbChangeListeners;
 
     public CLBController(int numInputs, int numCLBInputs, int numCLB) {
         this(numInputs, numCLBInputs);
@@ -259,7 +261,7 @@ public class CLBController implements Serializable {
     public void addCLBChangeListener(CLBChangeListener clbChangeListener) {
         Utility.checkNull(clbChangeListener, "listener");
         if (clbChangeListeners == null) {
-            clbChangeListeners = new ArrayList<>();
+            clbChangeListeners = new ConcurrentLinkedQueue<>();
         }
         clbChangeListeners.add(clbChangeListener);
     }

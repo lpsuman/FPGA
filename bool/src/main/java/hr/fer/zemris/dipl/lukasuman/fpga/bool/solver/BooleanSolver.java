@@ -46,6 +46,26 @@ public class BooleanSolver implements Resetable, Serializable {
             this.numEvaluations = numEvaluations;
             this.elapsedTime = elapsedTime;
         }
+
+        public BoolVectorSolution getResult() {
+            return result;
+        }
+
+        public RandomizeCrossover<int[]> getRandomizeCrossover() {
+            return randomizeCrossover;
+        }
+
+        public RandomizeMutation<int[]> getRandomizeMutation() {
+            return randomizeMutation;
+        }
+
+        public int getNumEvaluations() {
+            return numEvaluations;
+        }
+
+        public int getElapsedTime() {
+            return elapsedTime;
+        }
     }
 
     private final SolverMode solverMode;
@@ -333,7 +353,7 @@ public class BooleanSolver implements Resetable, Serializable {
                 .flatMap(List::stream)
                 .mapToInt(result -> result.numEvaluations)
                 .sum() / numTests;
-        printNumEvaluations(numEvaluations);
+//        printNumEvaluations(numEvaluations);
 
         List<Double> elapsedTimes = new ArrayList<>();
         List<Double> numberOfCLBs = new ArrayList<>();
@@ -351,11 +371,16 @@ public class BooleanSolver implements Resetable, Serializable {
             numberOfCLBs.add((double) numCLBsSum / numTests);
         }
 
-        System.out.println(String.format("Results for functions (index, number of CLBs, elapsed time), average time is %10.3f seconds):",
-                (elapsedTimes.stream().mapToDouble(i -> i).sum() / elapsedTimes.size()) / 1000.0));
+        if (elapsedTimes.size() <= 2) {
+            System.out.println(String.format("%4s   %4.2f   %10.3f\n", "", numberOfCLBs.get(1), elapsedTimes.get(1) / 1000.0));
+        } else {
+            System.out.println(String.format("Results for functions (index, number of CLBs, elapsed time), average time is %10.3f seconds):",
+                    (elapsedTimes.stream().mapToDouble(i -> i).sum() / elapsedTimes.size()) / 1000.0));
 
-        for (int i = 0; i < elapsedTimes.size(); i++) {
-            System.out.println(String.format("%4d   %4.2f   %10.3f", i, numberOfCLBs.get(i), elapsedTimes.get(i) / 1000.0));
+            for (int i = 0; i < elapsedTimes.size(); i++) {
+                System.out.println(String.format("%4d   %4.2f   %10.3f", i, numberOfCLBs.get(i), elapsedTimes.get(i) / 1000.0));
+            }
+            System.out.println();
         }
     }
 

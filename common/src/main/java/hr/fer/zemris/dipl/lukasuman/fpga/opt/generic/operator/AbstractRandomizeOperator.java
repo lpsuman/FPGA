@@ -131,18 +131,17 @@ public abstract class AbstractRandomizeOperator implements OperatorRandomizer, F
     public String resultsToString(List<OperatorStatistics> operatorStatistics) {
         checkIfUsingStatistics();
         StringBuilder sb = new StringBuilder();
-        sb.append('\n');
-        sb.append(getResultMessage());
-        sb.append('\n');
-        sb.append(String.format("%14s %24s %21s %19s", "Times used", "Decreased fitness", "Increased fitness", "Increased best"));
-        sb.append('\n');
+        sb.append('\n').append(getResultMessage()).append('\n');
+        sb.append(String.format("%14s %24s %21s %19s\n", "Times used", "Decreased fitness", "Increased fitness", "Increased best"));
 
+        OperatorStatistics totalStatistics = new AtomicOperatorStatistics();
         for (int i = 0, n = operatorStatistics.size(); i < n; i++) {
-            sb.append(operatorNames.get(i));
-            sb.append('\n');
-            sb.append(operatorStatistics.get(i));
-            sb.append('\n');
+            sb.append(operatorNames.get(i)).append('\n');
+            sb.append(operatorStatistics.get(i)).append('\n');
+            totalStatistics.add(operatorStatistics.get(i));
         }
+        sb.append("Total:").append('\n');
+        sb.append(totalStatistics).append('\n');
 
         return sb.toString();
     }

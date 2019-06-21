@@ -8,7 +8,7 @@ import java.util.List;
 public class ShowResults {
 
     public static void main(String[] args) {
-        String filePath = BooleanOptimizer.getFolderPath() + "opt_2019-06-17T23_26_58.865476100_with_caching_30" + ".json";
+        String filePath = BooleanOptimizer.getSolutionFolderPath() + "opt_2019-06-21T03_50_16.918602300_adder2no_final_1" + ".json";
         int numTests = Integer.parseInt(filePath.substring(0, filePath.lastIndexOf('.')).substring(filePath.lastIndexOf('_') + 1));
         List<BooleanOptimizer.OptimizationRunResult> optimizationResults;
 

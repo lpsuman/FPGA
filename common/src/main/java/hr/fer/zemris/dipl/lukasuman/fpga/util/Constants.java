@@ -26,19 +26,19 @@ public class Constants {
     public static final boolean STOP_AFTER_MERGING = false;
 
     public static final ArgumentLimit<Integer> NUM_FUNCTION_INPUTS_LIMIT =
-            new ArgumentIntervalLimit<>("number of inputs for boolean function", 2, 10);
+            new ArgumentIntervalLimit<>("number of inputs for boolean function", 2, 14);
 
     public static final ArgumentLimit<Integer> NUM_FUNCTIONS_LIMIT =
             new ArgumentIntervalLimit<>("number of functions", 1, 100);
 
     public static final ArgumentLimit<Integer> NUM_CLB_INPUTS_LIMIT =
-            new ArgumentIntervalLimit<>("number of CLB inputs", 2, 10);
+            new ArgumentIntervalLimit<>("number of CLB inputs", 2, NUM_FUNCTION_INPUTS_LIMIT.getUpperLimit());
 
     public static final ArgumentLimit<Integer> NUM_CLB_LIMIT =
-            new ArgumentIntervalLimit<>("number of CLBs", 1, 1000);
+            new ArgumentIntervalLimit<>("number of CLBs", 1, 10000);
 
     public static final ArgumentLimit<Integer> TOURNAMENT_SIZE_LIMIT =
-            new ArgumentIntervalLimit<>("tournament size", 2, 10);
+            new ArgumentIntervalLimit<>("tournament size", 2, 1000);
 
     public static final ArgumentLimit<Integer> NUM_OPERATORS_LIMIT =
             new ArgumentIntervalLimit<>("number of operators", 1, 10);

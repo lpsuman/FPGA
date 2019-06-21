@@ -68,10 +68,14 @@ public class AtomicOperatorStatistics implements OperatorStatistics {
 
     @Override
     public String toString() {
+        long numUsed = getNumUsed();
+        if (numUsed < 0) {
+            numUsed += 2L * Integer.MAX_VALUE;
+        }
         return String.format("%14d %14d (%2.4f) %12d (%2.4f) %6d (%.8f)",
-                getNumUsed(),
-                getNumDecreasedFitness(), 100.0 * getNumDecreasedFitness() / getNumUsed(),
-                getNumIncreasedFitness(), 100.0 * getNumIncreasedFitness() / getNumUsed(),
-                getNumIncreasedBestFitness(), 100.0 * getNumIncreasedBestFitness() / getNumUsed());
+                numUsed,
+                getNumDecreasedFitness(), 100.0 * getNumDecreasedFitness() / numUsed,
+                getNumIncreasedFitness(), 100.0 * getNumIncreasedFitness() / numUsed,
+                getNumIncreasedBestFitness(), 100.0 * getNumIncreasedBestFitness() / numUsed);
     }
 }

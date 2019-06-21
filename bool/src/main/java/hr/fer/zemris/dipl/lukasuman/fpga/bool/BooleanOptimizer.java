@@ -18,6 +18,8 @@ import hr.fer.zemris.dipl.lukasuman.fpga.util.Utility;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class BooleanOptimizer {
@@ -54,10 +56,9 @@ public class BooleanOptimizer {
         }
     }
 
-    private static final String VECTOR_FILE_NAME = "adder3no.json";
-
+    private static final String VECTOR_FILE_NAME = "adder4no";
     private static final int[][] FIXED_PARAMETERS = new int[][]{
-            {10, 1000, 500}
+            {1, 1000, 500}
     };
 
 //    private static final int[][] FIXED_PARAMETERS = new int[][]{
@@ -72,19 +73,46 @@ public class BooleanOptimizer {
 //    private static final int[] POPULATION_SIZES = new int[]{50};
 //    private static final int[] MAX_GENERATIONS = new int[]{500};
 
-    private static final int[] MAX_NUM_FAILS = new int[]{1, 5, 10};
-    private static final int[] POPULATION_SIZES = new int[]{50, 200, 1000};
-    private static final int[] MAX_GENERATIONS = new int[]{500, 2000, 10000};
+//    private static final int[] MAX_NUM_FAILS = new int[]{1, 5, 10};
+//    private static final int[] POPULATION_SIZES = new int[]{50, 200, 1000};
+//    private static final int[] MAX_GENERATIONS = new int[]{500, 2000, 10000};
+
+    private static final int[] MAX_NUM_FAILS = new int[]{1};
+    private static final int[] POPULATION_SIZES = new int[]{500, 1000, 2000};
+    private static final int[] MAX_GENERATIONS = new int[]{200, 500};
 
     private static final int NUM_THREADS = 3;
     private static final int NUM_TESTS = 20;
     private static final boolean SOLVE_INDIVIDUALLY = false;
-    private static final boolean USE_STATISTICS = true;
+    private static final boolean USE_STATISTICS = false;
     private static final boolean ALLOW_PRINTING = false;
 
     public static void main(String[] args) {
-        int[][] params = getGridParameters();
-//        int[][] params = FIXED_PARAMETERS;
+//        List<String> problemNames = Collections.singletonList(VECTOR_FILE_NAME);
+        List<String> problemNames = Arrays.asList(
+                "adder1",
+                "adder2",
+                "adder2no",
+                "adder3",
+                "adder3no",
+                "adder4",
+                "adder4no",
+                "adder5",
+                "adder5no"
+                );
+
+//        int[][] params = getGridParameters();
+        int[][] params = FIXED_PARAMETERS;
+
+        List<BoolVecProblem> problems = new ArrayList<>();
+        for (String problemName : problemNames) {
+            try {
+                problems.add(getTestProblem(problemName));
+            } catch (Exception exc) {
+                exc.printStackTrace();
+                return;
+            }
+        }
 
         BooleanSolverConfig solverConfig = new BooleanSolverConfig()
                 .printOnlyBestSolution(true)
@@ -99,53 +127,68 @@ public class BooleanOptimizer {
         TypeToken<ArrayList<OptimizationRunResult>> listType = new TypeToken<>(){};
         LocalDateTime time;
 
-        for (int i = 0; i < totalNumSteps; i++) {
-            int maxNumFails = params[i][0];
-            int populationSize = params[i][1];
-            int maxGenerations = params[i][2];
+        for (int j = 0; j < NUM_TESTS; j++) {
+            for (int k = 0; k < problems.size(); k++) {
+                BoolVecProblem problem = problems.get(k);
+                String problemName = problemNames.get(k);
+                for (int i = 0; i < totalNumSteps; i++) {
+                    int maxNumFails = params[i][0];
+                    int populationSize = params[i][1];
+                    int maxGenerations = params[i][2];
 
-            for (int j = 0; j < NUM_TESTS; j++) {
-                String setup = String.format("Step %2d/%2d (try %2d/%2d), fails=%3d, pop_size=%6d, max_gen=%6d",
-                        i + 1, totalNumSteps, j + 1, NUM_TESTS, maxNumFails, populationSize, maxGenerations);
-                System.out.println(setup);
+//                    for (int j = 0; j < NUM_TESTS; j++) {
+                        String setup = String.format("Problem %12s     Step %2d/%2d (try %2d/%2d), fails=%3d, pop_size=%6d, max_gen=%6d",
+                                problemName, i + 1, totalNumSteps, j + 1, NUM_TESTS, maxNumFails, populationSize, maxGenerations);
+                        System.out.println(setup);
 
-                BooleanSolver solver = new BooleanSolver(SolverMode.FULL, null, solverConfig);
-                solver.setMaxNumFails(maxNumFails);
-                ParallelGAConfig gaConfig = new ParallelGAConfig()
-                        .populationSize(populationSize)
-                        .maxGenerations(maxGenerations);
-                solver.setAlgorithmConfig(gaConfig);
-                AnnealedThreadPoolConfig tpConfig = new AnnealedThreadPoolConfig()
-                        .numThreads(NUM_THREADS);
-                solver.setThreadPoolConfig(tpConfig);
-                solver.setEnablePrinting(ALLOW_PRINTING);
-                solver.solve(getTestProblem());
+                        BooleanSolver solver = new BooleanSolver(SolverMode.FULL, null, solverConfig);
+                        solver.setMaxNumFails(maxNumFails);
+                        ParallelGAConfig gaConfig = new ParallelGAConfig()
+                                .populationSize(populationSize)
+                                .maxGenerations(maxGenerations);
+                        solver.setAlgorithmConfig(gaConfig);
+                        AnnealedThreadPoolConfig tpConfig = new AnnealedThreadPoolConfig()
+                                .numThreads(NUM_THREADS);
+                        solver.setThreadPoolConfig(tpConfig);
+                        solver.setEnablePrinting(ALLOW_PRINTING);
+                        solver.solve(problem);
 
-                optimizationResults.add(new OptimizationRunResult(setup, solver.getRunResults(),
-                        solver.getCrossoverOperatorStatistics(), solver.getMutationOperatorStatistics()));
-            }
+                        optimizationResults.add(new OptimizationRunResult(setup, solver.getRunResults(),
+                                solver.getCrossoverOperatorStatistics(), solver.getMutationOperatorStatistics()));
+//                    }
 
-            time = LocalDateTime.now();
-            try {
-                MyGson.writeToJson(getFolderPath() + "opt_" + time.toString().replace(':', '_') + "_step_" + (i + 1) + "_of_" + totalNumSteps + "_" + NUM_TESTS + ".json",
-                        optimizationResults, listType.getRawType());
-            } catch (IOException e) {
-                e.printStackTrace();
+                    time = LocalDateTime.now();
+                    try {
+                        MyGson.writeToJson(getSolutionFolderPath() + "opt_" + time.toString().replace(':', '_')
+                                        + "_" + problemName
+                                        + "_" + maxNumFails
+                                        + "_" + populationSize
+                                        + "_" + maxGenerations
+                                        + "_step_" + (i + 1) + "_of_" + totalNumSteps + "_" + NUM_TESTS + ".json",
+                                optimizationResults, listType.getRawType());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (totalNumSteps > 1) {
+                    time = LocalDateTime.now();
+                    try {
+                        MyGson.writeToJson(getSolutionFolderPath() + "opt_" + time.toString().replace(':', '_')
+                                        + "_" + problemName
+                                        + "_final_" + NUM_TESTS + ".json",
+                                optimizationResults, listType.getRawType());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                showResults(problem, optimizationResults);
+                showAverageResults(optimizationResults, NUM_TESTS);
+
+                System.out.println("Total elapsed time: " + timer.getElapsedTime() / 1000.0);
             }
         }
-
-        time = LocalDateTime.now();
-        try {
-            MyGson.writeToJson(getFolderPath() + "opt_" + time.toString().replace(':', '_') + "_final_" + NUM_TESTS + ".json",
-                    optimizationResults, listType.getRawType());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        showResults(getTestProblem(), optimizationResults);
-        showAverageResults(optimizationResults, NUM_TESTS);
-
-        System.out.println("Total elapsed time: " + timer.getElapsedTime() / 1000.0);
     }
 
     private static int[][] getGridParameters() {
@@ -168,9 +211,13 @@ public class BooleanOptimizer {
     }
 
     public static BoolVecProblem getTestProblem() {
+        return getTestProblem(VECTOR_FILE_NAME);
+    }
+
+    public static BoolVecProblem getTestProblem(String vectorFileName) {
         BooleanVector adder3no;
         try {
-            adder3no = MyGson.readFromJson(getFolderPath() + VECTOR_FILE_NAME, BooleanVector.class);
+            adder3no = MyGson.readFromJsonAsList(getProblemFolderPath() + vectorFileName + ".json", BooleanVector[].class).get(0);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -201,6 +248,13 @@ public class BooleanOptimizer {
             }
         }
 
+        int totalRunningTime = optimizationResults.stream()
+                .map(BooleanOptimizer.OptimizationRunResult::getRunResults)
+                .flatMap(List::stream)
+                .mapToInt(BooleanSolver.RunResults::getElapsedTime)
+                .sum() / 2;
+        System.out.println(String.format("Total running time in seconds: %.3f", totalRunningTime / 1000.0));
+
         if (USE_STATISTICS) {
             System.out.println("\nSuper global operator statistics:");
             BooleanSolver.printStats(randomizeCrossover, superGlobalCrossoverStatistics,
@@ -221,7 +275,11 @@ public class BooleanOptimizer {
         }
     }
 
-    public static String getFolderPath() {
-        return Utility.getWorkingDir() + "/data/sessions/";
+    public static String getProblemFolderPath() {
+        return Utility.getWorkingDir() + "/data/sessions/problems/";
+    }
+
+    public static String getSolutionFolderPath() {
+        return Utility.getWorkingDir() + "/data/sessions/solutions/";
     }
 }
