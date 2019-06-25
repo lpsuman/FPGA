@@ -1,0 +1,403 @@
+Step  1/ 6 (try  1/20), fails=  1, pop_size=   500, max_gen=   200
+       9.00        7.539
+
+Step  1/ 6 (try  2/20), fails=  1, pop_size=   500, max_gen=   200
+       6.00        5.770
+
+Step  1/ 6 (try  3/20), fails=  1, pop_size=   500, max_gen=   200
+       7.00        3.597
+
+Step  1/ 6 (try  4/20), fails=  1, pop_size=   500, max_gen=   200
+       54.00       33.276
+
+Step  1/ 6 (try  5/20), fails=  1, pop_size=   500, max_gen=   200
+       14.00       27.626
+
+Step  1/ 6 (try  6/20), fails=  1, pop_size=   500, max_gen=   200
+       6.00        9.097
+
+Step  1/ 6 (try  7/20), fails=  1, pop_size=   500, max_gen=   200
+       6.00        3.543
+
+Step  1/ 6 (try  8/20), fails=  1, pop_size=   500, max_gen=   200
+       54.00       30.554
+
+Step  1/ 6 (try  9/20), fails=  1, pop_size=   500, max_gen=   200
+       6.00        3.378
+
+Step  1/ 6 (try 10/20), fails=  1, pop_size=   500, max_gen=   200
+       54.00       28.330
+
+Step  1/ 6 (try 11/20), fails=  1, pop_size=   500, max_gen=   200
+       6.00        3.052
+
+Step  1/ 6 (try 12/20), fails=  1, pop_size=   500, max_gen=   200
+       6.00        2.971
+
+Step  1/ 6 (try 13/20), fails=  1, pop_size=   500, max_gen=   200
+       6.00        4.798
+
+Step  1/ 6 (try 14/20), fails=  1, pop_size=   500, max_gen=   200
+       9.00        9.102
+
+Step  1/ 6 (try 15/20), fails=  1, pop_size=   500, max_gen=   200
+       18.00       29.492
+
+Step  1/ 6 (try 16/20), fails=  1, pop_size=   500, max_gen=   200
+       7.00        4.206
+
+Step  1/ 6 (try 17/20), fails=  1, pop_size=   500, max_gen=   200
+       6.00        3.219
+
+Step  1/ 6 (try 18/20), fails=  1, pop_size=   500, max_gen=   200
+       6.00        2.572
+
+Step  1/ 6 (try 19/20), fails=  1, pop_size=   500, max_gen=   200
+       6.00        2.968
+
+Step  1/ 6 (try 20/20), fails=  1, pop_size=   500, max_gen=   200
+       6.00        3.252
+
+
+
+
+
+Step  2/ 6 (try  1/20), fails=  1, pop_size=   500, max_gen=   500
+       6.00        5.247
+
+Step  2/ 6 (try  2/20), fails=  1, pop_size=   500, max_gen=   500
+       6.00        8.645
+
+Step  2/ 6 (try  3/20), fails=  1, pop_size=   500, max_gen=   500
+       6.00        6.681
+
+Step  2/ 6 (try  4/20), fails=  1, pop_size=   500, max_gen=   500
+       6.00        6.243
+
+Step  2/ 6 (try  5/20), fails=  1, pop_size=   500, max_gen=   500
+       7.00        7.298
+
+Step  2/ 6 (try  6/20), fails=  1, pop_size=   500, max_gen=   500
+       17.00       29.305
+
+Step  2/ 6 (try  7/20), fails=  1, pop_size=   500, max_gen=   500
+       7.00        5.670
+
+Step  2/ 6 (try  8/20), fails=  1, pop_size=   500, max_gen=   500
+       6.00        6.122
+
+Step  2/ 6 (try  9/20), fails=  1, pop_size=   500, max_gen=   500
+       6.00        7.614
+
+Step  2/ 6 (try 10/20), fails=  1, pop_size=   500, max_gen=   500
+       7.00        4.538
+
+Step  2/ 6 (try 11/20), fails=  1, pop_size=   500, max_gen=   500
+       6.00        7.417
+
+Step  2/ 6 (try 12/20), fails=  1, pop_size=   500, max_gen=   500
+       8.00       14.334
+
+Step  2/ 6 (try 13/20), fails=  1, pop_size=   500, max_gen=   500
+       7.00        7.063
+
+Step  2/ 6 (try 14/20), fails=  1, pop_size=   500, max_gen=   500
+       6.00        6.810
+
+Step  2/ 6 (try 15/20), fails=  1, pop_size=   500, max_gen=   500
+       6.00        6.932
+
+Step  2/ 6 (try 16/20), fails=  1, pop_size=   500, max_gen=   500
+       6.00        6.452
+
+Step  2/ 6 (try 17/20), fails=  1, pop_size=   500, max_gen=   500
+       6.00        6.774
+
+Step  2/ 6 (try 18/20), fails=  1, pop_size=   500, max_gen=   500
+       6.00        6.463
+
+Step  2/ 6 (try 19/20), fails=  1, pop_size=   500, max_gen=   500
+       6.00        4.946
+
+Step  2/ 6 (try 20/20), fails=  1, pop_size=   500, max_gen=   500
+       6.00        5.066
+
+
+
+
+
+Step  3/ 6 (try  1/20), fails=  1, pop_size=  1000, max_gen=   200
+       7.00        8.496
+
+Step  3/ 6 (try  2/20), fails=  1, pop_size=  1000, max_gen=   200
+       6.00       12.077
+
+Step  3/ 6 (try  3/20), fails=  1, pop_size=  1000, max_gen=   200
+       10.00       16.966
+
+Step  3/ 6 (try  4/20), fails=  1, pop_size=  1000, max_gen=   200
+       9.00        9.460
+
+Step  3/ 6 (try  5/20), fails=  1, pop_size=  1000, max_gen=   200
+       9.00       10.258
+
+Step  3/ 6 (try  6/20), fails=  1, pop_size=  1000, max_gen=   200
+       6.00        6.121
+
+Step  3/ 6 (try  7/20), fails=  1, pop_size=  1000, max_gen=   200
+       6.00        5.851
+
+Step  3/ 6 (try  8/20), fails=  1, pop_size=  1000, max_gen=   200
+       6.00        7.663
+
+Step  3/ 6 (try  9/20), fails=  1, pop_size=  1000, max_gen=   200
+       6.00        5.879
+
+Step  3/ 6 (try 10/20), fails=  1, pop_size=  1000, max_gen=   200
+       6.00        8.089
+
+Step  3/ 6 (try 11/20), fails=  1, pop_size=  1000, max_gen=   200
+       8.00       17.296
+
+Step  3/ 6 (try 12/20), fails=  1, pop_size=  1000, max_gen=   200
+       6.00        5.086
+
+Step  3/ 6 (try 13/20), fails=  1, pop_size=  1000, max_gen=   200
+       20.00       64.086
+
+Step  3/ 6 (try 14/20), fails=  1, pop_size=  1000, max_gen=   200
+       6.00        6.377
+
+Step  3/ 6 (try 15/20), fails=  1, pop_size=  1000, max_gen=   200
+       6.00        5.594
+
+Step  3/ 6 (try 16/20), fails=  1, pop_size=  1000, max_gen=   200
+       29.00       51.801
+
+Step  3/ 6 (try 17/20), fails=  1, pop_size=  1000, max_gen=   200
+       6.00        7.319
+
+Step  3/ 6 (try 18/20), fails=  1, pop_size=  1000, max_gen=   200
+       8.00        8.635
+
+Step  3/ 6 (try 19/20), fails=  1, pop_size=  1000, max_gen=   200
+       6.00       14.026
+
+Step  3/ 6 (try 20/20), fails=  1, pop_size=  1000, max_gen=   200
+       7.00        7.638
+
+
+
+
+
+
+Step  4/ 6 (try  1/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       12.993
+
+Step  4/ 6 (try  2/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00        8.899
+
+Step  4/ 6 (try  3/20), fails=  1, pop_size=  1000, max_gen=   500
+       7.00       13.381
+
+Step  4/ 6 (try  4/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       11.702
+
+Step  4/ 6 (try  5/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       11.285
+
+Step  4/ 6 (try  6/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       13.018
+
+Step  4/ 6 (try  7/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       11.625
+
+Step  4/ 6 (try  8/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       11.771
+
+Step  4/ 6 (try  9/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       12.994
+
+Step  4/ 6 (try 10/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00        9.138
+
+Step  4/ 6 (try 11/20), fails=  1, pop_size=  1000, max_gen=   500
+       7.00       16.734
+
+Step  4/ 6 (try 12/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       12.880
+
+Step  4/ 6 (try 13/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       13.008
+
+Step  4/ 6 (try 14/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       11.889
+
+Step  4/ 6 (try 15/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00        9.921
+
+Step  4/ 6 (try 16/20), fails=  1, pop_size=  1000, max_gen=   500
+       9.00       10.338
+
+Step  4/ 6 (try 17/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00        9.633
+
+Step  4/ 6 (try 18/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       11.055
+
+Step  4/ 6 (try 19/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       15.221
+
+Step  4/ 6 (try 20/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       12.680
+
+
+
+
+
+
+Step  5/ 6 (try  1/20), fails=  1, pop_size=  2000, max_gen=   200
+       8.00       16.217
+
+Step  5/ 6 (try  2/20), fails=  1, pop_size=  2000, max_gen=   200
+       6.00       11.478
+
+Step  5/ 6 (try  3/20), fails=  1, pop_size=  2000, max_gen=   200
+       6.00       11.868
+
+Step  5/ 6 (try  4/20), fails=  1, pop_size=  2000, max_gen=   200
+       6.00       11.227
+
+Step  5/ 6 (try  5/20), fails=  1, pop_size=  2000, max_gen=   200
+       8.00       14.934
+
+Step  5/ 6 (try  6/20), fails=  1, pop_size=  2000, max_gen=   200
+       6.00       12.099
+
+Step  5/ 6 (try  7/20), fails=  1, pop_size=  2000, max_gen=   200
+       6.00       12.718
+
+Step  5/ 6 (try  8/20), fails=  1, pop_size=  2000, max_gen=   200
+       6.00       14.141
+
+Step  5/ 6 (try  9/20), fails=  1, pop_size=  2000, max_gen=   200
+       8.00       17.187
+
+Step  5/ 6 (try 10/20), fails=  1, pop_size=  2000, max_gen=   200
+       6.00       13.203
+
+Step  5/ 6 (try 11/20), fails=  1, pop_size=  2000, max_gen=   200
+       6.00       16.188
+
+Step  5/ 6 (try 12/20), fails=  1, pop_size=  2000, max_gen=   200
+       6.00       12.147
+
+Step  5/ 6 (try 13/20), fails=  1, pop_size=  2000, max_gen=   200
+       6.00       12.057
+
+Step  5/ 6 (try 14/20), fails=  1, pop_size=  2000, max_gen=   200
+       6.00       10.282
+
+Step  5/ 6 (try 15/20), fails=  1, pop_size=  2000, max_gen=   200
+       6.00       73.036
+
+Step  5/ 6 (try 16/20), fails=  1, pop_size=  2000, max_gen=   200
+       6.00       13.650
+
+Step  5/ 6 (try 17/20), fails=  1, pop_size=  2000, max_gen=   200
+       8.00       13.640
+
+Step  5/ 6 (try 18/20), fails=  1, pop_size=  2000, max_gen=   200
+       8.00       16.604
+
+Step  5/ 6 (try 19/20), fails=  1, pop_size=  2000, max_gen=   200
+       6.00       11.551
+
+Step  5/ 6 (try 20/20), fails=  1, pop_size=  2000, max_gen=   200
+       6.00       15.751
+
+
+
+
+
+
+Step  6/ 6 (try  1/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.00       28.076
+
+Step  6/ 6 (try  2/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.00       26.136
+
+Step  6/ 6 (try  3/20), fails=  1, pop_size=  2000, max_gen=   500
+       8.00       53.823
+
+Step  6/ 6 (try  4/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.00       25.134
+
+Step  6/ 6 (try  5/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.00       20.681
+
+Step  6/ 6 (try  6/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.00       22.014
+
+Step  6/ 6 (try  7/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.00       22.220
+
+Step  6/ 6 (try  8/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.00       21.522
+
+Step  6/ 6 (try  9/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.00       24.859
+
+Step  6/ 6 (try 10/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.00       20.597
+
+Step  6/ 6 (try 11/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.00       22.226
+
+Step  6/ 6 (try 12/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.00       20.435
+
+Step  6/ 6 (try 13/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.00       25.461
+
+Step  6/ 6 (try 14/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.00       21.941
+
+Step  6/ 6 (try 15/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.00       22.062
+
+Step  6/ 6 (try 16/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.00       20.727
+
+Step  6/ 6 (try 17/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.00       22.880
+
+Step  6/ 6 (try 18/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.00       27.156
+
+Step  6/ 6 (try 19/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.00       24.725
+
+Step  6/ 6 (try 20/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.00       26.669
+
+Total running time in seconds: 1725.875
+Step  1/ 6 (try  1/20), fails=  1, pop_size=   500, max_gen=   200
+       14.60       10.917
+
+Step  2/ 6 (try  1/20), fails=  1, pop_size=   500, max_gen=   500
+       6.85        7.981
+
+Step  3/ 6 (try  1/20), fails=  1, pop_size=  1000, max_gen=   200
+       8.65       13.936
+
+Step  4/ 6 (try  1/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.25       12.008
+
+Step  5/ 6 (try  1/20), fails=  1, pop_size=  2000, max_gen=   200
+       6.50       16.499
+
+Step  6/ 6 (try  1/20), fails=  1, pop_size=  2000, max_gen=   500
+       6.10       24.967
+
+Total elapsed time: 1726.51

@@ -1,0 +1,1881 @@
+Step  1/27 (try  1/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 308160
+Results for functions (index, number of CLBs, elapsed time), average time is     12.368 seconds):
+   0   0.00       12.336
+   1   54.00       12.400
+Step  1/27 (try  2/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 343680
+Results for functions (index, number of CLBs, elapsed time), average time is     12.937 seconds):
+   0   0.00       12.935
+   1   54.00       12.939
+Step  1/27 (try  3/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 259664
+Results for functions (index, number of CLBs, elapsed time), average time is      9.201 seconds):
+   0   0.00        9.201
+   1   54.00        9.201
+Step  1/27 (try  4/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 347400
+Results for functions (index, number of CLBs, elapsed time), average time is     14.802 seconds):
+   0   0.00       14.794
+   1   54.00       14.809
+Step  1/27 (try  5/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 307776
+Results for functions (index, number of CLBs, elapsed time), average time is     10.248 seconds):
+   0   0.00       10.248
+   1   54.00       10.248
+Step  1/27 (try  6/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 173184
+Results for functions (index, number of CLBs, elapsed time), average time is      3.600 seconds):
+   0   10.00        3.592
+   1   10.00        3.608
+Step  1/27 (try  7/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 404544
+Results for functions (index, number of CLBs, elapsed time), average time is     17.730 seconds):
+   0   0.00       17.730
+   1   54.00       17.730
+Step  1/27 (try  8/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 227520
+Results for functions (index, number of CLBs, elapsed time), average time is      6.155 seconds):
+   0   13.00        6.155
+   1   13.00        6.155
+Step  1/27 (try  9/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 373632
+Results for functions (index, number of CLBs, elapsed time), average time is     16.568 seconds):
+   0   0.00       16.568
+   1   54.00       16.568
+Step  1/27 (try 10/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 361152
+Results for functions (index, number of CLBs, elapsed time), average time is     13.684 seconds):
+   0   0.00       13.684
+   1   54.00       13.684
+Step  1/27 (try 11/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 268224
+Results for functions (index, number of CLBs, elapsed time), average time is      9.701 seconds):
+   0   0.00        9.701
+   1   54.00        9.701
+Step  1/27 (try 12/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 320832
+Results for functions (index, number of CLBs, elapsed time), average time is     12.856 seconds):
+   0   0.00       12.856
+   1   54.00       12.856
+Step  1/27 (try 13/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 321024
+Results for functions (index, number of CLBs, elapsed time), average time is     12.820 seconds):
+   0   0.00       12.820
+   1   54.00       12.820
+Step  1/27 (try 14/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 347136
+Results for functions (index, number of CLBs, elapsed time), average time is     14.580 seconds):
+   0   0.00       14.580
+   1   54.00       14.580
+Step  1/27 (try 15/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 343104
+Results for functions (index, number of CLBs, elapsed time), average time is     13.515 seconds):
+   0   0.00       13.515
+   1   54.00       13.515
+Step  1/27 (try 16/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 300864
+Results for functions (index, number of CLBs, elapsed time), average time is     12.193 seconds):
+   0   0.00       12.185
+   1   54.00       12.200
+Step  1/27 (try 17/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 262656
+Results for functions (index, number of CLBs, elapsed time), average time is      3.812 seconds):
+   0   12.00        3.812
+   1   12.00        3.812
+Step  1/27 (try 18/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 312192
+Results for functions (index, number of CLBs, elapsed time), average time is     11.139 seconds):
+   0   0.00       11.131
+   1   54.00       11.146
+Step  1/27 (try 19/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 335424
+Results for functions (index, number of CLBs, elapsed time), average time is     12.146 seconds):
+   0   0.00       12.146
+   1   54.00       12.146
+Step  1/27 (try 20/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 345408
+Results for functions (index, number of CLBs, elapsed time), average time is     13.435 seconds):
+   0   0.00       13.435
+   1   54.00       13.435
+   
+   
+   
+Step  2/27 (try  1/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 985408
+Results for functions (index, number of CLBs, elapsed time), average time is     37.174 seconds):
+   0   0.00       37.174
+   1   54.00       37.174
+Step  2/27 (try  2/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 1237056
+Results for functions (index, number of CLBs, elapsed time), average time is     45.473 seconds):
+   0   0.00       45.473
+   1   54.00       45.473
+Step  2/27 (try  3/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 677952
+Results for functions (index, number of CLBs, elapsed time), average time is      3.703 seconds):
+   0   6.00        3.703
+   1   6.00        3.703
+Step  2/27 (try  4/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 1340928
+Results for functions (index, number of CLBs, elapsed time), average time is     52.487 seconds):
+   0   0.00       52.487
+   1   54.00       52.487
+Step  2/27 (try  5/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 1409472
+Results for functions (index, number of CLBs, elapsed time), average time is     51.035 seconds):
+   0   0.00       51.035
+   1   54.00       51.035
+Step  2/27 (try  6/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 1265280
+Results for functions (index, number of CLBs, elapsed time), average time is     41.061 seconds):
+   0   0.00       41.053
+   1   54.00       41.069
+Step  2/27 (try  7/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 1269888
+Results for functions (index, number of CLBs, elapsed time), average time is     45.708 seconds):
+   0   0.00       45.708
+   1   54.00       45.708
+Step  2/27 (try  8/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 1428864
+Results for functions (index, number of CLBs, elapsed time), average time is     57.838 seconds):
+   0   0.00       57.830
+   1   54.00       57.845
+Step  2/27 (try  9/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 1235136
+Results for functions (index, number of CLBs, elapsed time), average time is     47.739 seconds):
+   0   0.00       47.739
+   1   54.00       47.739
+Step  2/27 (try 10/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 1137408
+Results for functions (index, number of CLBs, elapsed time), average time is     42.912 seconds):
+   0   0.00       42.912
+   1   54.00       42.912
+Step  2/27 (try 11/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 328704
+Results for functions (index, number of CLBs, elapsed time), average time is      3.663 seconds):
+   0   9.00        3.655
+   1   9.00        3.671
+Step  2/27 (try 12/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 928320
+Results for functions (index, number of CLBs, elapsed time), average time is     32.529 seconds):
+   0   18.00       32.529
+   1   18.00       32.529
+Step  2/27 (try 13/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 1444608
+Results for functions (index, number of CLBs, elapsed time), average time is     63.571 seconds):
+   0   0.00       63.563
+   1   54.00       63.579
+Step  2/27 (try 14/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 1214208
+Results for functions (index, number of CLBs, elapsed time), average time is     49.245 seconds):
+   0   0.00       49.243
+   1   54.00       49.246
+Step  2/27 (try 15/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 1381632
+Results for functions (index, number of CLBs, elapsed time), average time is     55.418 seconds):
+   0   23.00       55.415
+   1   23.00       55.421
+Step  2/27 (try 16/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 1137216
+Results for functions (index, number of CLBs, elapsed time), average time is     48.542 seconds):
+   0   0.00       48.541
+   1   54.00       48.543
+Step  2/27 (try 17/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 329472
+Results for functions (index, number of CLBs, elapsed time), average time is      3.940 seconds):
+   0   9.00        3.937
+   1   9.00        3.942
+Step  2/27 (try 18/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 1000128
+Results for functions (index, number of CLBs, elapsed time), average time is      6.990 seconds):
+   0   7.00        6.988
+   1   7.00        6.992
+Step  2/27 (try 19/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 698688
+Results for functions (index, number of CLBs, elapsed time), average time is     14.575 seconds):
+   0   11.00       14.573
+   1   11.00       14.577
+Step  2/27 (try 20/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 302400
+Results for functions (index, number of CLBs, elapsed time), average time is      4.546 seconds):
+   0   7.00        4.544
+   1   7.00        4.548
+   
+   
+   
+Step  3/27 (try  1/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 5428224
+Results for functions (index, number of CLBs, elapsed time), average time is    200.495 seconds):
+   0   0.00      200.493
+   1   54.00      200.496
+Step  3/27 (try  2/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 4578056
+Results for functions (index, number of CLBs, elapsed time), average time is    251.860 seconds):
+   0   0.00      251.859
+   1   54.00      251.861
+Step  3/27 (try  3/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 1126464
+Results for functions (index, number of CLBs, elapsed time), average time is     13.386 seconds):
+   0   7.00       13.384
+   1   7.00       13.388
+Step  3/27 (try  4/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 2969088
+Results for functions (index, number of CLBs, elapsed time), average time is     64.634 seconds):
+   0   15.00       64.632
+   1   15.00       64.636
+Step  3/27 (try  5/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 6038592
+Results for functions (index, number of CLBs, elapsed time), average time is    225.024 seconds):
+   0   0.00      225.022
+   1   54.00      225.025
+Step  3/27 (try  6/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 3072000
+Results for functions (index, number of CLBs, elapsed time), average time is     18.027 seconds):
+   0   6.00       18.025
+   1   6.00       18.029
+Step  3/27 (try  7/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 5309952
+Results for functions (index, number of CLBs, elapsed time), average time is    189.571 seconds):
+   0   0.00      189.569
+   1   54.00      189.572
+Step  3/27 (try  8/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 4237440
+Results for functions (index, number of CLBs, elapsed time), average time is     26.815 seconds):
+   0   6.00       26.813
+   1   6.00       26.817
+Step  3/27 (try  9/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 1202112
+Results for functions (index, number of CLBs, elapsed time), average time is     14.421 seconds):
+   0   6.00       14.418
+   1   6.00       14.423
+Step  3/27 (try 10/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 3154944
+Results for functions (index, number of CLBs, elapsed time), average time is     19.903 seconds):
+   0   7.00       19.900
+   1   7.00       19.905
+Step  3/27 (try 11/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 3302976
+Results for functions (index, number of CLBs, elapsed time), average time is     59.569 seconds):
+   0   9.00       59.564
+   1   9.00       59.573
+Step  3/27 (try 12/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 4011264
+Results for functions (index, number of CLBs, elapsed time), average time is     22.258 seconds):
+   0   6.00       22.258
+   1   6.00       22.258
+Step  3/27 (try 13/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 7404096
+Results for functions (index, number of CLBs, elapsed time), average time is    118.773 seconds):
+   0   14.00      118.773
+   1   14.00      118.773
+Step  3/27 (try 14/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 3071424
+Results for functions (index, number of CLBs, elapsed time), average time is     84.911 seconds):
+   0   15.00       84.910
+   1   15.00       84.911
+Step  3/27 (try 15/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 3291648
+Results for functions (index, number of CLBs, elapsed time), average time is     83.528 seconds):
+   0   16.00       83.526
+   1   16.00       83.530
+Step  3/27 (try 16/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 6415872
+Results for functions (index, number of CLBs, elapsed time), average time is    225.257 seconds):
+   0   0.00      225.256
+   1   54.00      225.258
+Step  3/27 (try 17/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 4046592
+Results for functions (index, number of CLBs, elapsed time), average time is     98.612 seconds):
+   0   17.00       98.609
+   1   17.00       98.614
+Step  3/27 (try 18/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 2962176
+Results for functions (index, number of CLBs, elapsed time), average time is     42.688 seconds):
+   0   7.00       42.686
+   1   7.00       42.689
+Step  3/27 (try 19/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 3465408
+Results for functions (index, number of CLBs, elapsed time), average time is     22.678 seconds):
+   0   6.00       22.676
+   1   6.00       22.679
+Step  3/27 (try 20/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 2187648
+
+
+
+Results for functions (index, number of CLBs, elapsed time), average time is     37.513 seconds):
+   0   7.00       37.511
+   1   7.00       37.515
+Step  4/27 (try  1/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 753192
+Results for functions (index, number of CLBs, elapsed time), average time is      5.176 seconds):
+   0   6.00        5.174
+   1   6.00        5.178
+Step  4/27 (try  2/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 1272368
+Results for functions (index, number of CLBs, elapsed time), average time is     50.391 seconds):
+   0   0.00       50.389
+   1   54.00       50.392
+Step  4/27 (try  3/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 1189584
+Results for functions (index, number of CLBs, elapsed time), average time is     45.309 seconds):
+   0   0.00       45.308
+   1   54.00       45.310
+Step  4/27 (try  4/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 981288
+Results for functions (index, number of CLBs, elapsed time), average time is      5.705 seconds):
+   0   6.00        5.703
+   1   6.00        5.706
+Step  4/27 (try  5/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 1586376
+Results for functions (index, number of CLBs, elapsed time), average time is     64.023 seconds):
+   0   0.00       64.021
+   1   54.00       64.024
+Step  4/27 (try  6/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 350064
+Results for functions (index, number of CLBs, elapsed time), average time is      4.066 seconds):
+   0   8.00        4.064
+   1   8.00        4.068
+Step  4/27 (try  7/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 782496
+Results for functions (index, number of CLBs, elapsed time), average time is     10.179 seconds):
+   0   10.00       10.177
+   1   10.00       10.181
+Step  4/27 (try  8/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 768240
+Results for functions (index, number of CLBs, elapsed time), average time is     16.050 seconds):
+   0   17.00       16.047
+   1   17.00       16.052
+Step  4/27 (try  9/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 890208
+Results for functions (index, number of CLBs, elapsed time), average time is      5.274 seconds):
+   0   6.00        5.272
+   1   6.00        5.276
+Step  4/27 (try 10/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 1346400
+Results for functions (index, number of CLBs, elapsed time), average time is     51.869 seconds):
+   0   0.00       51.868
+   1   54.00       51.870
+Step  4/27 (try 11/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 1424016
+Results for functions (index, number of CLBs, elapsed time), average time is     58.884 seconds):
+   0   0.00       58.883
+   1   54.00       58.885
+Step  4/27 (try 12/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 822096
+Results for functions (index, number of CLBs, elapsed time), average time is      4.978 seconds):
+   0   6.00        4.976
+   1   6.00        4.980
+Step  4/27 (try 13/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 337392
+Results for functions (index, number of CLBs, elapsed time), average time is      4.704 seconds):
+   0   6.00        4.702
+   1   6.00        4.706
+Step  4/27 (try 14/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 475992
+Results for functions (index, number of CLBs, elapsed time), average time is      5.768 seconds):
+   0   6.00        5.766
+   1   6.00        5.770
+Step  4/27 (try 15/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 1543608
+Results for functions (index, number of CLBs, elapsed time), average time is     60.024 seconds):
+   0   0.00       60.022
+   1   54.00       60.025
+Step  4/27 (try 16/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 852192
+Results for functions (index, number of CLBs, elapsed time), average time is      5.642 seconds):
+   0   6.00        5.640
+   1   6.00        5.643
+Step  4/27 (try 17/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 777744
+Results for functions (index, number of CLBs, elapsed time), average time is     19.285 seconds):
+   0   13.00       19.283
+   1   13.00       19.287
+Step  4/27 (try 18/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 769032
+Results for functions (index, number of CLBs, elapsed time), average time is     18.089 seconds):
+   0   16.00       18.086
+   1   16.00       18.091
+Step  4/27 (try 19/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 512424
+Results for functions (index, number of CLBs, elapsed time), average time is      8.092 seconds):
+   0   9.00        8.090
+   1   9.00        8.093
+Step  4/27 (try 20/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 299376
+Results for functions (index, number of CLBs, elapsed time), average time is      3.993 seconds):
+   0   7.00        3.991
+   1   7.00        3.994
+   
+   
+   
+Step  5/27 (try  1/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 3365208
+Results for functions (index, number of CLBs, elapsed time), average time is     21.654 seconds):
+   0   6.00       21.651
+   1   6.00       21.656
+Step  5/27 (try  2/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 2569248
+Results for functions (index, number of CLBs, elapsed time), average time is     14.165 seconds):
+   0   6.00       14.163
+   1   6.00       14.167
+Step  5/27 (try  3/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 2993760
+Results for functions (index, number of CLBs, elapsed time), average time is     16.815 seconds):
+   0   6.00       16.812
+   1   6.00       16.817
+Step  5/27 (try  4/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 5497272
+Results for functions (index, number of CLBs, elapsed time), average time is    219.937 seconds):
+   0   0.00      219.936
+   1   54.00      219.938
+Step  5/27 (try  5/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 1642608
+Results for functions (index, number of CLBs, elapsed time), average time is     22.386 seconds):
+   0   9.00       22.384
+   1   9.00       22.387
+Step  5/27 (try  6/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 3409560
+Results for functions (index, number of CLBs, elapsed time), average time is     24.109 seconds):
+   0   6.00       24.107
+   1   6.00       24.111
+Step  5/27 (try  7/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 3350952
+Results for functions (index, number of CLBs, elapsed time), average time is     30.994 seconds):
+   0   6.00       30.992
+   1   6.00       30.996
+Step  5/27 (try  8/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 1354320
+Results for functions (index, number of CLBs, elapsed time), average time is     16.660 seconds):
+   0   6.00       16.658
+   1   6.00       16.662
+Step  5/27 (try  9/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 1947528
+Results for functions (index, number of CLBs, elapsed time), average time is     29.090 seconds):
+   0   6.00       29.088
+   1   6.00       29.091
+Step  5/27 (try 10/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 3580632
+Results for functions (index, number of CLBs, elapsed time), average time is     28.604 seconds):
+   0   8.00       28.601
+   1   8.00       28.606
+Step  5/27 (try 11/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 3279672
+Results for functions (index, number of CLBs, elapsed time), average time is     66.688 seconds):
+   0   9.00       66.686
+   1   9.00       66.689
+Step  5/27 (try 12/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 5300856
+Results for functions (index, number of CLBs, elapsed time), average time is    232.077 seconds):
+   0   0.00      232.075
+   1   54.00      232.078
+Step  5/27 (try 13/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 2574000
+Results for functions (index, number of CLBs, elapsed time), average time is     13.797 seconds):
+   0   6.00       13.795
+   1   6.00       13.798
+Step  5/27 (try 14/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 2589840
+Results for functions (index, number of CLBs, elapsed time), average time is     60.044 seconds):
+   0   17.00       60.042
+   1   17.00       60.045
+Step  5/27 (try 15/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 3398472
+Results for functions (index, number of CLBs, elapsed time), average time is     19.322 seconds):
+   0   6.00       19.319
+   1   6.00       19.324
+Step  5/27 (try 16/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 1036728
+Results for functions (index, number of CLBs, elapsed time), average time is     12.076 seconds):
+   0   8.00       12.074
+   1   8.00       12.078
+Step  5/27 (try 17/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 4303728
+Results for functions (index, number of CLBs, elapsed time), average time is    134.910 seconds):
+   0   17.00      134.907
+   1   17.00      134.912
+Step  5/27 (try 18/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 2582712
+Results for functions (index, number of CLBs, elapsed time), average time is     13.368 seconds):
+   0   6.00       13.366
+   1   6.00       13.369
+Step  5/27 (try 19/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 3754872
+Results for functions (index, number of CLBs, elapsed time), average time is     27.292 seconds):
+   0   7.00       27.289
+   1   7.00       27.294
+Step  5/27 (try 20/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 2745864
+Results for functions (index, number of CLBs, elapsed time), average time is     16.542 seconds):
+   0   6.00       16.540
+   1   6.00       16.543
+   
+   
+   
+Step  6/27 (try  1/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 12207888
+Results for functions (index, number of CLBs, elapsed time), average time is     65.056 seconds):
+   0   6.00       65.053
+   1   6.00       65.058
+Step  6/27 (try  2/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 4254624
+Results for functions (index, number of CLBs, elapsed time), average time is     48.413 seconds):
+   0   9.00       48.410
+   1   9.00       48.415
+Step  6/27 (try  3/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 12947616
+Results for functions (index, number of CLBs, elapsed time), average time is     79.000 seconds):
+   0   6.00       78.998
+   1   6.00       79.001
+Step  6/27 (try  4/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 15546960
+Results for functions (index, number of CLBs, elapsed time), average time is    101.747 seconds):
+   0   6.00      101.745
+   1   6.00      101.749
+Step  6/27 (try  5/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 4862088
+Results for functions (index, number of CLBs, elapsed time), average time is     54.156 seconds):
+   0   9.00       54.154
+   1   9.00       54.157
+Step  6/27 (try  6/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 14515776
+Results for functions (index, number of CLBs, elapsed time), average time is     78.809 seconds):
+   0   6.00       78.807
+   1   6.00       78.811
+Step  6/27 (try  7/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 12562704
+Results for functions (index, number of CLBs, elapsed time), average time is     70.362 seconds):
+   0   6.00       70.360
+   1   6.00       70.363
+Step  6/27 (try  8/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 12276792
+Results for functions (index, number of CLBs, elapsed time), average time is    179.973 seconds):
+   0   6.00      179.971
+   1   6.00      179.975
+Step  6/27 (try  9/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 5388768
+Results for functions (index, number of CLBs, elapsed time), average time is     69.256 seconds):
+   0   6.00       69.255
+   1   6.00       69.257
+Step  6/27 (try 10/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 15057504
+Results for functions (index, number of CLBs, elapsed time), average time is     82.403 seconds):
+   0   6.00       82.403
+   1   6.00       82.403
+Step  6/27 (try 11/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 13921776
+Results for functions (index, number of CLBs, elapsed time), average time is     85.589 seconds):
+   0   7.00       85.589
+   1   7.00       85.589
+Step  6/27 (try 12/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 13529736
+Results for functions (index, number of CLBs, elapsed time), average time is     73.163 seconds):
+   0   6.00       73.155
+   1   6.00       73.170
+Step  6/27 (try 13/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 5949504
+Results for functions (index, number of CLBs, elapsed time), average time is     60.470 seconds):
+   0   7.00       60.470
+   1   7.00       60.470
+Step  6/27 (try 14/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 12454992
+Results for functions (index, number of CLBs, elapsed time), average time is     63.696 seconds):
+   0   6.00       63.688
+   1   6.00       63.704
+Step  6/27 (try 15/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 9267984
+Results for functions (index, number of CLBs, elapsed time), average time is     60.470 seconds):
+   0   6.00       60.470
+   1   6.00       60.470
+Step  6/27 (try 16/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 5163840
+Results for functions (index, number of CLBs, elapsed time), average time is     54.261 seconds):
+   0   7.00       54.253
+   1   7.00       54.269
+Step  6/27 (try 17/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 10224720
+Results for functions (index, number of CLBs, elapsed time), average time is     59.486 seconds):
+   0   6.00       59.486
+   1   6.00       59.486
+Step  6/27 (try 18/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 16032456
+Results for functions (index, number of CLBs, elapsed time), average time is     87.651 seconds):
+   0   6.00       87.651
+   1   6.00       87.651
+Step  6/27 (try 19/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 5610528
+Results for functions (index, number of CLBs, elapsed time), average time is     69.109 seconds):
+   0   8.00       69.109
+   1   8.00       69.109
+Step  6/27 (try 20/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 14544288
+Results for functions (index, number of CLBs, elapsed time), average time is     80.551 seconds):
+   0   6.00       80.543
+   1   6.00       80.559
+   
+   
+   
+Step  7/27 (try  1/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 3708568
+Results for functions (index, number of CLBs, elapsed time), average time is     19.964 seconds):
+   0   6.00       19.964
+   1   6.00       19.964
+Step  7/27 (try  2/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 4139704
+Results for functions (index, number of CLBs, elapsed time), average time is     24.916 seconds):
+   0   6.00       24.916
+   1   6.00       24.916
+Step  7/27 (try  3/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 3640704
+Results for functions (index, number of CLBs, elapsed time), average time is     19.605 seconds):
+   0   6.00       19.605
+   1   6.00       19.605
+Step  7/27 (try  4/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 4059864
+Results for functions (index, number of CLBs, elapsed time), average time is     25.884 seconds):
+   0   7.00       25.884
+   1   7.00       25.884
+Step  7/27 (try  5/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 4271440
+Results for functions (index, number of CLBs, elapsed time), average time is     25.830 seconds):
+   0   6.00       25.822
+   1   6.00       25.838
+Step  7/27 (try  6/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 1819848
+Results for functions (index, number of CLBs, elapsed time), average time is     26.424 seconds):
+   0   9.00       26.416
+   1   9.00       26.431
+Step  7/27 (try  7/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 3860264
+Results for functions (index, number of CLBs, elapsed time), average time is     22.292 seconds):
+   0   6.00       22.292
+   1   6.00       22.292
+Step  7/27 (try  8/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 4059864
+Results for functions (index, number of CLBs, elapsed time), average time is     22.729 seconds):
+   0   6.00       22.714
+   1   6.00       22.744
+Step  7/27 (try  9/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 4443096
+Results for functions (index, number of CLBs, elapsed time), average time is     25.471 seconds):
+   0   6.00       25.463
+   1   6.00       25.479
+Step  7/27 (try 10/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 1413168
+Results for functions (index, number of CLBs, elapsed time), average time is     16.340 seconds):
+   0   7.00       16.340
+   1   7.00       16.340
+Step  7/27 (try 11/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 3836312
+Results for functions (index, number of CLBs, elapsed time), average time is     21.760 seconds):
+   0   6.00       21.760
+   1   6.00       21.760
+Step  7/27 (try 12/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 4710560
+Results for functions (index, number of CLBs, elapsed time), average time is     28.572 seconds):
+   0   6.00       28.572
+   1   6.00       28.572
+Step  7/27 (try 13/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 5249480
+Results for functions (index, number of CLBs, elapsed time), average time is     33.226 seconds):
+   0   6.00       33.226
+   1   6.00       33.226
+Step  7/27 (try 14/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 2083432
+Results for functions (index, number of CLBs, elapsed time), average time is     24.666 seconds):
+   0   6.00       24.666
+   1   6.00       24.666
+Step  7/27 (try 15/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 2179648
+Results for functions (index, number of CLBs, elapsed time), average time is     24.948 seconds):
+   0   8.00       24.948
+   1   8.00       24.948
+Step  7/27 (try 16/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 3596792
+Results for functions (index, number of CLBs, elapsed time), average time is     19.168 seconds):
+   0   6.00       19.152
+   1   6.00       19.183
+Step  7/27 (try 17/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 3908168
+Results for functions (index, number of CLBs, elapsed time), average time is     22.900 seconds):
+   0   6.00       22.900
+   1   6.00       22.900
+Step  7/27 (try 18/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 4147688
+Results for functions (index, number of CLBs, elapsed time), average time is     23.136 seconds):
+   0   6.00       23.136
+   1   6.00       23.136
+Step  7/27 (try 19/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 4419144
+Results for functions (index, number of CLBs, elapsed time), average time is     24.463 seconds):
+   0   6.00       24.463
+   1   6.00       24.463
+Step  7/27 (try 20/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 3792400
+Results for functions (index, number of CLBs, elapsed time), average time is     20.401 seconds):
+   0   6.00       20.401
+   1   6.00       20.401
+   
+   
+   
+Step  8/27 (try  1/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 16024296
+Results for functions (index, number of CLBs, elapsed time), average time is    125.095 seconds):
+   0   6.00      125.095
+   1   6.00      125.095
+Step  8/27 (try  2/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 14746448
+Results for functions (index, number of CLBs, elapsed time), average time is     80.020 seconds):
+   0   6.00       80.012
+   1   6.00       80.028
+Step  8/27 (try  3/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 13492960
+Results for functions (index, number of CLBs, elapsed time), average time is     68.406 seconds):
+   0   6.00       68.406
+   1   6.00       68.406
+Step  8/27 (try  4/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 13628688
+Results for functions (index, number of CLBs, elapsed time), average time is     73.608 seconds):
+   0   6.00       73.608
+   1   6.00       73.608
+Step  8/27 (try  5/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 15041856
+Results for functions (index, number of CLBs, elapsed time), average time is     78.122 seconds):
+   0   6.00       78.122
+   1   6.00       78.122
+Step  8/27 (try  6/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 14882176
+Results for functions (index, number of CLBs, elapsed time), average time is     86.105 seconds):
+   0   6.00       86.105
+   1   6.00       86.105
+Step  8/27 (try  7/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 14051840
+Results for functions (index, number of CLBs, elapsed time), average time is     86.136 seconds):
+   0   6.00       86.136
+   1   6.00       86.136
+Step  8/27 (try  8/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 14514912
+Results for functions (index, number of CLBs, elapsed time), average time is     78.138 seconds):
+   0   6.00       78.138
+   1   6.00       78.138
+Step  8/27 (try  9/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 15045848
+Results for functions (index, number of CLBs, elapsed time), average time is     81.325 seconds):
+   0   6.00       81.325
+   1   6.00       81.325
+Step  8/27 (try 10/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 12802344
+Results for functions (index, number of CLBs, elapsed time), average time is     65.243 seconds):
+   0   6.00       65.235
+   1   6.00       65.250
+Step  8/27 (try 11/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 12514920
+Results for functions (index, number of CLBs, elapsed time), average time is     66.109 seconds):
+   0   6.00       66.109
+   1   6.00       66.109
+Step  8/27 (try 12/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 12602744
+Results for functions (index, number of CLBs, elapsed time), average time is     65.048 seconds):
+   0   6.00       65.048
+   1   6.00       65.048
+Step  8/27 (try 13/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 4658664
+Results for functions (index, number of CLBs, elapsed time), average time is     54.839 seconds):
+   0   8.00       54.831
+   1   8.00       54.846
+Step  8/27 (try 14/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 15357224
+Results for functions (index, number of CLBs, elapsed time), average time is     84.074 seconds):
+   0   6.00       84.074
+   1   6.00       84.074
+Step  8/27 (try 15/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 12750448
+Results for functions (index, number of CLBs, elapsed time), average time is     67.429 seconds):
+   0   6.00       67.421
+   1   6.00       67.437
+Step  8/27 (try 16/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 9194424
+Results for functions (index, number of CLBs, elapsed time), average time is    119.535 seconds):
+   0   10.00      119.535
+   1   10.00      119.535
+Step  8/27 (try 17/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 12482984
+Results for functions (index, number of CLBs, elapsed time), average time is     65.406 seconds):
+   0   6.00       65.390
+   1   6.00       65.422
+Step  8/27 (try 18/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 13612720
+Results for functions (index, number of CLBs, elapsed time), average time is     69.726 seconds):
+   0   6.00       69.718
+   1   6.00       69.734
+Step  8/27 (try 19/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 5489000
+Results for functions (index, number of CLBs, elapsed time), average time is     71.577 seconds):
+   0   8.00       71.577
+   1   8.00       71.577
+Step  8/27 (try 20/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 12938072
+Results for functions (index, number of CLBs, elapsed time), average time is     67.999 seconds):
+   0   6.00       67.999
+   1   6.00       67.999
+   
+   
+   
+Step  9/27 (try  1/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 64051640
+Results for functions (index, number of CLBs, elapsed time), average time is    317.019 seconds):
+   0   6.00      317.019
+   1   6.00      317.019
+Step  9/27 (try  2/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 62542664
+Results for functions (index, number of CLBs, elapsed time), average time is    308.138 seconds):
+   0   6.00      308.130
+   1   6.00      308.146
+Step  9/27 (try  3/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 60730296
+Results for functions (index, number of CLBs, elapsed time), average time is    292.400 seconds):
+   0   6.00      292.400
+   1   6.00      292.400
+Step  9/27 (try  4/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 61792168
+Results for functions (index, number of CLBs, elapsed time), average time is    305.741 seconds):
+   0   6.00      305.741
+   1   6.00      305.741
+Step  9/27 (try  5/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 65396944
+Results for functions (index, number of CLBs, elapsed time), average time is    322.534 seconds):
+   0   6.00      322.534
+   1   6.00      322.534
+Step  9/27 (try  6/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 81149376
+Results for functions (index, number of CLBs, elapsed time), average time is    564.492 seconds):
+   0   6.00      564.492
+   1   6.00      564.492
+Step  9/27 (try  7/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 61257240
+Results for functions (index, number of CLBs, elapsed time), average time is    293.494 seconds):
+   0   6.00      293.494
+   1   6.00      293.494
+Step  9/27 (try  8/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 60382992
+Results for functions (index, number of CLBs, elapsed time), average time is    292.462 seconds):
+   0   6.00      292.462
+   1   6.00      292.462
+Step  9/27 (try  9/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 60315128
+Results for functions (index, number of CLBs, elapsed time), average time is    294.853 seconds):
+   0   6.00      294.853
+   1   6.00      294.853
+Step  9/27 (try 10/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 76303088
+Results for functions (index, number of CLBs, elapsed time), average time is    399.422 seconds):
+   0   6.00      399.422
+   1   6.00      399.422
+Step  9/27 (try 11/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 61891968
+Results for functions (index, number of CLBs, elapsed time), average time is    305.006 seconds):
+   0   6.00      305.006
+   1   6.00      305.006
+Step  9/27 (try 12/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 67907912
+Results for functions (index, number of CLBs, elapsed time), average time is    336.890 seconds):
+   0   6.00      336.890
+   1   6.00      336.890
+Step  9/27 (try 13/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 64578584
+Results for functions (index, number of CLBs, elapsed time), average time is    326.689 seconds):
+   0   6.00      326.689
+   1   6.00      326.689
+Step  9/27 (try 14/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 78442800
+Results for functions (index, number of CLBs, elapsed time), average time is    398.781 seconds):
+   0   6.00      398.781
+   1   6.00      398.781
+Step  9/27 (try 15/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 20778360
+Results for functions (index, number of CLBs, elapsed time), average time is    208.217 seconds):
+   0   7.00      208.217
+   1   7.00      208.217
+Step  9/27 (try 16/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 62319112
+Results for functions (index, number of CLBs, elapsed time), average time is    304.671 seconds):
+   0   6.00      304.663
+   1   6.00      304.679
+Step  9/27 (try 17/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 65261216
+Results for functions (index, number of CLBs, elapsed time), average time is    338.725 seconds):
+   0   6.00      338.717
+   1   6.00      338.733
+Step  9/27 (try 18/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 56212832
+Results for functions (index, number of CLBs, elapsed time), average time is    317.628 seconds):
+   0   6.00      317.628
+   1   6.00      317.628
+Step  9/27 (try 19/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 77608472
+Results for functions (index, number of CLBs, elapsed time), average time is    391.658 seconds):
+   0   6.00      391.658
+   1   6.00      391.658
+Step  9/27 (try 20/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 62111528
+Results for functions (index, number of CLBs, elapsed time), average time is    353.566 seconds):
+   0   7.00      353.558
+   1   7.00      353.574
+   
+   
+   
+Step 10/27 (try  1/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 931200
+Results for functions (index, number of CLBs, elapsed time), average time is     31.906 seconds):
+   0   0.00       31.898
+   1   54.00       31.914
+Step 10/27 (try  2/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 1150464
+Results for functions (index, number of CLBs, elapsed time), average time is     45.131 seconds):
+   0   0.00       45.131
+   1   54.00       45.131
+Step 10/27 (try  3/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 1088064
+Results for functions (index, number of CLBs, elapsed time), average time is     43.161 seconds):
+   0   0.00       43.161
+   1   54.00       43.161
+Step 10/27 (try  4/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 948288
+Results for functions (index, number of CLBs, elapsed time), average time is     32.891 seconds):
+   0   0.00       32.883
+   1   54.00       32.899
+Step 10/27 (try  5/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 951168
+Results for functions (index, number of CLBs, elapsed time), average time is     33.711 seconds):
+   0   0.00       33.711
+   1   54.00       33.711
+Step 10/27 (try  6/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 1062912
+Results for functions (index, number of CLBs, elapsed time), average time is     42.443 seconds):
+   0   0.00       42.443
+   1   54.00       42.443
+Step 10/27 (try  7/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 1004352
+Results for functions (index, number of CLBs, elapsed time), average time is     38.163 seconds):
+   0   0.00       38.163
+   1   54.00       38.163
+Step 10/27 (try  8/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 1091520
+Results for functions (index, number of CLBs, elapsed time), average time is     41.053 seconds):
+   0   0.00       41.053
+   1   54.00       41.053
+Step 10/27 (try  9/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 989184
+Results for functions (index, number of CLBs, elapsed time), average time is     34.538 seconds):
+   0   0.00       34.538
+   1   54.00       34.538
+Step 10/27 (try 10/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 1089792
+Results for functions (index, number of CLBs, elapsed time), average time is     40.819 seconds):
+   0   0.00       40.819
+   1   54.00       40.819
+Step 10/27 (try 11/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 278976
+Results for functions (index, number of CLBs, elapsed time), average time is      3.749 seconds):
+   0   9.00        3.749
+   1   9.00        3.749
+Step 10/27 (try 12/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 424512
+Results for functions (index, number of CLBs, elapsed time), average time is      6.225 seconds):
+   0   7.00        6.217
+   1   7.00        6.233
+Step 10/27 (try 13/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 936576
+Results for functions (index, number of CLBs, elapsed time), average time is     34.789 seconds):
+   0   0.00       34.789
+   1   54.00       34.789
+Step 10/27 (try 14/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 955776
+Results for functions (index, number of CLBs, elapsed time), average time is     34.180 seconds):
+   0   0.00       34.180
+   1   54.00       34.180
+Step 10/27 (try 15/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 504960
+Results for functions (index, number of CLBs, elapsed time), average time is      7.685 seconds):
+   0   9.00        7.685
+   1   9.00        7.685
+Step 10/27 (try 16/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 817728
+Results for functions (index, number of CLBs, elapsed time), average time is      5.382 seconds):
+   0   6.00        5.374
+   1   6.00        5.390
+Step 10/27 (try 17/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 1018752
+Results for functions (index, number of CLBs, elapsed time), average time is     36.594 seconds):
+   0   0.00       36.586
+   1   54.00       36.601
+Step 10/27 (try 18/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 1007616
+Results for functions (index, number of CLBs, elapsed time), average time is     36.632 seconds):
+   0   0.00       36.632
+   1   54.00       36.632
+Step 10/27 (try 19/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 822976
+Results for functions (index, number of CLBs, elapsed time), average time is      5.967 seconds):
+   0   7.00        5.967
+   1   7.00        5.967
+Step 10/27 (try 20/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 1141056
+Results for functions (index, number of CLBs, elapsed time), average time is     44.036 seconds):
+   0   0.00       44.036
+   1   54.00       44.036
+   
+   
+   
+Step 11/27 (try  1/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 4254336
+Results for functions (index, number of CLBs, elapsed time), average time is     87.073 seconds):
+   0   20.00       87.073
+   1   20.00       87.073
+Step 11/27 (try  2/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 3796608
+Results for functions (index, number of CLBs, elapsed time), average time is    136.890 seconds):
+   0   0.00      136.890
+   1   54.00      136.890
+Step 11/27 (try  3/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 2340480
+Results for functions (index, number of CLBs, elapsed time), average time is     56.924 seconds):
+   0   14.00       56.924
+   1   14.00       56.924
+Step 11/27 (try  4/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 4215936
+Results for functions (index, number of CLBs, elapsed time), average time is    145.466 seconds):
+   0   0.00      145.466
+   1   54.00      145.466
+Step 11/27 (try  5/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 1708032
+Results for functions (index, number of CLBs, elapsed time), average time is     27.821 seconds):
+   0   13.00       27.821
+   1   13.00       27.821
+Step 11/27 (try  6/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 2997264
+Results for functions (index, number of CLBs, elapsed time), average time is     17.340 seconds):
+   0   6.00       17.340
+   1   6.00       17.340
+Step 11/27 (try  7/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 1877184
+Results for functions (index, number of CLBs, elapsed time), average time is     31.914 seconds):
+   0   11.00       31.914
+   1   11.00       31.914
+Step 11/27 (try  8/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 1262400
+Results for functions (index, number of CLBs, elapsed time), average time is     14.426 seconds):
+   0   6.00       14.418
+   1   6.00       14.434
+Step 11/27 (try  9/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 4263936
+Results for functions (index, number of CLBs, elapsed time), average time is    167.063 seconds):
+   0   0.00      167.055
+   1   54.00      167.071
+Step 11/27 (try 10/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 3146112
+Results for functions (index, number of CLBs, elapsed time), average time is     22.291 seconds):
+   0   7.00       22.291
+   1   7.00       22.291
+Step 11/27 (try 11/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 3165504
+Results for functions (index, number of CLBs, elapsed time), average time is     22.229 seconds):
+   0   7.00       22.229
+   1   7.00       22.229
+Step 11/27 (try 12/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 3167808
+Results for functions (index, number of CLBs, elapsed time), average time is     93.260 seconds):
+   0   32.00       93.260
+   1   32.00       93.260
+Step 11/27 (try 13/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 3825984
+Results for functions (index, number of CLBs, elapsed time), average time is    128.594 seconds):
+   0   0.00      128.594
+   1   54.00      128.594
+Step 11/27 (try 14/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 2955432
+Results for functions (index, number of CLBs, elapsed time), average time is     18.481 seconds):
+   0   6.00       18.481
+   1   6.00       18.481
+Step 11/27 (try 15/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 3349208
+Results for functions (index, number of CLBs, elapsed time), average time is     92.181 seconds):
+   0   16.00       92.181
+   1   16.00       92.181
+Step 11/27 (try 16/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 4408128
+Results for functions (index, number of CLBs, elapsed time), average time is    172.803 seconds):
+   0   0.00      172.803
+   1   54.00      172.803
+Step 11/27 (try 17/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 3914688
+Results for functions (index, number of CLBs, elapsed time), average time is    149.528 seconds):
+   0   0.00      149.528
+   1   54.00      149.528
+Step 11/27 (try 18/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 3599040
+Results for functions (index, number of CLBs, elapsed time), average time is    128.469 seconds):
+   0   0.00      128.469
+   1   54.00      128.469
+Step 11/27 (try 19/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 3385920
+Results for functions (index, number of CLBs, elapsed time), average time is    123.768 seconds):
+   0   0.00      123.768
+   1   54.00      123.768
+Step 11/27 (try 20/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 2020608
+Results for functions (index, number of CLBs, elapsed time), average time is     32.540 seconds):
+   0   15.00       32.540
+   1   15.00       32.540
+   
+   
+   
+Step 12/27 (try  1/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 9655680
+Results for functions (index, number of CLBs, elapsed time), average time is    193.720 seconds):
+   0   17.00      193.720
+   1   17.00      193.720
+Step 12/27 (try  2/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 8626176
+Results for functions (index, number of CLBs, elapsed time), average time is    143.740 seconds):
+   0   15.00      143.732
+   1   15.00      143.748
+Step 12/27 (try  3/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 14641152
+Results for functions (index, number of CLBs, elapsed time), average time is    391.752 seconds):
+   0   22.00      391.752
+   1   22.00      391.752
+Step 12/27 (try  4/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 12685440
+Results for functions (index, number of CLBs, elapsed time), average time is     69.983 seconds):
+   0   6.00       69.983
+   1   6.00       69.983
+Step 12/27 (try  5/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 15322560
+Results for functions (index, number of CLBs, elapsed time), average time is     98.711 seconds):
+   0   6.00       98.711
+   1   6.00       98.711
+Step 12/27 (try  6/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 13226944
+Results for functions (index, number of CLBs, elapsed time), average time is     74.186 seconds):
+   0   6.00       74.186
+   1   6.00       74.186
+Step 12/27 (try  7/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 7036608
+Results for functions (index, number of CLBs, elapsed time), average time is    101.648 seconds):
+   0   9.00      101.648
+   1   9.00      101.648
+Step 12/27 (try  8/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 11118336
+Results for functions (index, number of CLBs, elapsed time), average time is    154.589 seconds):
+   0   8.00      154.589
+   1   8.00      154.589
+Step 12/27 (try  9/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 19011840
+Results for functions (index, number of CLBs, elapsed time), average time is    718.753 seconds):
+   0   0.00      718.753
+   1   54.00      718.753
+Step 12/27 (try 10/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 13502016
+Results for functions (index, number of CLBs, elapsed time), average time is     86.558 seconds):
+   0   7.00       86.558
+   1   7.00       86.558
+Step 12/27 (try 11/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 6887808
+Results for functions (index, number of CLBs, elapsed time), average time is     89.057 seconds):
+   0   7.00       89.057
+   1   7.00       89.057
+Step 12/27 (try 12/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 4883136
+Results for functions (index, number of CLBs, elapsed time), average time is     55.550 seconds):
+   0   6.00       55.550
+   1   6.00       55.550
+Step 12/27 (try 13/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 23319360
+Results for functions (index, number of CLBs, elapsed time), average time is    547.590 seconds):
+   0   19.00      547.590
+   1   19.00      547.590
+Step 12/27 (try 14/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 17885952
+Results for functions (index, number of CLBs, elapsed time), average time is    642.661 seconds):
+   0   28.00      642.661
+   1   28.00      642.661
+Step 12/27 (try 15/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 11753472
+Results for functions (index, number of CLBs, elapsed time), average time is     72.788 seconds):
+   0   7.00       72.780
+   1   7.00       72.796
+Step 12/27 (try 16/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 28097472
+Results for functions (index, number of CLBs, elapsed time), average time is    691.572 seconds):
+   0   15.00      691.572
+   1   15.00      691.572
+Step 12/27 (try 17/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 8650368
+Results for functions (index, number of CLBs, elapsed time), average time is    141.920 seconds):
+   0   13.00      141.920
+   1   13.00      141.920
+Step 12/27 (try 18/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 3969408
+Results for functions (index, number of CLBs, elapsed time), average time is     44.404 seconds):
+   0   6.00       44.396
+   1   6.00       44.411
+Step 12/27 (try 19/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 12756288
+Results for functions (index, number of CLBs, elapsed time), average time is     68.812 seconds):
+   0   6.00       68.812
+   1   6.00       68.812
+Step 12/27 (try 20/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 18868800
+Results for functions (index, number of CLBs, elapsed time), average time is    674.873 seconds):
+   0   0.00      674.873
+   1   54.00      674.873
+   
+   
+   
+Step 13/27 (try  1/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 2696760
+Results for functions (index, number of CLBs, elapsed time), average time is     14.309 seconds):
+   0   6.00       14.309
+   1   6.00       14.309
+Step 13/27 (try  2/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 2618352
+Results for functions (index, number of CLBs, elapsed time), average time is     13.162 seconds):
+   0   6.00       13.154
+   1   6.00       13.169
+Step 13/27 (try  3/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 2586672
+Results for functions (index, number of CLBs, elapsed time), average time is     13.224 seconds):
+   0   6.00       13.216
+   1   6.00       13.232
+Step 13/27 (try  4/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 3103056
+Results for functions (index, number of CLBs, elapsed time), average time is     18.261 seconds):
+   0   6.00       18.261
+   1   6.00       18.261
+Step 13/27 (try  5/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 933768
+Results for functions (index, number of CLBs, elapsed time), average time is      9.763 seconds):
+   0   8.00        9.763
+   1   8.00        9.763
+Step 13/27 (try  6/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 2734776
+Results for functions (index, number of CLBs, elapsed time), average time is     14.731 seconds):
+   0   6.00       14.731
+   1   6.00       14.731
+Step 13/27 (try  7/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 1304424
+Results for functions (index, number of CLBs, elapsed time), average time is     16.528 seconds):
+   0   9.00       16.528
+   1   9.00       16.528
+Step 13/27 (try  8/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 4483504
+Results for functions (index, number of CLBs, elapsed time), average time is    184.003 seconds):
+   0   23.00      184.003
+   1   23.00      184.003
+Step 13/27 (try  9/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 2901096
+Results for functions (index, number of CLBs, elapsed time), average time is     17.449 seconds):
+   0   7.00       17.449
+   1   7.00       17.449
+Step 13/27 (try 10/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 3541032
+Results for functions (index, number of CLBs, elapsed time), average time is     43.677 seconds):
+   0   11.00       43.677
+   1   11.00       43.677
+Step 13/27 (try 11/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 2312640
+Results for functions (index, number of CLBs, elapsed time), average time is     13.521 seconds):
+   0   6.00       13.513
+   1   6.00       13.529
+Step 13/27 (try 12/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 4331952
+Results for functions (index, number of CLBs, elapsed time), average time is    176.177 seconds):
+   0   0.00      176.177
+   1   54.00      176.177
+Step 13/27 (try 13/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 2848824
+Results for functions (index, number of CLBs, elapsed time), average time is     15.637 seconds):
+   0   6.00       15.637
+   1   6.00       15.637
+Step 13/27 (try 14/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 934560
+Results for functions (index, number of CLBs, elapsed time), average time is     10.083 seconds):
+   0   7.00       10.075
+   1   7.00       10.091
+Step 13/27 (try 15/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 3284424
+Results for functions (index, number of CLBs, elapsed time), average time is     48.591 seconds):
+   0   9.00       48.583
+   1   9.00       48.598
+Step 13/27 (try 16/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 2826648
+Results for functions (index, number of CLBs, elapsed time), average time is     15.169 seconds):
+   0   6.00       15.169
+   1   6.00       15.169
+Step 13/27 (try 17/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 2579544
+Results for functions (index, number of CLBs, elapsed time), average time is     12.896 seconds):
+   0   6.00       12.888
+   1   6.00       12.903
+Step 13/27 (try 18/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 2387880
+Results for functions (index, number of CLBs, elapsed time), average time is     29.845 seconds):
+   0   6.00       29.837
+   1   6.00       29.852
+Step 13/27 (try 19/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 1316632
+Results for functions (index, number of CLBs, elapsed time), average time is     15.801 seconds):
+   0   8.00       15.793
+   1   8.00       15.809
+Step 13/27 (try 20/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 2231856
+Results for functions (index, number of CLBs, elapsed time), average time is     41.108 seconds):
+   0   13.00       41.100
+   1   13.00       41.115
+   
+   
+   
+Step 14/27 (try  1/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 9999000
+Results for functions (index, number of CLBs, elapsed time), average time is     49.535 seconds):
+   0   6.00       49.535
+   1   6.00       49.535
+Step 14/27 (try  2/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 11398464
+Results for functions (index, number of CLBs, elapsed time), average time is     67.414 seconds):
+   0   7.00       67.406
+   1   7.00       67.422
+Step 14/27 (try  3/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 10516176
+Results for functions (index, number of CLBs, elapsed time), average time is     57.698 seconds):
+   0   6.00       57.690
+   1   6.00       57.705
+Step 14/27 (try  4/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 3544200
+Results for functions (index, number of CLBs, elapsed time), average time is     38.476 seconds):
+   0   9.00       38.476
+   1   9.00       38.476
+Step 14/27 (try  5/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 10253232
+Results for functions (index, number of CLBs, elapsed time), average time is     52.105 seconds):
+   0   6.00       52.097
+   1   6.00       52.112
+Step 14/27 (try  6/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 10372824
+Results for functions (index, number of CLBs, elapsed time), average time is     52.004 seconds):
+   0   6.00       52.004
+   1   6.00       52.004
+Step 14/27 (try  7/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 10428264
+Results for functions (index, number of CLBs, elapsed time), average time is     51.113 seconds):
+   0   6.00       51.113
+   1   6.00       51.113
+Step 14/27 (try  8/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 13804560
+Results for functions (index, number of CLBs, elapsed time), average time is     81.621 seconds):
+   0   6.00       81.621
+   1   6.00       81.621
+Step 14/27 (try  9/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 12226896
+Results for functions (index, number of CLBs, elapsed time), average time is     69.109 seconds):
+   0   6.00       69.093
+   1   6.00       69.125
+Step 14/27 (try 10/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 8419752
+Results for functions (index, number of CLBs, elapsed time), average time is     56.502 seconds):
+   0   7.00       56.502
+   1   7.00       56.502
+Step 14/27 (try 11/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 10448856
+Results for functions (index, number of CLBs, elapsed time), average time is     52.972 seconds):
+   0   6.00       52.972
+   1   6.00       52.972
+Step 14/27 (try 12/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 9868320
+Results for functions (index, number of CLBs, elapsed time), average time is     49.723 seconds):
+   0   6.00       49.723
+   1   6.00       49.723
+Step 14/27 (try 13/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 8847432
+Results for functions (index, number of CLBs, elapsed time), average time is    110.045 seconds):
+   0   10.00      110.037
+   1   10.00      110.052
+Step 14/27 (try 14/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 9721008
+Results for functions (index, number of CLBs, elapsed time), average time is     47.395 seconds):
+   0   6.00       47.395
+   1   6.00       47.395
+Step 14/27 (try 15/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 10335936
+Results for functions (index, number of CLBs, elapsed time), average time is     53.253 seconds):
+   0   6.00       53.253
+   1   6.00       53.253
+Step 14/27 (try 16/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 7554096
+Results for functions (index, number of CLBs, elapsed time), average time is    111.458 seconds):
+   0   8.00      111.458
+   1   8.00      111.458
+Step 14/27 (try 17/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 9877032
+Results for functions (index, number of CLBs, elapsed time), average time is     48.567 seconds):
+   0   6.00       48.567
+   1   6.00       48.567
+Step 14/27 (try 18/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 4519944
+Results for functions (index, number of CLBs, elapsed time), average time is     57.049 seconds):
+   0   8.00       57.049
+   1   8.00       57.049
+Step 14/27 (try 19/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 10406880
+Results for functions (index, number of CLBs, elapsed time), average time is     51.925 seconds):
+   0   6.00       51.925
+   1   6.00       51.925
+Step 14/27 (try 20/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 7960392
+Results for functions (index, number of CLBs, elapsed time), average time is     46.615 seconds):
+   0   6.00       46.615
+   1   6.00       46.615
+   
+   
+   
+   
+Step 15/27 (try  1/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 33630696
+Results for functions (index, number of CLBs, elapsed time), average time is    530.657 seconds):
+   0   9.00      530.657
+   1   9.00      530.657
+Step 15/27 (try  2/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 16917912
+Results for functions (index, number of CLBs, elapsed time), average time is    178.301 seconds):
+   0   9.00      178.301
+   1   9.00      178.301
+Step 15/27 (try  3/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 48864024
+Results for functions (index, number of CLBs, elapsed time), average time is    243.592 seconds):
+   0   6.00      243.584
+   1   6.00      243.600
+Step 15/27 (try  4/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 48222504
+Results for functions (index, number of CLBs, elapsed time), average time is    231.852 seconds):
+   0   6.00      231.836
+   1   6.00      231.867
+Step 15/27 (try  5/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 48234384
+Results for functions (index, number of CLBs, elapsed time), average time is    233.508 seconds):
+   0   6.00      233.508
+   1   6.00      233.508
+Step 15/27 (try  6/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 58154184
+Results for functions (index, number of CLBs, elapsed time), average time is    296.258 seconds):
+   0   6.00      296.258
+   1   6.00      296.258
+Step 15/27 (try  7/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 48399120
+Results for functions (index, number of CLBs, elapsed time), average time is    232.805 seconds):
+   0   6.00      232.805
+   1   6.00      232.805
+Step 15/27 (try  8/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 49713048
+Results for functions (index, number of CLBs, elapsed time), average time is    242.115 seconds):
+   0   6.00      242.115
+   1   6.00      242.115
+Step 15/27 (try  9/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 20116008
+Results for functions (index, number of CLBs, elapsed time), average time is    193.173 seconds):
+   0   9.00      193.173
+   1   9.00      193.173
+Step 15/27 (try 10/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 58530384
+Results for functions (index, number of CLBs, elapsed time), average time is    307.943 seconds):
+   0   6.00      307.943
+   1   6.00      307.943
+Step 15/27 (try 11/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 19918800
+Results for functions (index, number of CLBs, elapsed time), average time is    202.734 seconds):
+   0   7.00      202.734
+   1   7.00      202.734
+Step 15/27 (try 12/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 18059184
+Results for functions (index, number of CLBs, elapsed time), average time is    193.845 seconds):
+   0   8.00      193.845
+   1   8.00      193.845
+Step 15/27 (try 13/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 19686744
+Results for functions (index, number of CLBs, elapsed time), average time is    222.354 seconds):
+   0   8.00      222.354
+   1   8.00      222.354
+Step 15/27 (try 14/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 16974936
+Results for functions (index, number of CLBs, elapsed time), average time is    176.115 seconds):
+   0   7.00      176.115
+   1   7.00      176.115
+Step 15/27 (try 15/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 19803168
+Results for functions (index, number of CLBs, elapsed time), average time is    199.375 seconds):
+   0   8.00      199.375
+   1   8.00      199.375
+Step 15/27 (try 16/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 49623552
+Results for functions (index, number of CLBs, elapsed time), average time is    241.350 seconds):
+   0   6.00      241.350
+   1   6.00      241.350
+Step 15/27 (try 17/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 52105680
+Results for functions (index, number of CLBs, elapsed time), average time is    254.433 seconds):
+   0   6.00      254.425
+   1   6.00      254.440
+Step 15/27 (try 18/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 55413072
+Results for functions (index, number of CLBs, elapsed time), average time is    372.460 seconds):
+   0   7.00      372.460
+   1   7.00      372.460
+Step 15/27 (try 19/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 16826832
+Results for functions (index, number of CLBs, elapsed time), average time is    178.473 seconds):
+   0   9.00      178.473
+   1   9.00      178.473
+Step 15/27 (try 20/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 55523952
+Results for functions (index, number of CLBs, elapsed time), average time is    272.108 seconds):
+   0   6.00      272.108
+   1   6.00      272.108
+   
+   
+   
+Step 16/27 (try  1/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 12678592
+Results for functions (index, number of CLBs, elapsed time), average time is     65.656 seconds):
+   0   6.00       65.656
+   1   6.00       65.656
+Step 16/27 (try  2/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 4758464
+Results for functions (index, number of CLBs, elapsed time), average time is     51.535 seconds):
+   0   6.00       51.535
+   1   6.00       51.535
+Step 16/27 (try  3/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 13508928
+Results for functions (index, number of CLBs, elapsed time), average time is     71.960 seconds):
+   0   6.00       71.952
+   1   6.00       71.967
+Step 16/27 (try  4/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 13496952
+Results for functions (index, number of CLBs, elapsed time), average time is     71.273 seconds):
+   0   6.00       71.265
+   1   6.00       71.281
+Step 16/27 (try  5/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 13580784
+Results for functions (index, number of CLBs, elapsed time), average time is     70.061 seconds):
+   0   6.00       70.061
+   1   6.00       70.061
+Step 16/27 (try  6/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 12498952
+Results for functions (index, number of CLBs, elapsed time), average time is     64.563 seconds):
+   0   6.00       64.563
+   1   6.00       64.563
+Step 16/27 (try  7/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 12942064
+Results for functions (index, number of CLBs, elapsed time), average time is     66.930 seconds):
+   0   6.00       66.922
+   1   6.00       66.938
+Step 16/27 (try  8/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 12818312
+Results for functions (index, number of CLBs, elapsed time), average time is     65.125 seconds):
+   0   6.00       65.125
+   1   6.00       65.125
+Step 16/27 (try  9/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 14279384
+Results for functions (index, number of CLBs, elapsed time), average time is     80.137 seconds):
+   0   6.00       80.137
+   1   6.00       80.137
+Step 16/27 (try 10/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 13496952
+Results for functions (index, number of CLBs, elapsed time), average time is     70.609 seconds):
+   0   6.00       70.609
+   1   6.00       70.609
+Step 16/27 (try 11/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 13241464
+Results for functions (index, number of CLBs, elapsed time), average time is     67.625 seconds):
+   0   6.00       67.625
+   1   6.00       67.625
+Step 16/27 (try 12/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 13161624
+Results for functions (index, number of CLBs, elapsed time), average time is     68.437 seconds):
+   0   6.00       68.437
+   1   6.00       68.437
+Step 16/27 (try 13/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 4214296
+Results for functions (index, number of CLBs, elapsed time), average time is     47.598 seconds):
+   0   8.00       47.598
+   1   8.00       47.598
+Step 16/27 (try 14/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 14450264
+Results for functions (index, number of CLBs, elapsed time), average time is     90.838 seconds):
+   0   7.00       90.838
+   1   7.00       90.838
+Step 16/27 (try 15/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 13768408
+Results for functions (index, number of CLBs, elapsed time), average time is     71.077 seconds):
+   0   6.00       71.077
+   1   6.00       71.077
+Step 16/27 (try 16/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 14043856
+Results for functions (index, number of CLBs, elapsed time), average time is     73.069 seconds):
+   0   6.00       73.061
+   1   6.00       73.077
+Step 16/27 (try 17/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 13237472
+Results for functions (index, number of CLBs, elapsed time), average time is     67.281 seconds):
+   0   6.00       67.281
+   1   6.00       67.281
+Step 16/27 (try 18/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 15656624
+Results for functions (index, number of CLBs, elapsed time), average time is     86.854 seconds):
+   0   6.00       86.854
+   1   6.00       86.854
+Step 16/27 (try 19/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 15321296
+Results for functions (index, number of CLBs, elapsed time), average time is     93.455 seconds):
+   0   7.00       93.447
+   1   7.00       93.463
+Step 16/27 (try 20/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 13181584
+Results for functions (index, number of CLBs, elapsed time), average time is     68.968 seconds):
+   0   6.00       68.968
+   1   6.00       68.968
+   
+   
+   
+Step 17/27 (try  1/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 52786216
+Results for functions (index, number of CLBs, elapsed time), average time is    264.032 seconds):
+   0   6.00      264.032
+   1   6.00      264.032
+Step 17/27 (try  2/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 54774232
+Results for functions (index, number of CLBs, elapsed time), average time is    273.295 seconds):
+   0   6.00      273.295
+   1   6.00      273.295
+Step 17/27 (try  3/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 48606592
+Results for functions (index, number of CLBs, elapsed time), average time is    234.273 seconds):
+   0   6.00      234.273
+   1   6.00      234.273
+Step 17/27 (try  4/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 54526728
+Results for functions (index, number of CLBs, elapsed time), average time is    269.827 seconds):
+   0   6.00      269.827
+   1   6.00      269.827
+Step 17/27 (try  5/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 53077632
+Results for functions (index, number of CLBs, elapsed time), average time is    282.200 seconds):
+   0   6.00      282.200
+   1   6.00      282.200
+Step 17/27 (try  6/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 68510704
+Results for functions (index, number of CLBs, elapsed time), average time is    427.290 seconds):
+   0   6.00      427.290
+   1   6.00      427.290
+Step 17/27 (try  7/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 56961848
+Results for functions (index, number of CLBs, elapsed time), average time is    285.113 seconds):
+   0   6.00      285.105
+   1   6.00      285.121
+Step 17/27 (try  8/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 55213352
+Results for functions (index, number of CLBs, elapsed time), average time is    274.576 seconds):
+   0   6.00      274.576
+   1   6.00      274.576
+Step 17/27 (try  9/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 49253296
+Results for functions (index, number of CLBs, elapsed time), average time is    238.093 seconds):
+   0   6.00      238.085
+   1   6.00      238.100
+Step 17/27 (try 10/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 54335112
+Results for functions (index, number of CLBs, elapsed time), average time is    275.162 seconds):
+   0   6.00      275.154
+   1   6.00      275.170
+Step 17/27 (try 11/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 38107440
+Results for functions (index, number of CLBs, elapsed time), average time is    247.004 seconds):
+   0   6.00      247.004
+   1   6.00      247.004
+Step 17/27 (try 12/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 17325280
+Results for functions (index, number of CLBs, elapsed time), average time is    180.614 seconds):
+   0   8.00      180.614
+   1   8.00      180.614
+Step 17/27 (try 13/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 21920072
+Results for functions (index, number of CLBs, elapsed time), average time is    217.496 seconds):
+   0   6.00      217.496
+   1   6.00      217.496
+Step 17/27 (try 14/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 48870064
+Results for functions (index, number of CLBs, elapsed time), average time is    240.834 seconds):
+   0   6.00      240.834
+   1   6.00      240.834
+Step 17/27 (try 15/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 49440920
+Results for functions (index, number of CLBs, elapsed time), average time is    245.427 seconds):
+   0   6.00      245.427
+   1   6.00      245.427
+Step 17/27 (try 16/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 49812176
+Results for functions (index, number of CLBs, elapsed time), average time is    241.670 seconds):
+   0   6.00      241.662
+   1   6.00      241.678
+Step 17/27 (try 17/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 49073656
+Results for functions (index, number of CLBs, elapsed time), average time is    238.116 seconds):
+   0   6.00      238.116
+   1   6.00      238.116
+Step 17/27 (try 18/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 57029712
+Results for functions (index, number of CLBs, elapsed time), average time is    287.097 seconds):
+   0   6.00      287.089
+   1   6.00      287.104
+Step 17/27 (try 19/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 54207368
+Results for functions (index, number of CLBs, elapsed time), average time is    268.593 seconds):
+   0   6.00      268.593
+   1   6.00      268.593
+Step 17/27 (try 20/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 49828144
+Results for functions (index, number of CLBs, elapsed time), average time is    242.896 seconds):
+   0   6.00      242.896
+   1   6.00      242.896
+   
+   
+   
+Step 18/27 (try  1/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 185148960
+Results for functions (index, number of CLBs, elapsed time), average time is   1928.422 seconds):
+   0   6.00     1928.422
+   1   6.00     1928.422
+Step 18/27 (try  2/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 267839248
+Results for functions (index, number of CLBs, elapsed time), average time is   1492.376 seconds):
+   0   6.00     1492.368
+   1   6.00     1492.384
+Step 18/27 (try  3/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 275943008
+Results for functions (index, number of CLBs, elapsed time), average time is   1366.992 seconds):
+   0   6.00     1366.992
+   1   6.00     1366.992
+Step 18/27 (try  4/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 279977640
+Results for functions (index, number of CLBs, elapsed time), average time is   1438.954 seconds):
+   0   6.00     1438.945
+   1   6.00     1438.962
+Step 18/27 (try  5/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 256335520
+Results for functions (index, number of CLBs, elapsed time), average time is   1341.003 seconds):
+   0   6.00     1341.001
+   1   6.00     1341.004
+Step 18/27 (try  6/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 278501880
+Results for functions (index, number of CLBs, elapsed time), average time is   1421.611 seconds):
+   0   6.00     1421.610
+   1   6.00     1421.612
+Step 18/27 (try  7/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 240202520
+Results for functions (index, number of CLBs, elapsed time), average time is   1192.923 seconds):
+   0   6.00     1192.921
+   1   6.00     1192.924
+Step 18/27 (try  8/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 279950976
+Results for functions (index, number of CLBs, elapsed time), average time is   1434.971 seconds):
+   0   6.00     1434.970
+   1   6.00     1434.972
+Step 18/27 (try  9/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 273573528
+Results for functions (index, number of CLBs, elapsed time), average time is   1422.529 seconds):
+   0   6.00     1422.526
+   1   6.00     1422.531
+Step 18/27 (try 10/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 260905144
+Results for functions (index, number of CLBs, elapsed time), average time is   1302.847 seconds):
+   0   6.00     1302.845
+   1   6.00     1302.849
+Step 18/27 (try 11/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 235857632
+Results for functions (index, number of CLBs, elapsed time), average time is   1285.012 seconds):
+   0   6.00     1285.010
+   1   6.00     1285.013
+Step 18/27 (try 12/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 240825384
+Results for functions (index, number of CLBs, elapsed time), average time is   1215.636 seconds):
+   0   6.00     1215.634
+   1   6.00     1215.637
+Step 18/27 (try 13/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 172494880
+Results for functions (index, number of CLBs, elapsed time), average time is   1146.705 seconds):
+   0   6.00     1146.703
+   1   6.00     1146.707
+Step 18/27 (try 14/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 276334224
+Results for functions (index, number of CLBs, elapsed time), average time is   1392.957 seconds):
+   0   6.00     1392.955
+   1   6.00     1392.959
+Step 18/27 (try 15/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 266653624
+Results for functions (index, number of CLBs, elapsed time), average time is   1358.126 seconds):
+   0   6.00     1358.124
+   1   6.00     1358.128
+Step 18/27 (try 16/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 240705624
+Results for functions (index, number of CLBs, elapsed time), average time is   1185.282 seconds):
+   0   6.00     1185.280
+   1   6.00     1185.283
+Step 18/27 (try 17/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 245140736
+Results for functions (index, number of CLBs, elapsed time), average time is   1225.704 seconds):
+   0   6.00     1225.702
+   1   6.00     1225.705
+Step 18/27 (try 18/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 274169216
+Results for functions (index, number of CLBs, elapsed time), average time is   1428.095 seconds):
+   0   6.00     1428.093
+   1   6.00     1428.096
+Step 18/27 (try 19/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 244450120
+Results for functions (index, number of CLBs, elapsed time), average time is   1209.632 seconds):
+   0   6.00     1209.630
+   1   6.00     1209.633
+Step 18/27 (try 20/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 262725496
+Results for functions (index, number of CLBs, elapsed time), average time is   1318.903 seconds):
+   0   6.00     1318.901
+   1   6.00     1318.904
+
+Super global operator statistics:
+
+Crossover operator statistics.
+    Times used        Decreased fitness     Increased fitness      Increased best
+SingleBlockCrossover (aligned)
+     374717166      203233326 (54.2365)     42743474 (11.4069)   3697 (0.00098661)
+IntervalBlockCrossover (aligned)
+     749361302      417311306 (55.6889)     96849910 (12.9243)  11597 (0.00154758)
+SingleBlockCrossover (not aligned)
+     187383550      155466186 (82.9668)      7426595 (3.9633)   1868 (0.00099689)
+IntervalBlockCrossover (not aligned)
+     374737362      269656148 (71.9587)     31105493 (8.3006)   4444 (0.00118590)
+SubBlockCrossover (aligned)
+     749440972      408454773 (54.5013)     89493594 (11.9414)  11311 (0.00150926)
+
+
+Mutation operator statistics.
+    Times used        Decreased fitness     Increased fitness      Increased best
+InputFullMutation
+     124910965      101324105 (81.1171)      3438878 (2.7531)   1295 (0.00103674)
+InputSingleMutation
+     499620741      346230341 (69.2986)     12594215 (2.5208)   6516 (0.00130419)
+TableCopyMutation
+     749437499      306533394 (40.9018)     57347935 (7.6521)  11498 (0.00153422)
+TableFullMutation
+      62452390       51209573 (81.9978)      1544125 (2.4725)    581 (0.00093031)
+TableSingleMutation
+     999218757      783839812 (78.4453)     47059010 (4.7096)  15225 (0.00152369)

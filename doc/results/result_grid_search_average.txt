@@ -1,0 +1,90 @@
+Step  1/27 (try  1/20), fails=  1, pop_size=    50, max_gen=   500
+Number of evaluations: 313178
+Results for functions (index, number of CLBs, elapsed time), average time is     11.674 seconds):
+   1   47.65       11.678
+   
+Step  2/27 (try  1/20), fails=  1, pop_size=    50, max_gen=  2000
+Number of evaluations: 1037638
+Results for functions (index, number of CLBs, elapsed time), average time is     35.407 seconds):
+   1   36.90       35.410
+   
+Step  3/27 (try  1/20), fails=  1, pop_size=    50, max_gen= 10000
+Number of evaluations: 3863798
+Results for functions (index, number of CLBs, elapsed time), average time is     90.996 seconds):
+   1   20.70       90.998
+   
+Step  4/27 (try  1/20), fails=  1, pop_size=   200, max_gen=   500
+Number of evaluations: 886704
+Results for functions (index, number of CLBs, elapsed time), average time is     22.375 seconds):
+   1   22.30       22.377
+   
+Step  5/27 (try  1/20), fails=  1, pop_size=   200, max_gen=  2000
+Number of evaluations: 3063891
+Results for functions (index, number of CLBs, elapsed time), average time is     51.026 seconds):
+   1   12.45       51.028
+   
+Step  6/27 (try  1/20), fails=  1, pop_size=   200, max_gen= 10000
+Number of evaluations: 10816027
+Results for functions (index, number of CLBs, elapsed time), average time is     76.181 seconds):
+   1   6.55       76.183
+   
+Step  7/27 (try  1/20), fails=  1, pop_size=  1000, max_gen=   500
+Number of evaluations: 3667007
+Results for functions (index, number of CLBs, elapsed time), average time is     23.635 seconds):
+   1   6.35       23.637
+   
+Step  8/27 (try  1/20), fails=  1, pop_size=  1000, max_gen=  2000
+Number of evaluations: 12791628
+Results for functions (index, number of CLBs, elapsed time), average time is     77.697 seconds):
+   1   6.40       77.700
+   
+Step  9/27 (try  1/20), fails=  1, pop_size=  1000, max_gen= 10000
+Number of evaluations: 63551716
+Results for functions (index, number of CLBs, elapsed time), average time is    333.619 seconds):
+   1   6.10      333.621
+   
+Step 10/27 (try  1/20), fails=  5, pop_size=    50, max_gen=   500
+Number of evaluations: 910793
+Results for functions (index, number of CLBs, elapsed time), average time is     29.953 seconds):
+   1   42.40       29.955
+   
+Step 11/27 (try  1/20), fails=  5, pop_size=    50, max_gen=  2000
+Number of evaluations: 3182730
+Results for functions (index, number of CLBs, elapsed time), average time is     83.453 seconds):
+   1   29.25       83.454
+   
+Step 12/27 (try  1/20), fails=  5, pop_size=    50, max_gen= 10000
+Number of evaluations: 13094940
+Results for functions (index, number of CLBs, elapsed time), average time is    253.143 seconds):
+   1   15.55      253.145
+   
+Step 13/27 (try  1/20), fails=  5, pop_size=   200, max_gen=   500
+Number of evaluations: 2597920
+Results for functions (index, number of CLBs, elapsed time), average time is     36.197 seconds):
+   1   10.45       36.200
+   
+Step 14/27 (try  1/20), fails=  5, pop_size=   200, max_gen=  2000
+Number of evaluations: 9525163
+Results for functions (index, number of CLBs, elapsed time), average time is     60.229 seconds):
+   1   6.65       60.231
+   
+Step 15/27 (try  1/20), fails=  5, pop_size=   200, max_gen= 10000
+Number of evaluations: 37735909
+Results for functions (index, number of CLBs, elapsed time), average time is    250.173 seconds):
+   1   7.05      250.174
+   
+Step 16/27 (try  1/20), fails=  5, pop_size=  1000, max_gen=   500
+Number of evaluations: 12716813
+Results for functions (index, number of CLBs, elapsed time), average time is     70.653 seconds):
+   1   6.20       70.655
+   
+Step 17/27 (try  1/20), fails=  5, pop_size=  1000, max_gen=  2000
+Number of evaluations: 49183027
+Results for functions (index, number of CLBs, elapsed time), average time is    261.680 seconds):
+   1   6.10      261.682
+   
+Step 18/27 (try  1/20), fails=  5, pop_size=  1000, max_gen= 10000
+Number of evaluations: 38138403
+Results for functions (index, number of CLBs, elapsed time), average time is   1355.434 seconds):
+   1   6.00     1355.436
+   

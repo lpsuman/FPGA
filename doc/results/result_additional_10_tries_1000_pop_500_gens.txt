@@ -1,0 +1,63 @@
+Step  1/ 1 (try  1/20), fails= 10, pop_size=  1000, max_gen=   500
+       6.00       63.138
+
+Step  1/ 1 (try  2/20), fails= 10, pop_size=  1000, max_gen=   500
+       6.00       36.963
+
+Step  1/ 1 (try  3/20), fails= 10, pop_size=  1000, max_gen=   500
+       6.00       48.506
+
+Step  1/ 1 (try  4/20), fails= 10, pop_size=  1000, max_gen=   500
+       9.00       27.899
+
+Step  1/ 1 (try  5/20), fails= 10, pop_size=  1000, max_gen=   500
+       7.00       84.307
+
+Step  1/ 1 (try  6/20), fails= 10, pop_size=  1000, max_gen=   500
+       6.00       41.794
+
+Step  1/ 1 (try  7/20), fails= 10, pop_size=  1000, max_gen=   500
+       6.00       34.617
+
+Step  1/ 1 (try  8/20), fails= 10, pop_size=  1000, max_gen=   500
+       6.00       39.017
+
+Step  1/ 1 (try  9/20), fails= 10, pop_size=  1000, max_gen=   500
+       6.00       35.389
+
+Step  1/ 1 (try 10/20), fails= 10, pop_size=  1000, max_gen=   500
+       6.00       38.045
+
+Step  1/ 1 (try 11/20), fails= 10, pop_size=  1000, max_gen=   500
+       6.00       57.584
+
+Step  1/ 1 (try 12/20), fails= 10, pop_size=  1000, max_gen=   500
+       6.00       35.819
+
+Step  1/ 1 (try 13/20), fails= 10, pop_size=  1000, max_gen=   500
+       6.00       57.364
+
+Step  1/ 1 (try 14/20), fails= 10, pop_size=  1000, max_gen=   500
+       7.00       91.417
+
+Step  1/ 1 (try 15/20), fails= 10, pop_size=  1000, max_gen=   500
+       6.00       33.560
+
+Step  1/ 1 (try 16/20), fails= 10, pop_size=  1000, max_gen=   500
+       6.00       52.181
+
+Step  1/ 1 (try 17/20), fails= 10, pop_size=  1000, max_gen=   500
+       6.00       60.152
+
+Step  1/ 1 (try 18/20), fails= 10, pop_size=  1000, max_gen=   500
+       6.00       34.083
+
+Step  1/ 1 (try 19/20), fails= 10, pop_size=  1000, max_gen=   500
+       6.00       63.219
+
+Step  1/ 1 (try 20/20), fails= 10, pop_size=  1000, max_gen=   500
+       6.00       37.094
+
+Total running time in seconds: 972.023
+Step  1/ 1 (try  1/20), fails= 10, pop_size=  1000, max_gen=   500
+       6.25       48.607

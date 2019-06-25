@@ -1,0 +1,67 @@
+Step  1/ 1 (try  1/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       14.705
+
+Step  1/ 1 (try  2/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       13.568
+
+Step  1/ 1 (try  3/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       11.705
+
+Step  1/ 1 (try  4/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       14.024
+
+Step  1/ 1 (try  5/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       10.510
+
+Step  1/ 1 (try  6/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       10.618
+
+Step  1/ 1 (try  7/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00        9.646
+
+Step  1/ 1 (try  8/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       11.183
+
+Step  1/ 1 (try  9/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00        9.371
+
+Step  1/ 1 (try 10/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       13.505
+
+Step  1/ 1 (try 11/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       14.608
+
+Step  1/ 1 (try 12/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       11.757
+
+Step  1/ 1 (try 13/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       14.036
+
+Step  1/ 1 (try 14/20), fails=  1, pop_size=  1000, max_gen=   500
+       8.00       12.651
+
+Step  1/ 1 (try 15/20), fails=  1, pop_size=  1000, max_gen=   500
+       9.00       21.317
+
+Step  1/ 1 (try 16/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       16.179
+
+Step  1/ 1 (try 17/20), fails=  1, pop_size=  1000, max_gen=   500
+       8.00       12.475
+
+Step  1/ 1 (try 18/20), fails=  1, pop_size=  1000, max_gen=   500
+       8.00       15.489
+
+Step  1/ 1 (try 19/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       12.666
+
+Step  1/ 1 (try 20/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.00       15.165
+
+Total running time in seconds: 265.087
+Step  1/ 1 (try  1/20), fails=  1, pop_size=  1000, max_gen=   500
+       6.45       13.259
+
+Total elapsed time: 265.292
+
+Process finished with exit code 0

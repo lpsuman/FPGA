@@ -20,31 +20,35 @@
 
 \begin{document}
 
-% TODO: Navedite broj rada.
 \thesisnumber{2020}
 
-% TODO: Navedite naslov rada.
 \title{Izvedba vektorskih Booleovih funkcija temeljena na konfigurabilnim logičkim blokovima}
 
-% TODO: Navedite svoje ime i prezime.
 \author{Luka Suman}
 
 \maketitle
 
 \includepdf{img/izvornik.pdf}
 
-% Dodavanje zahvale ili prazne stranice. Ako ne želite dodati zahvalu, naredbu ostavite radi prazne stranice.
 \zahvala{}
 
 \tableofcontents
 
 \chapter{Uvod} \label{chapter:introduction}
 
-%TODO
+Primjena uređaja FPGA u brzom je porastu u zadnjem desetljeću jer predstavljaju odličan izbor za proizvodnju digitalnih uređaja. Najviše se koriste u informacijskim sustavima te automobilskoj industriji. Najčešće su temeljeni na konfigurabilnim logičkim blokovima (CLB) koji su ostvareni pomoću preglednih tablica (LUT). Predmet razmatranja jest problem izvedbe vektorskih Booleovih funkcija temeljene na konfigurabilnim logičkim blokovima. Pritom je zanimljiv slučaj kada je potrebno izvesti Booleovu funkciju od $m$ varijabli koristeći $n$-ulazne CLB-ove ako je $n$ manji od $m$. Tada je potrebno iskoristiti više takvih blokova. Nadalje, istovremenom izvedbom više Booleovih funkcija postoji mogućnost za smanjenjem ukupnog broja iskorištenih blokova, u kojem bi slučaju krajnje rješenje sadržavalo blokove koji se koriste za izračun više Booleovih funkcija. Pronalazak minimalnog broja potrebnih blokova predstavlja složeni optimizacijski problem kojeg se želi riješiti.
+
+U poglavlju \ref{chapter:problem} objašnjena su teorijska znanja potrebna za razumijevanje zadanog problema. Prolazi se kroz osnove Booleove algebre i digitalne logike. Objašnjeni su svi pojmovi koji se koriste u daljnjim poglavljima. Definiran je pojam Booleovih funkcija te su navedeni različiti načini njihove reprezentacije. Objašnjen je postupak parsiranja Booleovih izraza. Objašnjeni su osnovni digitalni sklopovi koji su potrebni za razumijevanje potpunih binarnih zbrajala i konfigurabilnih logičkih blokova. Dan je kratak pregled tehnologije uređaja FPGA. Na kraju je dan opis problema dekompozicije Booleovih funkcija.
+
+U poglavlju \ref{chapter:impl} detaljno je objašnjena implementacija algoritma koji uspješno rješava zadani problem. Objašnjen je pojam heuristika te su navedeni primjeri heuristika koje se koriste u implementaciji. Objašnjene su modifikacije genetskog algoritma koji predstavlja osnovu implementirane heuristike. Navedeni su genetski operatori i parametri algoritma koje je potrebno optimizirati. Prikazana je implementacija grafičkog korisničkog sučelja. Dane su osnovne upute za korištenje sučelja te su detaljno objašnjene sve njegove mogućnosti.
+
+U poglavlju \ref{chapter:results} prikazani su rezultati testiranja algoritma. Prvi dio prikazuje rezultate optimizacije parametara algoritma. Objašnjen je postupak koji je korišten za postupnu optimizaciju većeg broja parametara kroz nekoliko koraka. Drugi dio prikazuje rezultate testiranja algoritma na primjeru potpunih binarnih zbrajala. Pokazuje se kako rezultati potvrđuju očekivanja i pretpostavke iznesene u poglavlju \ref{chapter:impl}.
+
+U poglavlju \ref{chapter:conclusion} izveden je kratak zaključak. Dan je osvrt na postignuto rješenje navođenjem prednosti i nedostataka implementirane heuristike i grafičkog korisničkog sučelja. Na kraju su ukratko navedene mogućnosti za nadogradnju i buduća istraživanja.
 
 \chapter{Opis problema} \label{chapter:problem}
 
-Ovo poglavlje sadrži teoriju potrebnu za razumijevanje problema koji se razmatra u ostatku ovog rada. Odjeljak \ref{sec:bool-func} objašnjava Booleove funkcije. Prvo se definira pojam Booleove funkcije. Zatim slijedi kratko objašnjenje binarnog prikaza brojeva. Potom slijede $3$ načina prikaza Booleove funkcije: tablica istinitosti, kanonski oblik te Booleov izraz. Odjeljak \ref{sec:fpga} objašnjava FPGA uređaje. Navedene su osnove digitalnih sklopova koji se koriste u FPGA tehnologiji uz kratak pregled osnovnih svojstava. Na kraju je dana definicija problema u odjeljku \ref{sec:decomposition}.
+Ovo poglavlje sadrži teoriju potrebnu za razumijevanje problema koji se razmatra u ostatku ovog rada. Odjeljak \ref{sec:bool-func} objašnjava Booleove funkcije. Prvo se definira pojam Booleove funkcije. Zatim slijedi kratko objašnjenje binarnog prikaza brojeva. Potom slijede $3$ načina prikaza Booleove funkcije: tablica istinitosti, kanonski oblik te Booleov izraz. Odjeljak \ref{sec:fpga} objašnjava uređaje FPGA. Navedene su osnove digitalnih sklopova koji se koriste u tehnologiji FPGA uz kratak pregled osnovnih svojstava. Na kraju je dana definicija problema u odjeljku \ref{sec:decomposition}.
 
 %%%%%
 %%%%%
@@ -93,7 +97,6 @@ U tablici \ref{tab:16funcs} mogu se vidjeti sve $16$ Booleove funkcije dviju var
 	\centering
 	\caption{Tablice istinitosti za svih 16 Booleovih funkcija dviju varijabli}
 	\label{tab:16funcs}
-	%	\setlength{\tabcolsep}{12pt}
 	\begin{tabular}{|cc|cccccccccccccccc|}
 		\hline
 		$A$ & $B$ & $F_{0}$ & $F_{1}$ & $F_{2}$ & $F_{3}$ & $F_{4}$ & $F_{5}$ & $F_{6}$ & $F_{7}$ & $F_{8}$ & $F_{9}$ & $F_{10}$ & $F_{11}$ & $F_{12}$ & $F_{13}$ & $F_{14}$ & $F_{15}$ \\
@@ -198,7 +201,7 @@ U nastavku je prikazan skup produkcijskih pravila gramatike koja opisuje Booleov
 	\bnfprod{faktor}{\bnfts{L\_ZAGRADA} \bnfsp \bnfpn{izraz} \bnfsp \bnfts{D\_ZAGRADA}}
 \end{bnf}
 
-Gramatika se sastoji od skupa produkcijskih pravila koja su definirana kao uređeni parovi $(\alpha, \beta) \in R$. Svako produkcijsko pravilo sastoji se od lijeve strane $\alpha \in V$ i desne strane $\beta \in (V \cup \Sigma)^{*}$ odvojenih znakom $\models$. Znak $^{*}$ predstavlja Kleeneov unarni operator ponavljanja. Dani primjer gramatike ima $5$ produkcijskih pravila. Zovu se produkcijska pravila jer opisuju načine na koje nezavršni znakovi proizvode završne znakove. Nezavršni znakovi $v \in V$ označeni su s kosim zagradama ($\bnfpn{...}$), a sve ostalo su završni znakovi. Dani primjer gramatike sadrži $3$ nezavršnih znakova $\{ \bnfpn{izraz}, \bnfpn{član}, \bnfpn{faktor} \}$ i $6$ završnih znakova $\{ \bnfts{OR}, \bnfts{AND}, \bnftd{varijabla}, \bnfts{NOT}, \bnfts{L\_ZAGRADA}, \bnfts{D\_ZAGRADA} \}$. Završni znak $\bnftd{varijabla}$ jest zapravo samo opis te je zamjenjiv s bilo kojom varijablom (A, B, C, itd.). Završni znakovi $\{\bnfts{L\_ZAGRADA}, \bnfts{D\_ZAGRADA}\}$ predstavljaju zagrade koje se mogu koristiti u Booleovim izrazima. Prioritet operatora zadan je implicitno. Operator s većim prioritetom generira se nakon operatora s manjim prioritetom te se nalazi "dublje" u produkcijskim pravilima. Formalna gramatika može sadržavati i prazan znak $\bnfes$, ali on se u danom primjeru ne koristi. Gramatika je kontekstno neovisna jer se na lijevoj strani svakog produkcijskog pravila nalazi samo jedan nezavršni znak. Kaže se da rezultat završnih znakova ne ovisi o kontekstu tj.~o susjednim znakovima. U tablici \ref{tab:grammar_generate} prikazan je postupak generiranja već navedenog izraza "A AND (NOT B OR C)".
+Gramatika se sastoji od skupa produkcijskih pravila koja su definirana kao uređeni parovi $(\alpha, \beta) \in R$. Svako produkcijsko pravilo sastoji se od lijeve strane $\alpha \in V$ i desne strane $\beta \in (V \cup \Sigma)^{*}$ odvojenih znakom $\models$. Znak $^{*}$ predstavlja Kleeneov unarni operator ponavljanja. Dani primjer gramatike ima $5$ produkcijskih pravila. Zovu se produkcijska pravila jer opisuju načine na koje nezavršni znakovi proizvode završne znakove. Nezavršni znakovi $v \in V$ označeni su s kosim zagradama ($\bnfpn{...}$), a sve ostalo su završni znakovi. Dani primjer gramatike sadrži $3$ nezavršnih znakova $\{ \bnfpn{izraz}, \bnfpn{član}, \bnfpn{faktor} \}$ i $6$ završnih znakova $\{ \bnfts{OR}, \bnfts{AND}, \bnftd{varijabla}, \bnfts{NOT}, \bnfts{L\_ZAGRADA}, \bnfts{D\_ZAGRADA} \}$. Završni znak $\bnftd{varijabla}$ jest zapravo samo opis te je zamjenjiv s bilo kojom varijablom (A, B, C, itd.). Završni znakovi $\{\bnfts{L\_ZAGRADA}, \bnfts{D\_ZAGRADA}\}$ predstavljaju zagrade koje se mogu koristiti u Booleovim izrazima. Prioritet operatora zadan je implicitno. Operator s većim prioritetom generira se nakon operatora s manjim prioritetom te se nalazi "dublje" u produkcijskim pravilima. Formalna gramatika može sadržavati i prazan znak $\bnfes$, ali on se u danom primjeru ne koristi. Gramatika je kontekstno neovisna jer se na lijevoj strani svakog produkcijskog pravila nalazi samo jedan nezavršni znak. Kaže se da rezultat završnih znakova ne ovisi o kontekstu tj.~ne ovisi o susjednim znakovima. U tablici \ref{tab:grammar_generate} prikazan je postupak generiranja već navedenog izraza "A AND (NOT B OR C)".
 
 \begin{table}[htb]
 	\centering
@@ -274,9 +277,9 @@ Za pretvorbu Booleovog izraza (koji se u računalo unosi kao niz znakova) korist
 %%%%%
 %%%%%
 
-\section{FPGA uređaji} \label{sec:fpga}
+\section{Uređaji FPGA} \label{sec:fpga}
 
-1985.~godine američka tehnološka kompanija \textit{Xilinx} proizvela je prvi komercijalni FPGA uređaj (engl.~\textit{field-programmable gate array}). FPGA je integrirani čip kojeg korisnik programira nakon što je čip već proizveden. Čip je moguće programirati više puta što je iznimno korisno. Primjena FPGA uređaja u brzom je porastu u zadnjem desetljeću te postoji velik izbor gotovih FPGA uređaja koji se mogu kupiti komercijalnim putem te odmah koristiti.
+1985.~godine američka tehnološka kompanija \textit{Xilinx} proizvela je prvi komercijalni uređaj FPGA (engl.~\textit{field-programmable gate array}). Uređaj FPGA je integrirani čip kojeg korisnik programira nakon što je čip već proizveden. Čip je moguće programirati više puta što je iznimno korisno. Primjena uređaja FPGA u brzom je porastu u zadnjem desetljeću te postoji velik izbor gotovih uređaja koji se mogu kupiti komercijalnim putem i odmah koristiti.
 
 \subsection{Osnovni digitalni sklopovi}
 
@@ -348,7 +351,7 @@ Za pohranu podataka u digitalnim sklopovima koriste se sklopke (engl.~\textit{la
 \end{figure*}
 \fi
 
-D-sklopka može mijenjati svoj izlaz sve dok je signal E upaljen. To nastaje u problem u sekvencijskim digitalnim sklopovima (poput FPGA) gdje izlaz sklopke može negativno utjecati na njen ulaz. Zato se koristi signal takta (engl.~\textit{clock}) preko kojeg se sinkroniziraju sve promjene stanja. Kombinacijom $2$ D-sklopke i $1$ invertera nastaje \textbf{D-bistabil} (engl.~\textit{D flip-flop}) koji je prikazan na slici \ref{fig:D-flip-flop}. Promjena izlaza Q moguća je samo kada signal CLK prelazi iz $1$ u $0$. Tada se izlaz Y iz glavne (lijeve) D-sklopke upisuje u izlaz desne D-sklopke.
+D-sklopka može mijenjati svoj izlaz sve dok je signal E upaljen. To nastaje u problem u sekvencijskim digitalnim sklopovima (poput uređaja FPGA) gdje izlaz sklopke može negativno utjecati na njen ulaz. Zato se koristi signal takta (engl.~\textit{clock}) preko kojeg se sinkroniziraju sve promjene stanja. Kombinacijom $2$ D-sklopke i $1$ invertera nastaje \textbf{D-bistabil} (engl.~\textit{D flip-flop}) koji je prikazan na slici \ref{fig:D-flip-flop}. Promjena izlaza Q moguća je samo kada signal CLK prelazi iz $1$ u $0$. Tada se izlaz Y iz glavne (lijeve) D-sklopke upisuje u izlaz desne D-sklopke.
 %
 \begin{align}
 	Y(n+1) &= (CLK \cdot D) + (\overline{CLK} \cdot Y(n)) \\
@@ -431,7 +434,7 @@ Slaganjem više potpunih binarnih zbrajala u niz moguće je ostvariti zbrajanje 
 
 \subsection{Konfigurabilni logički blokovi} \label{subsec:clb}
 
-Konfigurabilni logički blokovi (engl.~\textit{configurable logic block}, CLB) predstavljaju osnovnu komponentu unutar FPGA. Na slici \ref{fig:clb} prikazana je osnovna struktura CLB-a s $3$ ulaza. Blok se sastoji od \textbf{pregledne tablice} (engl.~\textit{look-up table}, LUT), multipleksera tablice (na slici lijevo), D-bistabila te izlaznog multipleksera (na slici desno) s pripadnom tablicom koja sadrži samo jednu vrijednost $S$. CLB ima $3$ funkcijska ulaza $\{A, B, C\}$, ulaz za sinkronizacijski takt $CLK$ te izlaz $Y$. CLB može implementirati bilo koju Booleovu funkciju s istim ili manjim brojem ulaza. To se jednostavno postiže upisom tablice istinitosti željene Booleove funkcije u preglednu tablicu. Za realizaciju pregledne tablice koristi se memorija. Najčešće se koristi SRAM (engl.~\textit{static random-access memory}) zbog svoje brzine i jednostavnosti sklopovlja. Na primjer, DRAM (engl.~\textit{dynamic RAM}) koja se koristi za glavnu memoriju u računalima puno je jeftinija za isti kapacitet, ali zahtijeva posebno sklopovlje za osvježavanje \cite{book:memory}. D-bistabil i izlazni multiplekser koriste se za izbor načina rada. Upisivanjem vrijednosti $0$ u $S$, na izlaz se direktno dovodi izlaz iz funkcijskog multipleksera. Kaže se da CLB radi u asinkronom načinu rada bez obzira na sinkronizacijski takt $CLK$. Upisivanjem vrijednosti $1$ u $S$, na izlaz se dovodi podatak spremljen u D-bistabilu (njegov izlaz $Q$). Pritom se u D-bistabil sprema vrijednost izlaza funkcijskog multipleksera na negativan brid od $CLK$ (kada prijeđe iz $1$ u $0$). Kaže se da CLB radi u sinkronom načinu rada i izlaz $Y$ mijenja se samo pri promjeni takta $CLK$. Kod CLB-ova s više ulaza često se pregledna tablica i pripadajući multiplekser implementiraju s više manjih komponenti.
+Konfigurabilni logički blokovi (engl.~\textit{configurable logic block}, CLB) predstavljaju osnovnu komponentu unutar uređaja FPGA. Na slici \ref{fig:clb} prikazana je osnovna struktura CLB-a s $3$ ulaza. Blok se sastoji od \textbf{pregledne tablice} (engl.~\textit{look-up table}, LUT), multipleksera tablice (na slici lijevo), D-bistabila te izlaznog multipleksera (na slici desno) s pripadnom tablicom koja sadrži samo jednu vrijednost $S$. CLB ima $3$ funkcijska ulaza $\{A, B, C\}$, ulaz za sinkronizacijski takt $CLK$ te izlaz $Y$. CLB može implementirati bilo koju Booleovu funkciju s istim ili manjim brojem ulaza. To se jednostavno postiže upisom tablice istinitosti željene Booleove funkcije u preglednu tablicu. Za realizaciju pregledne tablice koristi se memorija. Najčešće se koristi SRAM (engl.~\textit{static random-access memory}) zbog svoje brzine i jednostavnosti sklopovlja. Na primjer, DRAM (engl.~\textit{dynamic RAM}) koja se koristi za glavnu memoriju u računalima puno je jeftinija za isti kapacitet, ali zahtijeva posebno sklopovlje za osvježavanje \cite{book:memory}. D-bistabil i izlazni multiplekser koriste se za izbor načina rada. Upisivanjem vrijednosti $0$ u $S$, na izlaz se direktno dovodi izlaz iz funkcijskog multipleksera. Kaže se da CLB radi u asinkronom načinu rada bez obzira na sinkronizacijski takt $CLK$. Upisivanjem vrijednosti $1$ u $S$, na izlaz se dovodi podatak spremljen u D-bistabilu (njegov izlaz $Q$). Pritom se u D-bistabil sprema vrijednost izlaza funkcijskog multipleksera na negativan brid od $CLK$ (kada prijeđe iz $1$ u $0$). Kaže se da CLB radi u sinkronom načinu rada i izlaz $Y$ mijenja se samo pri promjeni takta $CLK$. Kod CLB-ova s više ulaza često se pregledna tablica i pripadajući multiplekser implementiraju s više manjih komponenti.
 
 \begin{figure}[htb]
 	\centering
@@ -444,25 +447,25 @@ Za izvršavanje algoritama postoje dvije krajnje mogućnosti \cite{article:recon
 
 Druga mogućnost jest izrada posebnog digitalnog sustava koji će implementirati željenu funkcionalnost tj.~algoritam. Konkretno, može se koristiti ASIC (engl.~\textit{application-specific integrated circuit}). To je integrirani krug koji se dizajnira i proizvodi za specifičnu namjenu. Današnji ASIC čipovi sadrži stotine milijuna logičkih vrata te može sadržavati procesore, memoriju i slične blokove složenih funkcionalnosti. U tom slučaju koristi se naziv "sustav na čipu" (engl.~\textit{system-on-chip}). Najveća prednost ASIC-a jest u brzini izvođenja. Direktno korištenje logičkih vrata za potrebe izvođenja algoritma puno je brže od izvođenja na mikroprocesorima. Razlog tome jest što mikroprocesor slijedno odrađuje instrukcije te troši vrijeme na dekodiranje svake instrukcije i pristup memoriji. Iako moderna računala imaju nekoliko jezgri od kojih svaka može odrađivati više instrukcija odjednom, mogućnost paralelizacije na razini logičkih vrata puno je veća. Unatoč tome, korištenje posebnih čipova ima veliki nedostatak. Naime, razvoj i cijena pokretanja proizvodnje su jako skupi te mogu doseći milijune američkih dolara. Zato se danas većinom koriste samo za veliku serijsku proizvodnju. Primjer uspješne primjene ASIC-a su uređaji za "rudarenje" kriptovaluta poput Bitcoina. Takvi uređaji su puno učinkovitiji od alternativa poput grafičkih kartica (engl.~\textit{graphics processing unit}, GPU) jer troše puno manje struje koja predstavlja najveći trošak.
 
-FPGA tehnologija služi kao srednja opcija između brzine ASIC-a i univerzalnosti mikroprocesora. Na slici \ref{fig:fpga_island} prikazana je osnovna struktura FPGA uređaja, tzv.~otočni raspored (engl.~\textit{island style}). Elementi su poslagani u dvodimenzionalno polje, a između ćelija se prostiru linije za prijenos signala. Ovo je najčešće korišteni raspored jer nudi visok stupanj fleksibilnosti. Postoje i drugi rasporedi kao što je raspodjela elemenata u stupce između kojih se nalaze sabirnice. Međutim, praktična primjena je pokazala da je dobra povezanost elemenata ključna za performanse uređaja. Zato se danas većina prostora na FPGA čipu koristi za resurse povezivanja (oko $60\%$ pa čak i do $90\%$).
+Tehnologija FPGA služi kao srednja opcija između brzine ASIC-a i univerzalnosti mikroprocesora. Na slici \ref{fig:fpga_island} prikazana je osnovna struktura uređaja FPGA, tzv.~otočni raspored (engl.~\textit{island style}). Elementi su poslagani u dvodimenzionalno polje, a između ćelija se prostiru linije za prijenos signala. Ovo je najčešće korišteni raspored jer nudi visok stupanj fleksibilnosti. Postoje i drugi rasporedi kao što je raspodjela elemenata u stupce između kojih se nalaze sabirnice. Međutim, praktična primjena je pokazala da je dobra povezanost elemenata ključna za performanse uređaja. Zato se danas većina prostora na čipu FPGA koristi za resurse povezivanja (oko $60\%$ pa čak i do $90\%$).
 
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=0.8\textwidth]{img/fpga_island_notext.jpg}
-	\caption{Raspored elemenata u FPGA}
+	\caption{Raspored elemenata u uređaju FPGA}
 	\label{fig:fpga_island}
 \end{figure}
 
-FPGA uređaj na periferiji sadrži veći broj \textbf{ulazno-izlaznih blokova} (engl.~\textit{input-output block}, IOB) koji služe za komunikaciju uređaja s okolinom. Blok se konfigurira kao ulazni, izlazni ili oboje istovremeno. Ulazi i izlazi se sastoje od jedne binarne vrijednosti, ali je moguće po potrebi koristiti više blokova. FPGA radi na određenom taktu koji određuje vrijeme koje je potrebno da uređaj pročita ulaze te izračuna potrebne izlaze. Radna frekvencija ovisi o najduljem putu između međusobno povezanih elemenata. Za konfiguraciju FPGA potrebno je upisati podatke u memorijske elemente te aktivirati ili ugasiti poluvodičke elemente koji služe kao osigurači (engl.~\textit{fuse}). Na programskoj razini to odgovara stvaranju posebne datoteke koja sadrži niz bitova (engl.~\textit{stream}). Konfiguracija je brza i izvodi se prije svakog pokretanja uređaja. Napredniji uređaju podržavaju rekonfiguraciju tj.~konfiguraciju dijela (ili cijelog) uređaja tijekom rada.
+Uređaj FPGA na periferiji sadrži veći broj \textbf{ulazno-izlaznih blokova} (engl.~\textit{input-output block}, IOB) koji služe za komunikaciju uređaja s okolinom. Blok se konfigurira kao ulazni, izlazni ili oboje istovremeno. Ulazi i izlazi se sastoje od jedne binarne vrijednosti, ali je moguće po potrebi koristiti više blokova. Uređaj FPGA radi na određenom taktu koji određuje vrijeme koje je potrebno da uređaj pročita ulaze te izračuna potrebne izlaze. Radna frekvencija ovisi o najduljem putu između međusobno povezanih elemenata. Za konfiguraciju uređaja FPGA potrebno je upisati podatke u memorijske elemente te aktivirati ili ugasiti poluvodičke elemente koji služe kao osigurači (engl.~\textit{fuse}). Na programskoj razini to odgovara stvaranju posebne datoteke koja sadrži niz bitova (engl.~\textit{stream}). Konfiguracija je brza i izvodi se prije svakog pokretanja uređaja. Napredniji uređaju podržavaju rekonfiguraciju tj.~konfiguraciju dijela (ili cijelog) uređaja tijekom rada.
 
-Signali unutar FPGA putuju po spojnim linijama koje su raspoređene u mrežu po redcima i stupcima. Na raskrižjima se nalaze \textbf{prespojne kutije} (engl.~\textit{switch box}, SB) koje služe za preusmjeravanje signala. Postoji više usporednih spojnih linija između susjednih prespojnih kutija. Uređaji često sadrže spojne linije raznih duljina koje mogu "preskakati" određeni broj spojnih kutija. Razlog njihova korištenja jest ubrzanje rada uređaja. Naime, spojevi unutar prespojnih kutija imaju puno veće kašnjenje u odnosu na neprekinuti vodič. Često postoji potreba za globalnim signalima unutar uređaja za što se koriste spojne linije koje se protežu cijelom širinom ili duljinom uređaja. U gornjem desnom dijelu slike \ref{fig:fpga_island} mogu se vidjeti moguće kombinacije prespajanja unutar jedne spojne kutije. Spojne linije označene su brojevima $\{0, 1, ..., n-1\}$. Svaka linija može biti spojena s $3$ pripadajuće linije na ostale $3$ strane spojne kutije. Broj mogućih spojeva bez preskakivanja prikazan je izrazom \ref{eq:sb-combinations} što za spojnu kutija sa slike \ref{fig:fpga_island} iznosi $6n = 24$ \cite{article:switch_box}. Korištenjem preskakivanja spojnih linija, broj mogućnosti može se smanjiti na $n$. Pritom broj mogućih konfiguracija prespojne kutije drastično pada.
+Signali unutar uređaja FPGA putuju po spojnim linijama koje su raspoređene u mrežu po redcima i stupcima. Na raskrižjima se nalaze \textbf{prespojne kutije} (engl.~\textit{switch box}, SB) koje služe za preusmjeravanje signala. Postoji više usporednih spojnih linija između susjednih prespojnih kutija. Uređaji često sadrže spojne linije raznih duljina koje mogu "preskakati" određeni broj spojnih kutija. Razlog njihova korištenja jest ubrzanje rada uređaja. Naime, spojevi unutar prespojnih kutija imaju puno veće kašnjenje u odnosu na neprekinuti vodič. Često postoji potreba za globalnim signalima unutar uređaja za što se koriste spojne linije koje se protežu cijelom širinom ili duljinom uređaja. U gornjem desnom dijelu slike \ref{fig:fpga_island} mogu se vidjeti moguće kombinacije prespajanja unutar jedne spojne kutije. Spojne linije označene su brojevima $\{0, 1, ..., n-1\}$. Svaka linija može biti spojena s $3$ pripadajuće linije na ostale $3$ strane spojne kutije. Broj mogućih spojeva bez preskakivanja prikazan je izrazom \ref{eq:sb-combinations} što za spojnu kutija sa slike \ref{fig:fpga_island} iznosi $6n = 24$ \cite{article:switch_box}. Korištenjem preskakivanja spojnih linija, broj mogućnosti može se smanjiti na $n$. Pritom broj mogućih konfiguracija prespojne kutije drastično pada.
 %
 \begin{gather}
 	\label{eq:sb-combinations}
 	\frac{broj\_strana * broj\_linija * (broj\_strana - 1)}{dupli\_bridovi} = \frac{4 * n * 3}{2} = 6n
 \end{gather}
 
-Unutar mreže prespojnih elemenata nalaze se logički elementi, a najčešće su to konfigurabilni logički blokovi. Osnovna struktura CLB-a objašnjena je u odjeljku \ref{subsec:clb}. Svaki logički element okružen je spojnim blokovima (engl.~\textit{connector block}, CB). Oni omogućavaju povezivanje logičkog elementa sa spojnim linijama. Često postoje direktne linije između susjednih logičkih elemenata kako bi se rasteretile spojne linije i smanjilo kašnjenje signala. Moderni FPGA uređaji poput Xilinx Virtex 7 sadrže razne gotove (ne konfigurabilne) elemente uz CLB-ove. Uređaj je podijeljen na više jednakih područja od kojih se svaki sastoji od većeg broja CLB-ova i više dodatnih elemenata. Najčešće su to razne vrste memorije. Iako je moguće pomoću kaskade CLB-ova konfigurirati memoriju proizvoljne veličine (uz dovoljan broj blokova), dodavanjem konkretnih memorijskih elemenata troši se manje prostora na uređaju te se postiže brži pristup podacima. Još jedna često korištena funkcija koja se teže implementira CLB-ovima jest operacija množenja. Raspodjelom takvih elemenata po uređaju osigurava se kraći put do CLB-ova. Dodatne mogućnosti uključuju integrirane mikroprocesore, kontrolnu logiku (npr. FIFO) i ispravljanje pogrešaka (engl.~\textit{error correcting code}, ECC).
+Unutar mreže prespojnih elemenata nalaze se logički elementi, a najčešće su to konfigurabilni logički blokovi. Osnovna struktura CLB-a objašnjena je u odjeljku \ref{subsec:clb}. Svaki logički element okružen je spojnim blokovima (engl.~\textit{connector block}, CB). Oni omogućavaju povezivanje logičkog elementa sa spojnim linijama. Često postoje direktne linije između susjednih logičkih elemenata kako bi se rasteretile spojne linije i smanjilo kašnjenje signala. Moderni uređaji FPGA poput Xilinx Virtex 7 sadrže razne gotove (ne konfigurabilne) elemente uz CLB-ove. Uređaj je podijeljen na više jednakih područja od kojih se svaki sastoji od većeg broja CLB-ova i više dodatnih elemenata. Najčešće su to razne vrste memorije. Iako je moguće pomoću kaskade CLB-ova konfigurirati memoriju proizvoljne veličine (uz dovoljan broj blokova), dodavanjem konkretnih memorijskih elemenata troši se manje prostora na uređaju te se postiže brži pristup podacima. Još jedna često korištena funkcija koja se teže implementira CLB-ovima jest operacija množenja. Raspodjelom takvih elemenata po uređaju osigurava se kraći put do CLB-ova. Dodatne mogućnosti uključuju integrirane mikroprocesore, kontrolnu logiku (npr. FIFO) i ispravljanje pogrešaka (engl.~\textit{error correcting code}, ECC).
 
 %%%%%
 %%%%%
@@ -470,7 +473,7 @@ Unutar mreže prespojnih elemenata nalaze se logički elementi, a najčešće su
 
 \section{Problem dekompozicije} \label{sec:decomposition}
 
-Problem koji se ovdje razmatra jest kako skup Booleovih funkcija tj.~vektorsku Booleovu funkciju (u nastavku Booleov vektor) implementirati u tehnologiji FPGA korištenjem što manjeg broja konfigurabilnih logičkih blokova (CLB). Motivacija je jednostavna, manjim brojem CLB-ova troši se manje resursa i uređaj radi brže. Problem nastaje kada je broj ulaza $n$ Booleove funkcije veći od broja ulaza $m$ CLB-a pri čemu je onda potrebno iskoristiti više CLB-ova za njenu implementaciju. Kako CLB s $m$ ulaza može implementirati bilo koju Booleovu funkciju s $m$ ulaza onda je problem istovjetan problemu pronalaska podfunkcija $f_{i}$ koje čine dekompoziciju glavne funkcije $f$. Pritom je potrebno prepoznati zajedničke podfunkcije ako one postoje te ih zasebno (bez ponavljanja) realizirati pomoću CLB-ova. Krajnje rješenje sadržavalo bi CLB-ove koji se koriste u izračunu više funkcija. Time bi se povećala iskoristivost blokova i smanjila redundantnost u izračunu izlaza.
+Problem koji se ovdje razmatra jest kako skup Booleovih funkcija tj.~vektorsku Booleovu funkciju (u nastavku Booleov vektor) implementirati u tehnologiji FPGA korištenjem što manjeg broja konfigurabilnih logičkih blokova (CLB). Motivacija za rješavanje zadanog problema inspirirana je postojećim rješenjima \cite{article:related}. Cilj je jednostavan, manjim brojem CLB-ova troši se manje resursa i uređaj radi brže. Problem nastaje kada je broj ulaza $n$ Booleove funkcije veći od broja ulaza $m$ CLB-a pri čemu je onda potrebno iskoristiti više CLB-ova za njenu implementaciju. Kako CLB s $m$ ulaza može implementirati bilo koju Booleovu funkciju s $m$ ulaza onda je problem istovjetan problemu pronalaska podfunkcija $f_{i}$ koje čine dekompoziciju glavne funkcije $f$. Pritom je potrebno prepoznati zajedničke podfunkcije ako one postoje te ih zasebno (bez ponavljanja) realizirati pomoću CLB-ova. Krajnje rješenje sadržavalo bi CLB-ove koji se koriste u izračunu više funkcija. Time bi se povećala iskoristivost blokova i smanjila redundantnost u izračunu izlaza.
 
 Navedeni problem je kombinatorički složen te ne postoje algoritmi koji garantiraju optimalno rješenje u razumnom vremenu. Moguće je konstruirati rješenje koristeći "grubu silu" (engl.~\textit{brute force}) i iterirati kroz sve moguće kombinacije CLB-ova, ali ovakav pristup nije praktičan. Razlog tome jest \textbf{kombinatorička eksplozija} tj.~broj kombinacija raste eksponencijalno u odnosu na broj blokova (oznaka $n$). Eksponencijalna vremenska ovisnost još se označava s $O(c^{n})$ (engl.~\textit{big O notation}) gdje je $c$ konstanta (najčešće $2$). U sklopu računarske znanosti takvi se problemi nazivaju \textbf{NP problemi} (engl.~\textit{nondeterministic polynomial time}). To su problemi koji se teško računaju za razliku od problema čija se rješenja mogu izračunati u polinomijalnom vremenu (oznaka P). Rješavanje ovakvih problema svodi se na korištenje algoritama koji nalaze što bolje rješenje u razumnom vremenu. Ne postoji garancija da je dobiveno rješenje optimalno, ali zato je često vrlo blizu optimalnom rješenju.
 
@@ -608,7 +611,7 @@ Za \textbf{genotip} se koristi niz cijelih brojeva. Prvi dio genotipa predstavlj
 	\label{fig:genotype}
 \end{figure}
 
-Naravno, navedeni genotip nije jedini mogući. Korištenje niza cijelih brojeva predstavlja kompromis između učinkovitosti i jednostavnosti. Intuitivnije jest korištenje strukture nalik stablu, gdje bi čvorovi sadržavali podatke o pojedinim CLB-ovima. Nedostatak jest veća računarska složenost jer se koristi više memorije. U cilju manje potrošnje memorije, moguće je koristiti niz bitova. Najveća ušteda ostvarila bi se za $m<5$. Na primjer, genotip na slici \ref{fig:genotype} koristi $10*32=320$ bitova memorije. Dovoljno je koristiti $3$ bita za ulaze ($M+n=3+3=6<2^{3}=8$) i $4$ bita za pregledne tablice. Rezultat bi bio $n*(m*3+4)+N*(3)=3*(2*3+4)+1*(3)=33$ bitova što donosi potrošnju od $33/320=10.3\%$. Razlika je velika, ali njena iskoristivost uvelike ovisi o programskom jeziku u kojem je genetski algoritam implementiran. Naime, programski jezik C podržava rad s pokazivačima (engl.\textit{pointer}) i bitovnim maskama (engl.\textit{bit mask}), dok programski jezik Java za niz bitova koristi nizove koji su duljine u višekratnicima broja $64$ (razred pod nazivom BitSet).
+Naravno, navedeni genotip nije jedini mogući. Korištenje niza cijelih brojeva predstavlja kompromis između učinkovitosti i jednostavnosti. Intuitivnije jest korištenje strukture nalik stablu, gdje bi čvorovi sadržavali podatke o pojedinim CLB-ovima. Nedostatak jest veća računarska složenost jer se koristi više memorije. U cilju manje potrošnje memorije, moguće je koristiti niz bitova. Najveća ušteda ostvarila bi se za $m<5$. Na primjer, genotip na slici \ref{fig:genotype} koristi $10*32=320$ bitova memorije. Dovoljno je koristiti $3$ bita za ulaze ($M+n=3+3=6<2^{3}=8$) i $4$ bita za pregledne tablice. Rezultat bi bio $n*(m*3+4)+N*(3)=3*(2*3+4)+1*(3)=33$ bitova što donosi potrošnju od $33/320=10.3\%$. Razlika je velika, ali njena iskoristivost uvelike ovisi o programskom jeziku u kojem je genetski algoritam implementiran. Naime, programski jezik C podržava rad s pokazivačima (engl.~\textit{pointer}) i bitovnim maskama (engl.~\textit{bit mask}), dok programski jezik Java za niz bitova koristi nizove koji su duljine u višekratnicima broja $64$ (razred pod nazivom BitSet).
 
 Izvedena je \textbf{paralelizacija genetskog algoritma} korištenjem skupa dretvi (engl.~\textit{thread pool}). Broj dretvi se odabire prije pokretanja algoritma. Na slici \ref{fig:threads} prikazan je dijagram koji prikazuje mehanizam usklađivanja skupa dretvi. Dretve čekaju u istovremenom redu čekanja (engl.~\textit{concurrent queue}). Genetski algoritam proslijedi populaciju u red čekanja, nakon čega se dretve "probude". Dretve paralelno izvode genetske operatore i pune novu populaciju. Koordinacija punjenja izvedena je korištenjem atomičkih operacija "usporedbe i zamjene" (engl.~\textit{compare and swap}, CAS). To su operacije koje su podržane na razini instrukcijskog seta procesora. CAS operacija garantira da će dretva pročitati trenutnu vrijednost varijable te da će istovremena promjena pročitane varijable biti odmah vidljiva svim ostalim dretvama. Prekid rada dretvi ostvaruje se na jedan od $2$ moguća načina. Normalan način zaustavljanja dretvi jest ubacivanje posebnih markera u red čekanja (engl.~\textit{red pill}). Dretva prepoznaje marker i prestaje s radom. Iznimno, omogućeno je zaustavljanje dretvi usred računanja sljedeće populacije.
 
@@ -635,7 +638,7 @@ Zadnji mehanizam odnosi se na minimalan broj uzastopnih stagnirajućih generacij
 
 \subsection{Implementirana heuristika} \label{subsec:solver}
 
-Modificirani genetski algoritam iz prethodnog odjeljka koristi se kao podprogram u sklopu glavnog programa koji će se ovdje nazivati "rješavač". Zajedno oni čine konačnu implementaciju heuristike. Zadaća rješavača jest \textbf{procijeniti najmanji potreban broj CLB-ova} za ostvarenje zadanog Booleovog vektora. Postoje $3$ postupno složenija načina procjene. Osnovna procjena zasniva se na rješavanju korištenjem "grube sile" (engl.~\textit{brute force}). Ovaj postupak garantira pronalazak rješenja u vrlo kratkom vremenu. Dobiveno rješenje najčešće je loše kvalitete (velik broj CLB-ova), ali katkad je prihvatljivo. Ideja postupka jest stvaranje "\textbf{multipleksorskog stabla}" kao što je prikazano na slici \ref{fig:brute}. Stablo se sastoji od $7$ CLB-ova. Skroz desni CLB predstavlja korijen stabla i njegov izlaz jednak je Booleovoj funkciji $F$. Gornji ulaz ($A$ za korijenski CLB) jest adresni ulaz, a preostala $2$ ulaza su podatkovni. Funkcionalnost multipleksera postiže se posebno konstruiranom preglednom tablicom s vrijednostima $00110101$. Ako je $A=0$ onda se koristi prva polovica tablice. Nadalje, ako je drugi ulaz (izlaz iz CLB-a $\#9$) jednak $0$ onda je izlaz $0$ bez obzira na treći ulaz. Slično je i za ostale kombinacije ulaza. CLB-ovi $\#9$ i $\#10$ rade po istom principu. Do razlike dolazi u listovima stabla tj.~u krajnjim čvorovima stabla. Pregledne tablice CLB-ova $\#5-\#8$ redom sadrže dijelove tablice istinitosti Booleove funkcije $F$. Tablica istinitosti očita se od gore prema dolje. Pregledne tablice označene žutom bojom sadrže jednake vrijednosti. Kako CLB-ovi $\#7$ i $\#8$ imaju i iste ulaze, njihovi izlazi su jednaki za sve kombinacije ulaza. Algoritam, nakon izgradnje stabla, simulira sve kombinacije ulaza te prepoznaje CLB-ove s jednakim izlazima. Nepotrebni CLB-ovi se uklanjaju kao što je prikazano iscrtkanim linijama. CLB-ovi $\#8$ i $\#10$ prestaju biti dio rješenja. Naravno, tablica istinitosti namjerno je odabrana tako da se ponavljanju nizovi $01001001$ na kraju.
+Modificirani genetski algoritam iz prethodnog odjeljka koristi se kao podprogram u sklopu glavnog programa koji će se ovdje nazivati "rješavač". Zajedno oni čine konačnu implementaciju heuristike. Zadaća rješavača jest \textbf{procijeniti najmanji potreban broj CLB-ova} za ostvarenje zadanog Booleovog vektora. Postoje $3$ postupno složenija načina procjene. Osnovna procjena zasniva se na rješavanju korištenjem "grube sile" (engl.~\textit{brute force}). Ovaj postupak garantira pronalazak rješenja u vrlo kratkom vremenu. Dobiveno rješenje najčešće je loše kvalitete (velik broj CLB-ova), ali katkad je prihvatljivo. Ideja postupka jest stvaranje "\textbf{multipleksorskog stabla}" kao što je prikazano na slici \ref{fig:brute}. Stablo se sastoji od $7$ CLB-ova. Skroz desni CLB predstavlja korijen stabla i njegov izlaz jednak je Booleovoj funkciji $F$. Gornji ulaz ($A$ za korijenski CLB) jest adresni ulaz, a preostala $2$ ulaza su podatkovni ulazi. Funkcionalnost multipleksera postiže se posebno konstruiranom preglednom tablicom s vrijednostima $00110101$. Ako je $A=0$ onda se koristi prva polovica tablice. Nadalje, ako je drugi ulaz (izlaz iz CLB-a $\#9$) jednak $0$ onda je izlaz $0$ bez obzira na treći ulaz. Slično je i za ostale kombinacije ulaza. CLB-ovi $\#9$ i $\#10$ rade po istom principu. Do razlike dolazi u listovima stabla tj.~u krajnjim čvorovima stabla. Pregledne tablice CLB-ova $\#5-\#8$ redom sadrže dijelove tablice istinitosti Booleove funkcije $F$. Tablica istinitosti očita se od gore prema dolje. Pregledne tablice označene žutom bojom sadrže jednake vrijednosti. Kako CLB-ovi $\#7$ i $\#8$ imaju i iste ulaze, njihovi izlazi su jednaki za sve kombinacije ulaza. Algoritam, nakon izgradnje stabla, simulira sve kombinacije ulaza te prepoznaje CLB-ove s jednakim izlazima. Nepotrebni CLB-ovi se uklanjaju kao što je prikazano iscrtkanim linijama. CLB-ovi $\#8$ i $\#10$ prestaju biti dio rješenja. Naravno, tablica istinitosti namjerno je odabrana tako da se ponavljanju nizovi $01001001$ na kraju.
 
 \begin{figure}[htb]
 	\centering
@@ -659,7 +662,7 @@ Treći postupak rješavanja sličan je prethodnom, ali uz sljedeće razlike. Gen
 
 U svrhu optimizacije genetskih operatora ugrađen je mehanizam praćenja "\textbf{statistike operatora}". Praćenje statistike usporava algoritam pa nije preporučeno ako nije potrebno. Razlog usporavanja proizlazi iz potrebe za dvostrukom evaluacijom djece u genetskom algoritmu. Pamti se kvaliteta jedinke prije svakog korištenja genetskog operatora. Zatim se uspoređuje s dobivenom jedinkom te se ažurira statistika za taj operator ovisno o razlici kvalitete. To znači da se evaluacija radi i nakon križanja i nakon mutacije (inače se radi samo nakon zadnjeg operatora). Prate se $4$ vrijednosti za svaku vrstu operatora: broj korištenja, broj pogoršanja jedinke, broj poboljšanja jedinke te broj puta koliko je operator uspio poboljšati najbolje rješenje u generaciji. Statistika se akumulira te se ispisuje na kraju algoritma.
 
-Na kraju je potrebno spomenuti $5$ dodatnih parametara koji se koriste u drugom i trećem postupku (ne koriste pri izgradnji stabla). Prvi parametar jest \textbf{maksimalan broj pokušaja} tj. broj pokretanja GA u slučaju da GA ne uspije način rješenje isprve. Naime, GA često ovisi o kvaliteti početne populacije te se može dogoditi da ne uspije naći rješenje u prvom pokušaju. Kako se ipak ne bi trošilo previše vremena s nerješivim brojem CLB-ova (procjena je premalena), koristi se još $3$ dodatna parametra. Prvi od njih jest maksimalan broj uzastopnih pokušaja koji su rezultirali s rješenjem ispod određenog praga. Prag poprima jednu od $2$ moguće vrijednosti ovisno o tome je li GA dosad našao ispravno rješenje. Ako rješenje postoji onda je pretpostavljena vrijednost praga je $prag_{1}=0.97$, a inače iznosi $prag_{2}=0.93$.
+Na kraju je potrebno spomenuti $5$ dodatnih parametara koji se koriste u drugom i trećem postupku (ne koriste pri izgradnji stabla). Prvi parametar jest \textbf{maksimalan broj pokušaja} tj.~broj pokretanja GA u slučaju da GA ne uspije način rješenje isprve. Naime, GA često ovisi o kvaliteti početne populacije te se može dogoditi da ne uspije naći rješenje u prvom pokušaju. Kako se ipak ne bi trošilo previše vremena s nerješivim brojem CLB-ova (procjena je premalena), koristi se još $3$ dodatna parametra. Prvi od njih jest maksimalan broj uzastopnih pokušaja koji su rezultirali s rješenjem ispod određenog praga. Prag poprima jednu od $2$ moguće vrijednosti ovisno o tome je li GA dosad našao ispravno rješenje. Ako rješenje postoji onda je pretpostavljena vrijednost praga je $prag_{1}=0.97$, a inače iznosi $prag_{2}=0.93$.
 
 %%%%%
 %%%%%
@@ -667,7 +670,7 @@ Na kraju je potrebno spomenuti $5$ dodatnih parametara koji se koriste u drugom 
 
 \section{Grafičko sučelje} \label{sec:gui}
 
-Kako bi se razvijeni algoritam mogao lakše koristiti, napravljeno je grafičko sučelje (engl.~\textit{graphical user interface}, GUI) korištenjem Swing-a. Sučelje podržava lokalizaciju i nudi izbor između $2$ jezika: \textbf{engleski i hrvatski}. Na slici \ref{fig:gui} može se vidjeti izgled glavnog prozora GUI-a. Veličina prozora je promjenjiva uz automatsko skaliranje većine komponenti. Na vrhu okvira prozora (engl.~\textit{frame}) jest datotečni put (engl.~\textit{file path}) trenutne datoteke nakon kojeg slijedi naziv aplikacije JFPGA. Odmah ispod nalazi se izbornik s alatima (engl.~\textit{menu}) u kojem se može pristupiti svim funkcionalnostima sučelja. Ispod izbornika nalazi se prostor s karticama (engl.~\textit{tab}). Svaka kartica sadrži ime datoteke trenutne sjednice (engl.~\textit{session}), ikonu spremljenosti podataka te gumb za zatvaranje sjednice. Sjednice omogućuju istovremeno korištenje različitih skupova podataka uz korištenje samo jednog prozora. Ova mogućnost jest opcionalna i u većini slučajeva dovoljno je koristiti $1$ sjednicu. Sučelje sjednice okvirno je podijeljeno u $5$ stupaca. Prvi stupac koristi se za unos i prikaz Booleovih funkcija. Drugi stupac sadrži popis Booleovih funkcija (i popratne alate). Treći stupac sadrži popis Booleovih vektora i popratne alate. Četvrti stupac koristi se za unos parametara i pokretanje algoritma. Peti i zadnji stupac sadrži generirana rješenja. Osnovan opis komponenti dan je u odjeljku \ref{subsec:osnove_koristenja}, dok se detaljan opis svih komponenti nalazi u odjeljku \ref{subsec:dodatne_mogucnosti}.
+Kako bi se razvijeni algoritam mogao lakše koristiti, napravljeno je grafičko sučelje (engl.~\textit{graphical user interface}, GUI) korištenjem Swing-a. Sučelje podržava lokalizaciju i nudi izbor između $2$ jezika: \textbf{engleski i hrvatski}. Na slici \ref{fig:gui} može se vidjeti izgled glavnog prozora GUI-a. Veličina prozora je promjenjiva uz automatsko skaliranje većine komponenti. Na vrhu okvira prozora (engl.~\textit{frame}) jest datotečni put (engl.~\textit{file path}) trenutne datoteke nakon kojeg slijedi naziv aplikacije "JFPGA". Odmah ispod nalazi se izbornik s alatima (engl.~\textit{menu}) u kojem se može pristupiti svim funkcionalnostima sučelja. Ispod izbornika nalazi se prostor s karticama (engl.~\textit{tab}). Svaka kartica sadrži ime datoteke trenutne sjednice (engl.~\textit{session}), ikonu spremljenosti podataka te gumb za zatvaranje sjednice. Sjednice omogućuju istovremeno korištenje različitih skupova podataka uz korištenje samo jednog prozora. Ova mogućnost jest opcionalna i u većini slučajeva dovoljno je koristiti $1$ sjednicu. Sučelje sjednice okvirno je podijeljeno u $5$ stupaca. Prvi stupac koristi se za unos i prikaz Booleovih funkcija. Drugi stupac sadrži popis Booleovih funkcija (i popratne alate). Treći stupac sadrži popis Booleovih vektora i popratne alate. Četvrti stupac koristi se za unos parametara i pokretanje algoritma. Peti i zadnji stupac sadrži generirana rješenja. Osnovan opis komponenti dan je u odjeljku \ref{subsec:osnove_koristenja}, dok se detaljan opis svih komponenti nalazi u odjeljku \ref{subsec:dodatne_mogucnosti}.
 
 \begin{figure}[htb]
 	\centering
@@ -711,7 +714,7 @@ U odjeljku \ref{subsec:osnove_koristenja} spomenut je samo osnovni način unosa 
 
 Omogućeno je i \textbf{nasumično generiranje} funkcija i vektora pomoću gumba s nazivima "Generiraj nasumično". Pritom se koriste padajući izbornici (engl.~\textit{combo box}) koji se nalaze ispod pripadnih gumba. Generiranje nasumične funkcije zahtijeva broj ulaza, dok generiranje nasumičnog vektora zahtijeva broj ulaza svake funkcije te broj funkcija. Kroz izbornik "Vektori" dostupan je još jedan način generiranja Booleovog vektora. Omogućeno je \textbf{generiranje rješivog vektora}. Klikom na opciju "Generiraj rješiv" prikaže se dijalog za unos broja CLB-ova. Klikom na "OK" stvori se vektor koji je sigurno rješiv sa zadanim brojem CLB-ova. Ostali parametri vektora te broj ulaza CLB-ova uzimaju se iz sučelja.
 
-Gornji dio četvrtog stupca sadrži različite parametre algoritma. Osim broja ulaza CLB-ova, mogu se mijenjati sljedeći parametri algoritma za rješavanje: način rada, veličina populacije, broj generacija, broj dretvi, veličina elitizma, vjerojatnost mutacije te  prag kaljenja. Dodatno, mogu se mijenjati i sljedeći parametri rješavača: broj pokušaja, broj pokušaja ispod pragova, prvi i drugi prag, pojedinačno rješavanje, ispisivanje samo najboljih rješenja, korištenje statistike operatora te ispisivanje samo globalne statistike. Svi brojčani ulazi su ograničeni te se unos nedozvoljenih vrijednosti poništava. Dodatna funkcionalnost algoritma jest spremanje trenutnog rješenja u slučaju da se izvođenje algoritma prekine pomoću gumba s nazivom %TODO
+Gornji dio četvrtog stupca sadrži različite parametre algoritma. Osim broja ulaza CLB-ova, mogu se mijenjati sljedeći parametri algoritma za rješavanje: način rada, veličina populacije, broj generacija, broj dretvi, veličina elitizma, vjerojatnost mutacije te  prag kaljenja. Dodatno, mogu se mijenjati i sljedeći parametri rješavača: broj pokušaja, broj pokušaja ispod pragova, prvi i drugi prag, pojedinačno rješavanje, ispisivanje samo najboljih rješenja, korištenje statistike operatora te ispisivanje samo globalne statistike. Svi brojčani ulazi su ograničeni te se unos nedozvoljenih vrijednosti poništava. Dodatna funkcionalnost algoritma jest spremanje trenutnog rješenja u slučaju da se izvođenje algoritma prekine pomoću gumba s nazivom "Zaustavi".
 
 Zadnja funkcionalnost odnosi se na rješenja koja su ostvarena pomoću $2$-ulaznih CLB-ova. U tom slučaju moguć je \textbf{ispis Booleovog izraza iz rješenja}. Odabirom prikladnog rješenje omogućava se korištenje gumba s nazivom "Generiraj izraz" koji se nalazi na vrhu petog stupca. Postupak generiranja izraza rekurzivno prolazi kroz CLB-ove i mapiranjem prevodi pregledne tablice u $16$ osnovnih Booleovih izraza s $2$ varijable. Pritom se mogu zadati $3$ različita mapiranja koja su dostupna u padajućem izborniku odmah ispod gumba "Generiraj izraz". Osnovno mapiranje ("NOT\_AND\_OR) koristi samo osnovne operatore. Naprednije mapiranje ("NOT\_AND\_OR\_XOR") uključuje i operator XOR. Pretpostavljeno mapiranje koristi svih $16$ operatora. Ova funkcionalnost proširena je i na tekstualni ispis rješenja čiji CLB-ovi imaju $2$ ulaza. Dodaje se ispis pripadnog Booleovog izraza nakon ispisa pregledne tablice svakog CLB-a.
 
@@ -776,9 +779,9 @@ Rezultati pretrage po rešetci prikazani su u tablici \ref{tab:grid-search-resul
 	\end{tabular}
 \end{table}
 
-Uspješnost pronalaska optimalnog rješenja raste s povećanjem vrijednosti parametara. Isto take raste i vrijeme izvođenja. Povećanjem broja pokušaja povećava se i uspješnot algoritma što potvrđuje ovisnost o kvaliteti početne populacije. Nedostatak jest $3.32/5=66.4\%$ veće prosječno vrijeme izvođenja. Najveći utjecaj ima veličina populacije. Algoritam s $50$ jedinki rijetko nalazi optimalno rješenje. Najbolji rezultati postižu se s veličinom populacije $1000$ (ali je $85.4\%$ sporije). Broj generacija isto povećava uspješnost, ali usporava rad za $74.5\%$. Zadnja konfiguracija (indeks $18$) postiže $100\%$-tnu (u $20$ testiranja) uspješnost u pronalasku optimalnog rješenja, ali zahtijeva daleko najviše vremena. Najzanimljivija konfiguracija jest ona koja postiže dobar omjer između uspješnosti i vremena izvođenja. Razlog je jednostavan: algoritam se pokrene više puta te se uzme rješenje s najamnjim brojem blokova. Konfiguracije s indeksima $7$ i $16$ predstavljaju najbolje kandidate za daljnje testiranje. Konfiguracija $7$ je $57$ puta brža i statistički je vrlo malo vjerojatno da ne nađe optimalno rješenje (za problem korišten u testiranju) u istom vremenu izvođenja.
+Uspješnost pronalaska optimalnog rješenja raste s povećanjem vrijednosti parametara. Isto take raste i vrijeme izvođenja. Povećanjem broja pokušaja povećava se i uspješnost algoritma što potvrđuje ovisnost o kvaliteti početne populacije. Nedostatak jest $3.32/5=66.4\%$ veće prosječno vrijeme izvođenja. Najveći utjecaj ima veličina populacije. Algoritam s $50$ jedinki rijetko nalazi optimalno rješenje. Najbolji rezultati postižu se s veličinom populacije $1000$ (ali je $85.4\%$ sporije). Broj generacija isto povećava uspješnost, ali usporava rad za $74.5\%$. Zadnja konfiguracija (indeks $18$) postiže $100\%$-tnu (u $20$ testiranja) uspješnost u pronalasku optimalnog rješenja, ali zahtijeva daleko najviše vremena. Najzanimljivija konfiguracija jest ona koja postiže dobar omjer između uspješnosti i vremena izvođenja. Razlog je jednostavan: algoritam se pokrene više puta te se uzme rješenje s najmanjim brojem blokova. Konfiguracije s indeksima $7$ i $16$ predstavljaju najbolje kandidate za daljnje testiranje. Konfiguracija $7$ je $57$ puta brža i statistički je vrlo malo vjerojatno da ne nađe optimalno rješenje (za problem korišten u testiranju) u istom vremenu izvođenja.
 
-Tablica \ref{tab:additional-results} sadrži rezultate dodatnih testiranja. Ovdje se ne prati statistika operatora pa algoritam troši samo $55\%$ vremena (otprilike je $2$ puta brži). To je vidljivo iz prva $2$ rezultata dobivenih ponovnim testiranjem konfiguracija $7$ i $16$. Povećanjem broja pokušaja konfiguracije $16$ iz tablice \ref{tab:grid-search-results} nije postignuto poboljšanje. Povećanjem veličine populacije s $1000$ na $2000$ postignuta je $100\%$-tna učinkovitost (u $20$ testiranja) uz $77.9\%$ više vremena. Zaključak je sljedeći: koristi se konfiguracija $22$ u grafičkom sučelju, dok se za višestruka testiranja koristi konfiguracija $7$.
+Tablica \ref{tab:additional-results} sadrži rezultate dodatnih testiranja. Ovdje se ne prati statistika operatora pa algoritam troši samo $55\%$ vremena (otprilike je $2$ puta brži). To je vidljivo iz prva $2$ rezultata dobivenih ponovnim testiranjem konfiguracija $7$ i $16$. Povećanjem broja pokušaja konfiguracije $16$ iz tablice \ref{tab:grid-search-results} nije postignuto poboljšanje. Povećanjem veličine populacije s $1000$ na $2000$ postignuta je $100\%$-tna učinkovitost (u $20$ testiranja) uz $77.9\%$ više vremena. Zaključak je sljedeći. U grafičkom sučelju koristi se konfiguracija $22$ zbog visoke točnosti i prihvatljivog vremena izvođenja, dok se za višestruka testiranja koristi konfiguracija $7$ zbog najbolje vjerojatnosti (u više testiranja) za pronalaskom optimalnog rješenja.
 
 \begin{table}
 	\centering
@@ -800,18 +803,20 @@ Tablica \ref{tab:additional-results} sadrži rezultate dodatnih testiranja. Ovdj
 		& \textbf{Broj \linebreak blokova}
 		& \textbf{Udio \linebreak optimalnih \linebreak rješenja [\%]}
 		& \textbf{Prosječno vrijeme izvođenja [s]} \\ \hline
+		
 		$19$		& $1$	& $1000$	& $500$		& $6.45$	& $80$		& $13.26$	\\ \hline
-		$19$		& $1$	& $500$		& $200$		& $14.6$	& $55$		& $10.92$	\\ \hline
-		$19$		& $1$	& $500$		& $500$		& $6.85$	& $70$		& $7.981$	\\ \hline
-		$19$		& $1$	& $1000$	& $200$		& $8.65$	& $55$		& $13.94$	\\ \hline
-		$19$		& $1$	& $1000$	& $500$		& $6.25$	& $70$		& $12.01$	\\ \hline
-		$19$		& $1$	& $2000$	& $200$		& $6.50$	& $80$		& $16.50$	\\ \hline
-		$19$		& $1$	& $2000$	& $500$		& $6.10$	& $95$		& $24.97$	\\ \hline
-		$20$		& $5$	& $1000$	& $500$		& $6.10$	& $85$		& $38.65$	\\ \hline
-		$21$		& $10$	& $1000$	& $500$		& $6.25$	& $85$		& $48.61$	\\ \hline
-		$22$		& $5$	& $2000$	& $500$		& $6.00$	& $100$		& $68.75$	\\ \hline
-		$23$		& $5$	& $2000$	& $2000$	& $6.20$	& $90$		& $279.87$	\\ \hline
-		$24$		& $5$	& $10000$	& $500$		& $6.10$	& $95$		& $359.73$	\\ \hline
+		$20$		& $1$	& $500$		& $200$		& $14.6$	& $55$		& $10.92$	\\ \hline
+		$21$		& $1$	& $500$		& $500$		& $6.85$	& $70$		& $7.981$	\\ \hline
+		$22$		& $1$	& $1000$	& $200$		& $8.65$	& $55$		& $13.94$	\\ \hline
+		$23$		& $1$	& $1000$	& $500$		& $6.25$	& $70$		& $12.01$	\\ \hline
+		$24$		& $1$	& $2000$	& $200$		& $6.50$	& $80$		& $16.50$	\\ \hline
+		$25$		& $1$	& $2000$	& $500$		& $6.10$	& $95$		& $24.97$	\\ \hline
+		$26$		& $5$	& $1000$	& $500$		& $6.10$	& $85$		& $38.65$	\\ \hline
+		$27$		& $10$	& $1000$	& $500$		& $6.25$	& $85$		& $48.61$	\\ \hline
+		$28$		& $5$	& $2000$	& $500$		& $6.00$	& $100$		& $68.75$	\\ \hline
+		$29$		& $5$	& $2000$	& $2000$	& $6.20$	& $90$		& $279.87$	\\ \hline
+		$30$		& $5$	& $10000$	& $500$		& $6.10$	& $95$		& $359.73$	\\ \hline
+		
 	\end{tabular}
 \end{table}
 
@@ -855,15 +860,98 @@ Tijekom pretrage po rešetci provedena je i optimizacija genetskih operatora kor
 	\end{tabular}
 \end{table}
 
-Još treba spomenuti kako su vrijednosti u zadnjem stupcu vrlo malene zbog korištenog problema. Naime, funkcija kvalitete koristi zbroj najboljih poklapanja CLB-ova i Booleovih funkcija što je zapravo diskretna vrijednost. Za problem $3$-bitnog potpunog binarnog zbrajala izlaz funkcije kvalitete jest u rasponu $[0, 512]$ ($N*2^{M}=4*2^{7}=512$). $N$ je broj Booleovih funkcija ($S_{0}, S_{1}, S{2}, C_{2}$), a $M$ je broj ulaza ($A_{2}A_{1}A_{0}$, $B_{2}B_{1}B_{0}$ i $C_{IN}$). Svi operatori zajedno poboljšavaju najbolje rješenje $2435*(13.51+14.42)=68010$ puta tj.~prosječno $68010/(18*20)=188$ puta po jednom testiranju konfiguracije. Ukupna vjerojatnost pronalaska optimalnog rješenja jest $52.5\%$ (prosjek šestog stupca u tablici \ref{tab:grid-search-results}).
+Još treba spomenuti kako su vrijednosti u zadnjem stupcu vrlo malene zbog korištenog problema. Naime, funkcija kvalitete koristi zbroj najboljih poklapanja CLB-ova i Booleovih funkcija što je zapravo diskretna vrijednost. Za problem $3$-bitnog potpunog binarnog zbrajala izlaz funkcije kvalitete jest u rasponu $[0, 512]$ ($N*2^{M}=4*2^{7}=512$). $N$ je broj Booleovih funkcija ($S_{0}, S_{1}, S{2}, C_{2}$), a $M$ je broj ulaza ($A_{2}A_{1}A_{0}$, $B_{2}B_{1}B_{0}$ i $C_{IN}$). Svi operatori zajedno poboljšavaju najbolje rješenje $2435*(13.51+14.42)=68010$ puta tj.~prosječno $\frac{68010}{18*20}=188$ puta po jednom testiranju konfiguracije. Ukupna vjerojatnost pronalaska optimalnog rješenja jest $52.5\%$ (prosjek šestog stupca u tablici \ref{tab:grid-search-results}).
+
+Osim optimizacije parametara, provedena je i optimizacija izvornog koda. Korišten je zaseban program za analizu vremena izvođenja (engl.~\textit{profiler}). Analiza pokazuje memorijsku učinkovitost zamjene nove i trenutne populacije s prosječnom aktivnošću čistača memorije (engl.~\textit{garbage collector}) manjom od $1\%$. Najviše vremena se troši na izračun izlaza CLB-ova, oko $75\%$. Jednostavnom optimizacijom načina pristupa podacima te spremanjem izlaza blokova (\textit{caching}) vrijeme izvođenja svedeno je na $60\%$ početne vrijednosti. Daljnje optimizacije nisu provedene jer bi narušavale principe objektne paradigme u programiranju.
 
 %%%%%
 %%%%%
 %%%%%
 
-\section{Potpuno binarno zbrajalo}
+\section{Potpuna binarna zbrajala}
 
-Rezultati izvođenja optimiziranog algoritma prikazat će se na primjeru potpunih binarnih zbrajala.
+Rezultati izvođenja optimiziranog algoritma prikazat će se na primjeru potpunih binarnih zbrajala. Korišteni su sljedeći parametri iz prethodnog odjeljka: broj pokušaja je $1$, veličina populacije je $1000$ i maksimalan broja generacija je $500$. Pragovi kvalitete se ne koriste jer je broj pokušaja jednak $1$. Tablica \ref{tab:optimized-results} sadrži rezultate testiranja s $3$-ulaznim CLB-ovima. Treći stupac predstavlja prisutnost svih funkcija zbrajala pri radu algoritma. Na primjer, rezultat s indeksom $4$ odnosi se rješavanje $6$ funkcija ($S_{0}$, $C_{0}$, $S_{1}$, $C_{1}$, $S_{2}$ i $C_{2}$), dok se rezultat s indeksom $5$ odnosi na rješavanje $4$ funkcija ($S_{0}$, $S_{1}$, $S_{2}$ i $C_{2}$).
+
+U tablici je naveden i broj testiranja jer nije jednak za sva zbrajala. Vrijeme izvođenja se jako povećava (oko $8$ puta) kako raste broj bitova u zbrajalu (više $1$-bitnih potpunih zbrajala u nizu). Testiranje $5$-ulaznog zbrajala zahtijeva od $12$ minuta do nekoliko sati. Zato su napravljena samo $3$ testiranja i rezultati su pojedinačno prikazani.
+
+\begin{table}
+	\centering
+	\caption{Rezultati optimiziranog algoritma na potpunim zbrajalima}
+	\label{tab:optimized-results}
+	\begin{tabular}{
+			|>{\centering\arraybackslash}m{4mm}
+			|>{\centering\arraybackslash}m{18mm}
+			|>{\centering\arraybackslash}m{18mm}
+			|>{\centering\arraybackslash}m{18mm}
+			|>{\centering\arraybackslash}m{18mm}
+			|>{\centering\arraybackslash}m{20mm}
+			|>{\centering\arraybackslash}m{20mm}|}
+		\hline
+		\textbf{\#}
+		& \textbf{Broj \linebreak bitova}
+		& \textbf{Sve \linebreak funkcije}
+		& \textbf{Broj \linebreak testiranja}
+		& \textbf{Broj \linebreak blokova}
+		& \textbf{Udio \linebreak optimalnih \linebreak rješenja [\%]}
+		& \textbf{Prosječno vrijeme izvođenja [s]} \\ \hline
+		
+		$1$		& $1$	& DA	& $20$		& $2.00$	& $100$		& $0.02$	\\ \hline
+		$2$		& $2$	& DA	& $20$		& $4.00$	& $100$		& $0.81$	\\ \hline
+		$3$		& $2$	& NE	& $20$		& $4.00$	& $100$		& $0.88$	\\ \hline
+		$4$		& $3$	& DA	& $20$		& $6.00$	& $100$		& $9.63$	\\ \hline
+		$5$		& $3$	& NE	& $20$		& $6.25$	& $85$		& $10.58$	\\ \hline
+		$6$		& $4$	& DA	& $20$		& $8.10$	& $90$		& $79.03$	\\ \hline
+		$7$		& $4$	& NE	& $20$		& $9.30$	& $45$		& $0$	\\ \hline
+		\multicolumn{7}{|c|}{\textbf{Pojedinačni rezultati}} \\ \hline
+		$8$		& $5$	& DA	& $1$		& $10$		& $100$		& $713.75$		\\ \hline
+		$9$		& $5$	& DA	& $1$		& $10$		& $100$		& $696.76$		\\ \hline
+		$10$	& $5$	& DA	& $1$		& $11$		& $0$		& $846.38$		\\ \hline
+		$11$	& $5$	& NE	& $1$		& $10$		& $100$		& $709.83$		\\ \hline
+		$12$	& $5$	& NE	& $1$		& $296$		& $0$		& $17921.97$	\\ \hline
+		$13$	& $5$	& NE	& $1$		& $296$		& $0$		& $17587.97$	\\ \hline
+		
+	\end{tabular}
+\end{table}
+
+Algoritam uspijeva pronaći optimalno rješenje za sva zbrajala s $5$ ili manje ulaza. Na slici \ref{fig:adder5no-solution} prikazano je rješenje $5$-bitnog potpunog zbrajala u tekstualnom obliku. Testiranje na zbrajalima s više od $5$ ulaza pokazalo se vremenski prezahtjevno i pretpostavka je da algoritam nije u mogućnosti pronaći rješenje u razumnom vremenu. Rezultati potvrđuju očekivanje da izostavljanje funkcija prijenosa otežava rad algoritma. Rezultat s indeksom $12$ ukazuje na veliku nepouzdanost vremenske složenosti algoritma. Rezultat od $296$ blokova nešto je bolji od rješenja grubom silom (potpuno stablo multipleksera) koje ima $2^{M-m+1}-1=511$ CLB-ova. Očito je da algoritam nije uspio pronaći rješenje za manji broj blokova te je izgubio jako puno vremena na većim procjenama.
+
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.6\textwidth]{img/adder5no_sol.png}
+	\caption{Rješenje za $5$-bitno potpuno zbrajalo u tekstualnom obliku}
+	\label{fig:adder5no-solution}
+\end{figure}
+
+Tablica \ref{tab:input-results} sadrži rezultate testiranja s CLB-ovima s $2$ ulaza. Smanjenjem broja ulaza s $3$ na $2$ povećava se složenost problema jer je potrebno iskoristiti puno više blokova. Algoritam puno teže dolazi do optimalnog rješenja uz $2$ ulaza za jednostavnije probleme te ne uspijeva pronaći rješenja za složenije probleme. Daljna testiranja nisu prikazana jer su rezultati vrlo slični navedenima. Povećanje broja ulaza ne mijenja rješenja jer potpuna zbrajala ionako koriste samo $1$ CLB po funkciji.
+
+\begin{table}
+	\centering
+	\caption{Rezultati s $2$-ulaznim CLB-ovima}
+	\label{tab:input-results}
+	\begin{tabular}{
+			|>{\centering\arraybackslash}m{4mm}
+			|>{\centering\arraybackslash}m{18mm}
+			|>{\centering\arraybackslash}m{18mm}
+			|>{\centering\arraybackslash}m{18mm}
+			|>{\centering\arraybackslash}m{18mm}
+			|>{\centering\arraybackslash}m{20mm}
+			|>{\centering\arraybackslash}m{20mm}|}
+		\hline
+		\textbf{\#}
+		& \textbf{Broj \linebreak bitova}
+		& \textbf{Sve \linebreak funkcije}
+		& \textbf{Broj \linebreak testiranja}
+		& \textbf{Broj \linebreak blokova}
+		& \textbf{Udio \linebreak optimalnih \linebreak rješenja [\%]}
+		& \textbf{Prosječno vrijeme izvođenja [s]} \\ \hline
+
+		$1$		& $1$	& DA	& $20$		& $5.00$	& $100$		& $0.26$	\\ \hline
+		$2$		& $2$	& DA	& $20$		& $11.60$	& $25$		& $6.24$	\\ \hline
+		$3$		& $2$	& NE	& $20$		& $15.85$	& $5$		& $9.50$	\\ \hline
+		$4$		& $3$	& DA	& $20$		& $83.70$	& $0$		& $300.16$	\\ \hline
+		
+	\end{tabular}
+\end{table}
 
 %%%%%
 %%%%%
@@ -884,7 +972,7 @@ Objašnjena su potrebna teorijska znanja za problem izvedbe vektorskih Booleovih
 
 \engtitle{Implementation of Vectorial Boolean Functions Based on Configurable Logic Blocks}
 \begin{abstract}
-Theoretical knowledge required for the problem of implementation of vectorial Boolean functions based on configurable logic blocks is explained. Fundamentals of Boolean algebra, digital logic and solving of optimization problems are explained. Motivation for optimizing the given problem is given. Implementation of the heuristic which successfully solves the problem is described in detail. A paralellization of a modified genetic algorithm is implemented. Instructions for using the graphical user interface are given and all its functionalities are explained. Process of parameter optimization is explained along with a presentation of the results. Finally, testing results on multibit full binary adders are shown.
+Theoretical knowledge required for the problem of implementation of vectorial Boolean functions based on configurable logic blocks is explained. Fundamentals of Boolean algebra, digital logic and solving of optimization problems are explained. Motivation for optimizing the given problem is given. Implementation of the heuristic which successfully solves the problem is described in detail. A parallelization of a modified genetic algorithm is implemented. Instructions for using the graphical user interface are given and all its functionalities are explained. Process of parameter optimization is explained along with a presentation of the results. Finally, testing results on multibit full binary adders are shown.
 
 \keywords{Boolean function, configurable logic block, FPGA, genetic algorithm, implementation, Java}
 \end{abstract}

@@ -1,0 +1,30 @@
+Crossover operator statistics.
+    Times used        Decreased fitness     Increased fitness      Increased best
+SingleBlockCrossover (aligned)
+     374717166      203233326 (54.2365)     42743474 (11.4069)   3697 (0.00098661)
+IntervalBlockCrossover (aligned)
+     749361302      417311306 (55.6889)     96849910 (12.9243)  11597 (0.00154758)
+SingleBlockCrossover (not aligned)
+     187383550      155466186 (82.9668)      7426595 (3.9633)   1868 (0.00099689)
+IntervalBlockCrossover (not aligned)
+     374737362      269656148 (71.9587)     31105493 (8.3006)   4444 (0.00118590)
+SubBlockCrossover (aligned)
+     749440972      408454773 (54.5013)     89493594 (11.9414)  11311 (0.00150926)
+Total:
+    2435640350     1454121739 (59.7018)    267619066 (10.9876)  32917 (0.00135147)
+
+
+Mutation operator statistics.
+    Times used        Decreased fitness     Increased fitness      Increased best
+InputFullMutation
+     124910965      101324105 (81.1171)      3438878 (2.7531)   1295 (0.00103674)
+InputSingleMutation
+     499620741      346230341 (69.2986)     12594215 (2.5208)   6516 (0.00130419)
+TableCopyMutation
+     749437499      306533394 (40.9018)     57347935 (7.6521)  11498 (0.00153422)
+TableFullMutation
+      62452390       51209573 (81.9978)      1544125 (2.4725)    581 (0.00093031)
+TableSingleMutation
+     999218757      783839812 (78.4453)     47059010 (4.7096)  15225 (0.00152369)
+Total:
+    2435640350     1589137225 (65.2452)    121984163 (5.0083)  35115 (0.00144172)

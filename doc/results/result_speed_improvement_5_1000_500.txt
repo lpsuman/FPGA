@@ -1,0 +1,65 @@
+Step  1/ 1 (try  1/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.00       53.843
+
+Step  1/ 1 (try  2/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.00       36.890
+
+Step  1/ 1 (try  3/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.00       36.618
+
+Step  1/ 1 (try  4/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.00       57.817
+
+Step  1/ 1 (try  5/20), fails=  5, pop_size=  1000, max_gen=   500
+       8.00       35.714
+
+Step  1/ 1 (try  6/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.00       39.015
+
+Step  1/ 1 (try  7/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.00       36.381
+
+Step  1/ 1 (try  8/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.00       36.422
+
+Step  1/ 1 (try  9/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.00       36.170
+
+Step  1/ 1 (try 10/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.00       36.628
+
+Step  1/ 1 (try 11/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.00       37.146
+
+Step  1/ 1 (try 12/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.00       39.967
+
+Step  1/ 1 (try 13/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.00       31.427
+
+Step  1/ 1 (try 14/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.00       39.878
+
+Step  1/ 1 (try 15/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.00       41.395
+
+Step  1/ 1 (try 16/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.00       31.616
+
+Step  1/ 1 (try 17/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.00       37.009
+
+Step  1/ 1 (try 18/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.00       34.904
+
+Step  1/ 1 (try 19/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.00       34.927
+
+Step  1/ 1 (try 20/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.00       39.258
+
+Total running time in seconds: 772.937
+Step  1/ 1 (try  1/20), fails=  5, pop_size=  1000, max_gen=   500
+       6.10       38.651
+
+Total elapsed time: 773.288
